@@ -1,3 +1,4 @@
+#include <Arduino.h>
 #include "Led.hpp"
 
 Led::Led(int pin) : _pin(pin), _state(false) {

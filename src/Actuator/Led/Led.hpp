@@ -1,9 +1,3 @@
-/**
- * @file Led.hpp
- * 
- * 内蔵LEDを制御する
- */
-
 #pragma once
 
 class Led {
