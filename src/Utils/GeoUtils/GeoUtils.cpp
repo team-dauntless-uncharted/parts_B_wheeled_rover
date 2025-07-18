@@ -1,3 +1,5 @@
+#define _USE_MATH_DEFINES // For M_PI on Windows/MSVC etc.
+#include <cmath>
 #include "GeoUtils.hpp"
 
 namespace GeoUtils {
