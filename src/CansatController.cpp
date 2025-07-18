@@ -2,7 +2,7 @@
 #include <Arduino.h>
 
 CansatController::CansatController()
-    : state(CansatState::STAND_BY),
+    : state(CansatState::NAVIGATION),
       userConfig{35.7100152, 139.8107594, 20, 0, 400, 0, 5},
       _altFlag(false), _timeFlag(false), _cdsFlag(false), _accFlag(false),
       _currentTime(0), _mOutputTime(0), _mr_pwm(0), _ml_pwm(0),

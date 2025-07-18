@@ -11,8 +11,8 @@ void setup() {
     Serial.println("Step 1: Serial initialized");
     
     // ユーザ設定
-    cansat.userConfig.goalLat = 35.658582;
-    cansat.userConfig.goalLng = 139.7454544;
+    cansat.userConfig.goalLat =35.7487860;
+    cansat.userConfig.goalLng = 139.8070711;
     cansat.userConfig.altThreshold = 20;
     cansat.userConfig.cdsThreshold = 400;
     cansat.userConfig.accThreshold = 0;
