@@ -1,4 +1,5 @@
 #include "GnssSensor.hpp"
+#include <Arduino.h>
 
 GnssSensor::GnssSensor() : _gnss(), _latitude(0), _longitude(0), _altitude(0), _currentDate(""), _posFix(false) {}
 
@@ -15,7 +16,25 @@ bool GnssSensor::begin() {
 		return false;
 	}
 
-	return true;
+	Serial.println("Waiting for GNSS position fix...");
+	unsigned long startTime = millis();
+	// タイムアウトを5分(300秒)に設定
+	const unsigned long timeout = 300000; 
+
+	while (!isPosFix()) {
+		update(); // 内部でwaitUpdate(-1)が呼ばれ、データ更新までブロックされる
+		if (millis() - startTime > timeout) {
+			Serial.println("\nGNSS position fix timed out.");
+			return false;
+		}
+		Serial.print(".");
+	}
+
+	Serial.println("\nGNSS position fix acquired.");
+	// 測位が完了したので、最新のデータを取得しておく
+	update();
+
+ 	return true;
 }
 
 void GnssSensor::update() {
