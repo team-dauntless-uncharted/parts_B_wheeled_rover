@@ -238,7 +238,7 @@ void CansatController::handleGoal() {
 }
 
 void CansatController::appendLog() {
-    String message = _logger.createMessage(
+    char *message = _logger.createMessage(
         millis(), _gnss.getCurrentDate(), (int)state,
         _gnss.getLatitude(), _gnss.getLongitude(), _gnss.getAltitude(),
         _distanceToGoal, _directionToGoal, _mr_pwm, _ml_pwm, _mOutputTime,
