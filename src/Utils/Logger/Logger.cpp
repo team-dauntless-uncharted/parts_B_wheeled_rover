@@ -1,7 +1,7 @@
 #include "Logger.hpp"
 #include <Arduino.h>
 
-#define TweliteSend(c) Serial2.println(c)
+#define TweliteSend(c) Serial2.print(c)
 
 Logger::Logger() : _sd(), _myFile() {}
 
@@ -55,6 +55,15 @@ const char* Logger::createMessage(unsigned long currentTime, const String& curre
              mx, my, mz,
              roll, pitch, heading);
 
+    return _logBuffer;
+}
+
+const char* Logger::createMessage(const String& currentDate,
+                                  double lat, double lng, double alt,
+                                  int mr_pwm, int ml_pwm) {
+    snprintf(_logBuffer, sizeof(_logBuffer),
+             "%s,%.6f,%.6f,%.2f,%d,%d",
+             currentDate.c_str(), lat, lng, alt, mr_pwm, ml_pwm);
     return _logBuffer;
 }
 

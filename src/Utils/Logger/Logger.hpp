@@ -13,6 +13,11 @@ public:
                         int mOutputTime, int cds, double ax, double ay, double az,
                         double gx, double gy, double gz, double mx, double my, double mz,
                         double roll, double pitch, double heading);
+
+    const char* createMessage(const String& currentDate,
+                              double lat, double lng, double alt,
+                              int mr_pwm, int ml_pwm);
+
 private:
     SDClass _sd;
     File _myFile;
