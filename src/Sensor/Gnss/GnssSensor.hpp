@@ -10,7 +10,7 @@ public:
 	double getLatitude() const;
 	double getLongitude() const;
 	double getAltitude() const;
-	String getCurrentDate() const;
+	char *getCurrentDate() const;
 	bool isPosFix() const;
 
 private:
@@ -18,9 +18,7 @@ private:
 	double _latitude;
 	double _longitude;
 	double _altitude;
-	String _currentDate;
 	bool _posFix;
 	static const int STRING_BUFFER_SIZE = 128;
-
-	String createDate(SpGnssTime time);
+	char _currentDate[STRING_BUFFER_SIZE];
 };

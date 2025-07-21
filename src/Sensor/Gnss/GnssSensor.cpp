@@ -53,7 +53,9 @@ void GnssSensor::update() {
 		if (navData.posDataExist == 0) {
 			// No position data
 		} else {
-			_currentDate = createDate(navData.time);
+			sprintf(_currentDate, "%04d/%02d/%02d %02d:%02d:%02dZ", 
+				navData.time.year, navData.time.month, navData.time.day,
+				navData.time.hour, navData.time.minute, navData.time.sec);
 			_latitude = navData.latitude;
 			_longitude = navData.longitude;
 			_altitude = navData.altitude;
@@ -73,17 +75,10 @@ double GnssSensor::getAltitude() const {
 	return _altitude;
 }
 
-String GnssSensor::getCurrentDate() const {
+char *GnssSensor::getCurrentDate() const {
 	return _currentDate;
 }
 
 bool GnssSensor::isPosFix() const {
 	return _posFix;
-}
-
-String GnssSensor::createDate(SpGnssTime time) {
-	// YYYY/MM/DD hh:mm:ssZ
-	char buffer[STRING_BUFFER_SIZE];
-	sprintf(buffer, "%04d/%02d/%02d %02d:%02d:%02dZ", time.year, time.month, time.day, time.hour, time.minute, time.sec);
-	return String(buffer);
 }

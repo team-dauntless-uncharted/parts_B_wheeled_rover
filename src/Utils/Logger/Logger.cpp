@@ -1,7 +1,7 @@
 #include "Logger.hpp"
 #include <Arduino.h>
 
-#define TweliteSend(c) Serial2.print(c)
+#define TweliteSend(c) Serial2.println(c)
 
 Logger::Logger() : _sd(), _myFile() {}
 
