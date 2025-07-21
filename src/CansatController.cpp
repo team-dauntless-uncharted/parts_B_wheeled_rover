@@ -238,14 +238,20 @@ void CansatController::handleGoal() {
 }
 
 void CansatController::appendLog() {
+    // char *message = _logger.createMessage(
+    //     millis(), _gnss.getCurrentDate(), (int)state,
+    //     _gnss.getLatitude(), _gnss.getLongitude(), _gnss.getAltitude(),
+    //     _distanceToGoal, _directionToGoal, _mr_pwm, _ml_pwm, _mOutputTime,
+    //     getCdsValue(), _imu.getAccX(), _imu.getAccY(), _imu.getAccZ(),
+    //     _imu.getGyroX(), _imu.getGyroY(), _imu.getGyroZ(),
+    //     _imu.getMagX(), _imu.getMagY(), _imu.getMagZ(),
+    //     _imu.getRoll(), _imu.getPitch(), _imu.getHeading()
+    // );
+
     char *message = _logger.createMessage(
-        millis(), _gnss.getCurrentDate(), (int)state,
+        _gnss.getCurrentDate(), (int)state,
         _gnss.getLatitude(), _gnss.getLongitude(), _gnss.getAltitude(),
-        _distanceToGoal, _directionToGoal, _mr_pwm, _ml_pwm, _mOutputTime,
-        getCdsValue(), _imu.getAccX(), _imu.getAccY(), _imu.getAccZ(),
-        _imu.getGyroX(), _imu.getGyroY(), _imu.getGyroZ(),
-        _imu.getMagX(), _imu.getMagY(), _imu.getMagZ(),
-        _imu.getRoll(), _imu.getPitch(), _imu.getHeading()
+        _mr_pwm, _ml_pwm
     );
     _logger.appendLog(message);
 }
