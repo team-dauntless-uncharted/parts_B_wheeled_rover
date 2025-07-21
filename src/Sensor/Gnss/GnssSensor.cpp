@@ -5,6 +5,10 @@ GnssSensor::GnssSensor() : _gnss(), _latitude(0), _longitude(0), _altitude(0), _
 bool GnssSensor::begin() {
 	if (_gnss.begin() != 0) {
 		return false;
+	} else {
+		_gnss.select(GPS);
+		_gnss.select(QZ_L1CA);
+		_gnss.select(QZ_L1S);
 	}
 
 	if (_gnss.start(COLD_START) != 0) {
