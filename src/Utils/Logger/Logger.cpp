@@ -27,6 +27,7 @@ bool Logger::appendLog(const String& message) {
     _myFile.println(message);
     _myFile.close();
     
+    Serial.println(message);
     tweliteSend(message); // 無線でログを送信
     
     return true;
@@ -38,33 +39,26 @@ String Logger::createMessage(unsigned long currentTime, const String& currentDat
                            int mOutputTime, int cds, double ax, double ay, double az,
                            double gx, double gy, double gz, double mx, double my, double mz,
                            double roll, double pitch, double heading) {
-    String message = "";
-    message += String(currentTime);     message += ","; // time
-    message += currentDate;             message += ","; // date
-    message += String(state);           message += ","; // mode
-    message += String(lat);             message += ","; // lat
-    message += String(lng);             message += ","; // lng
-    message += String(alt);             message += ","; // alt
-    message += String(distance);        message += ","; // distance
-    message += String(direction);       message += ","; // direction
-    message += String(mr_pwm);          message += ","; // mr_pwm
-    message += String(ml_pwm);          message += ","; // ml_pwm
-    message += String(mOutputTime);     message += ","; // mOutputTime
-    message += String(cds);             message += ","; // cds
-    message += String(ax);              message += ","; // ax
-    message += String(ay);              message += ","; // ay
-    message += String(az);              message += ","; // az
-    message += String(gx);              message += ","; // gx
-    message += String(gy);              message += ","; // gy
-    message += String(gz);              message += ","; // gz
-    message += String(mx);              message += ","; // mx
-    message += String(my);              message += ","; // my
-    message += String(mz);              message += ","; // mz
-    message += String(roll);            message += ","; // roll
-    message += String(pitch);           message += ","; // pitch
-    message += String(heading);         message += ","; // heading
-    
-    return message;
+    // 300バイトのバッファを確保。Stringの連結によるメモリの断片化を避ける
+    char message[300];
+
+    // snprintfでフォーマットされた文字列を生成
+    // 注意: AVRベースのArduinoでは、浮動小数点数のサポートに特別な設定が必要な場合があります
+    snprintf(message, sizeof(message),
+             "%lu,%s,%d,%.6f,%.6f,%.2f,%.2f,%.2f,%d,%d,%d,%d,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.2f,%.2f,%.2f",
+             currentTime,
+             currentDate.c_str(),
+             state,
+             lat, lng, alt,
+             distance, direction,
+             mr_pwm, ml_pwm,
+             mOutputTime, cds,
+             ax, ay, az,
+             gx, gy, gz,
+             mx, my, mz,
+             roll, pitch, heading);
+
+    return String(message);
 }
 
 bool Logger::sdInit() {
