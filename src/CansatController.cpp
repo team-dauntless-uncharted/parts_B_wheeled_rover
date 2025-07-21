@@ -249,7 +249,7 @@ void CansatController::appendLog() {
     // );
 
     char *message = _logger.createMessage(
-        _gnss.getCurrentDate(),
+        _gnss.getCurrentDate(), (int)state,
         _gnss.getLatitude(), _gnss.getLongitude(), _gnss.getAltitude(),
         _mr_pwm, _ml_pwm
     );

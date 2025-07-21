@@ -58,12 +58,12 @@ const char* Logger::createMessage(unsigned long currentTime, const String& curre
     return _logBuffer;
 }
 
-const char* Logger::createMessage(const String& currentDate,
+const char* Logger::createMessage(const String& currentDate, int state,
                                   double lat, double lng, double alt,
                                   int mr_pwm, int ml_pwm) {
     snprintf(_logBuffer, sizeof(_logBuffer),
-             "%s,%.6f,%.6f,%.2f,%d,%d",
-             currentDate.c_str(), lat, lng, alt, mr_pwm, ml_pwm);
+             "%s,%d,%.6f,%.6f,%.2f,%d,%d",
+             currentDate.c_str(), state, lat, lng, alt, mr_pwm, ml_pwm);
     return _logBuffer;
 }
 

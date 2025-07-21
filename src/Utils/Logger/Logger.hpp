@@ -14,7 +14,7 @@ public:
                         double gx, double gy, double gz, double mx, double my, double mz,
                         double roll, double pitch, double heading);
 
-    const char* createMessage(const String& currentDate,
+    const char* createMessage(const String& currentDate, int state,
                               double lat, double lng, double alt,
                               int mr_pwm, int ml_pwm);
 
