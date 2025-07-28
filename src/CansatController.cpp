@@ -121,6 +121,8 @@ void CansatController::begin() {
     Serial.println("CansatController: Initial message sent");
     
     Serial.println("CansatController: begin() completed");
+
+    _speaker.playStart();
 }
 
 void CansatController::update() {
