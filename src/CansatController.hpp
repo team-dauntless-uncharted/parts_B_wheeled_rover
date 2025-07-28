@@ -2,6 +2,7 @@
 #include "Sensor/Gnss/GnssSensor.hpp"
 #include "Sensor/Imu/ImuSensor.hpp"
 #include "Sensor/CdS/CdSSensor.hpp"
+#include "Sensor/Camera/CameraController.hpp"
 #include "Actuator/Motor/Motor.hpp"
 #include "Actuator/Led/Led.hpp"
 #include "Actuator/Speaker/Speaker.hpp"
@@ -80,6 +81,8 @@ private:
     Speaker _speaker;
     Heater _heater;
     Logger _logger;
+
+    CameraController _camera;
     
     // 計算値
     double _distanceToGoal;

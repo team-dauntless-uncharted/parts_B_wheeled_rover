@@ -13,6 +13,8 @@ bool Logger::begin() {
     if (!createLogFile()) {
         return false;
     }
+
+    refreshFilenameIndex();
     
     return true;
 }
@@ -88,13 +90,29 @@ void Logger::tweliteSend(const char* message) {
     TweliteSend(message);
 }
 
-bool Logger::saveImage(const char* filename, void* buff, size_t size) {
-    File myFile = _sd.open(filename, FILE_WRITE);
+bool Logger::saveImage(void* buff, size_t size) {
+    File myFile = _sd.open(_imageFilename, FILE_WRITE);
     if (!myFile) {
         Serial.println("Failed to open file for writing");
         return false;
     }
     myFile.write((uint8_t*)buff, size);
     myFile.close();
+
+    shiftImageFilename();
     return true;
+}
+
+void Logger::shiftImageFilename() {
+    sprintf(_imageFilename, "/Image_%04d.jpg", _imageNameCount);
+    _imageNameCount++;
+}
+
+void Logger::refreshFilenameIndex() {
+    while (true) {
+        shiftImageFilename();
+        if (!_sd.exists(_imageFilename)) {
+            break;
+        }
+    }
 }
