@@ -86,4 +86,15 @@ bool Logger::createLogFile() {
 
 void Logger::tweliteSend(const char* message) {
     TweliteSend(message);
-} 
+}
+
+bool Logger::saveImage(const char* filename, void* buff, size_t size) {
+    File myFile = _sd.open(filename, FILE_WRITE);
+    if (!myFile) {
+        Serial.println("Failed to open file for writing");
+        return false;
+    }
+    myFile.write((uint8_t*)buff, size);
+    myFile.close();
+    return true;
+}

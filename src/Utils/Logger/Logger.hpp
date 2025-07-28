@@ -27,4 +27,6 @@ private:
     bool sdInit();
     bool createLogFile();
     void tweliteSend(const char* message);
+
+    bool saveImage(const char* filename, void* buff, size_t size);
 };
