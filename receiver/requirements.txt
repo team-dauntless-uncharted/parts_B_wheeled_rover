@@ -1,3 +1,0 @@
-pyserial >= 3.5
-dash >= 2.15
-python-dotenv >= 1.0
