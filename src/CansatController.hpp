@@ -9,6 +9,7 @@
 #include "Actuator/Heater/Heater.hpp"
 #include "Utils/GeoUtils/GeoUtils.hpp"
 #include "Utils/Logger/Logger.hpp"
+#include "Utils/Twelite/TweliteController.hpp"
 
 enum class CansatState {
     CALIBRATION,
@@ -38,6 +39,7 @@ public:
     void runState();
     CansatState state;
     UserConfig userConfig;
+    void waitMessage();
     
     // センサ値の取得メソッド
     double getCurrentAlt() const;
@@ -81,6 +83,7 @@ private:
     Speaker _speaker;
     Heater _heater;
     Logger _logger;
+    TweliteController _twelite;
 
     CameraController _camera;
     

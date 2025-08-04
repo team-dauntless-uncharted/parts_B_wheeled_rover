@@ -33,17 +33,18 @@ void setup() {
 }
 
 void loop() {
-    static unsigned long lastDebugTime = 0;
-    unsigned long currentTime = millis();
+    // static unsigned long lastDebugTime = 0;
+    // unsigned long currentTime = millis();
     
-    // 5秒ごとにデバッグ出力
-    if (currentTime - lastDebugTime > 5000) {
-        Serial.print("Debug: Loop running, time: ");
-        Serial.println(currentTime);
-        lastDebugTime = currentTime;
-    }
+    // // 5秒ごとにデバッグ出力
+    // if (currentTime - lastDebugTime > 5000) {
+    //     Serial.print("Debug: Loop running, time: ");
+    //     Serial.println(currentTime);
+    //     lastDebugTime = currentTime;
+    // }
     
-    cansat.update();
-    cansat.runState();
-    delay(50);
+    // cansat.update();
+    // cansat.runState();
+    // delay(50);
+    cansat.waitMessage();
 }

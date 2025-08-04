@@ -1,8 +1,6 @@
 #include "Logger.hpp"
 #include <Arduino.h>
 
-#define TweliteSend(c) Serial2.println(c)
-
 Logger::Logger() : _sd(), _myFile() {}
 
 bool Logger::begin() {
@@ -30,8 +28,6 @@ bool Logger::appendLog(const char* message) {
     _myFile.close();
     
     Serial.println(message);
-    tweliteSend(message); // 無線でログを送信
-    
     return true;
 }
 
@@ -84,10 +80,6 @@ bool Logger::createLogFile() {
     _myFile.println(CSV_HEADER);
     _myFile.close();
     return true;
-}
-
-void Logger::tweliteSend(const char* message) {
-    TweliteSend(message);
 }
 
 bool Logger::saveImage(void* buff, size_t size) {

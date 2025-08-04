@@ -31,7 +31,6 @@ private:
     
     bool sdInit();
     bool createLogFile();
-    void tweliteSend(const char* message);
 
     void shiftImageFilename();
     void refreshFilenameIndex();
