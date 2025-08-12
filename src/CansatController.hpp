@@ -36,6 +36,7 @@ public:
     void begin();
     void update();
     void runState();
+    void rotate();
     CansatState state;
     UserConfig userConfig;
     
@@ -46,7 +47,7 @@ public:
     double getHeading() const;
     int getCdsValue() const;
     double getAcceleration() const;
-    
+
 private:
     // 状態処理メソッド
     void handleCalibration();
