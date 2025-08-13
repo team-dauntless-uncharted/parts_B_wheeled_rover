@@ -74,14 +74,7 @@ void CansatController::begin() {
     
     _currentTime = millis();
     
-    // 無線通信初期化
-    Serial.println("CansatController: Initializing wireless communication...");
-    Serial2.begin(115200);
-    while(!Serial2) {}
-    Serial.println("CansatController: Wireless communication initialized");
-    
     // 初期メッセージ送信
-    Serial2.print("Hello 100kinSAT!!!\n");
     Serial.println("CansatController: Initial message sent");
     
     Serial.println("CansatController: begin() completed");
@@ -278,7 +271,6 @@ void CansatController::handleNavigation() {
 }
 
 void CansatController::handleGoal() {
-    // だんご大家族を演奏する
     // LED2を点灯する
     update();
     appendLog();

@@ -33,7 +33,6 @@ bool Logger::appendLog(const char* message) {
     _myFile.close();
     
     Serial.println(message);
-    tweliteSend(message); // 無線でログを送信
     
     return true;
 }
@@ -151,9 +150,4 @@ void Logger::refreshPPMFileNameIndex() {
 void Logger::shiftPPMFileName() {
     sprintf(_ppmFileName, "/detection_%4d.ppm", _ppmFileNameCount);
     _ppmFileNameCount++;
-}
-
-// Tweliteでのデータ送信
-void Logger::tweliteSend(const char* message) {
-    TweliteSend(message);
 }

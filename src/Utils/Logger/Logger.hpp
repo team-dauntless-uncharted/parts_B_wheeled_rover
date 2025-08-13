@@ -57,7 +57,4 @@ private:
     void refreshPPMFileNameIndex();
     // PPMファイルのインクリメント
     void shiftPPMFileName();
-
-    // Tweliteでのデータ送信
-    void tweliteSend(const char* message);
 };
