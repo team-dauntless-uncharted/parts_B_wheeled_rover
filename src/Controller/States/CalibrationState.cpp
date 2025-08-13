@@ -6,7 +6,7 @@ void CalibrationState::onEnter() {
 	_ctx.getSerialWriter().log("Entering CalibrationState");
 }
 
-// TODO: センサのキャリブレーション
+// センサのキャリブレーション
 void CalibrationState::onUpdate() {
 	_ctx.getSerialWriter().log("Updating CalibrationState");
 

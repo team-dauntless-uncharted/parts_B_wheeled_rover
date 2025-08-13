@@ -29,6 +29,5 @@ void loop() {
     }
     
     cansat.update();
-    cansat.runState();
     delay(50);
 }

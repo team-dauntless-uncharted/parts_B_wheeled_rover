@@ -16,16 +16,6 @@
 
 #include <array>
 
-enum class CansatState {
-    CALIBRATION,
-    STAND_BY,
-    LAUNCH,
-    DROP,
-    LANDING,
-    NAVIGATION,
-    GOAL,
-};
-
 struct UserConfig {
     double goalLat;
     double goalLng;
@@ -42,8 +32,6 @@ public:
     void begin();
     void update();
     void changeState(std::unique_ptr<ICansatState> newState);
-    void runState();
-    CansatState state;
     UserConfig userConfig;
 
     // センサアクセス
@@ -54,7 +42,7 @@ public:
 
     // アクチュエータアクセス
     Motor &getMotor() { return _motor; }
-    Led &getLed(int idx);
+    Led &getLed(int idx) { return _led[idx]; }
     Heater &getHeater() { return _heater; }
     Speaker &getSpeaker() { return _speaker; }
 
@@ -70,11 +58,27 @@ public:
     double getHeading() const;
     int getCdsValue() const;
     double getAcceleration() const;
+
+    void setAltFlag(bool altFlag) { _altFlag = altFlag; }
+    void setTimeFlag(bool timeFlag) { _timeFlag = timeFlag; }
+    void setCdsFlag(bool cdsFlag) { _cdsFlag = cdsFlag; }
+    void setAccFlag(bool accFlag) { _accFlag = accFlag; }
+    void setCurrentTime(long currentTime) { _currentTime = currentTime; }
+    void setmOutputTime(int mOutputTime) { _mOutputTime = mOutputTime; }
+    void setMrPwm(int mrPwm) { _mr_pwm = mrPwm; }
+    void setMlPwm(int mlPwm) { _ml_pwm = mlPwm; }
+
+    bool getAltFlag() { return _altFlag; }
+    bool getTimeFlag() { return _timeFlag; }
+    bool getCdsFlag() { return _cdsFlag; }
+    bool getAccFlag() { return _accFlag; }
+    long getCurrentTime() { return _currentTime; }
+    int getmOutputTime() { return _mOutputTime; }
+    int getMrPwm() { return _mr_pwm; }
+    int getMlPwm() { return _ml_pwm; }
     
 private:
     std::unique_ptr<ICansatState> _state;
-    // 状態処理メソッド
-    void handleCalibration();
     void handleStandBy();
     void handleLaunch();
     void handleDrop();
@@ -99,6 +103,7 @@ private:
     GnssSensor _gnss;
     ImuSensor _imu;
     CdSSensor _cds;
+    CameraController _camera;
 
     // アクチュエータ
     int _motorR_pins[3];
@@ -113,8 +118,6 @@ private:
     Logger _logger;
     SerialWriter _writer;
 
-    CameraController _camera;
-    
     // 計算値
     double _distanceToGoal;
     double _directionToGoal;

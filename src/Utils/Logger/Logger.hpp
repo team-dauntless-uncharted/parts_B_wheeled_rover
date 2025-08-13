@@ -13,13 +13,13 @@ public:
 
     // ログの作成
     const char* createMessage(unsigned long currentTime, const String& currentDate, 
-                        int state, double lat, double lng, double alt,
+                        double lat, double lng, double alt,
                         double distance, double direction, int mr_pwm, int ml_pwm,
                         int mOutputTime, int cds, double ax, double ay, double az,
                         double gx, double gy, double gz, double mx, double my, double mz,
                         double roll, double pitch, double heading);
 
-    const char* createMessage(const String& currentDate, int state,
+    const char* createMessage(const String& currentDate,
                               double lat, double lng, double alt,
                               int mr_pwm, int ml_pwm);
 

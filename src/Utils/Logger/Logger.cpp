@@ -39,7 +39,7 @@ bool Logger::appendLog(const char* message) {
 
 // ログの作成
 const char* Logger::createMessage(unsigned long currentTime, const String& currentDate, 
-                           int state, double lat, double lng, double alt,
+                           double lat, double lng, double alt,
                            double distance, double direction, int mr_pwm, int ml_pwm,
                            int mOutputTime, int cds, double ax, double ay, double az,
                            double gx, double gy, double gz, double mx, double my, double mz,
@@ -47,10 +47,9 @@ const char* Logger::createMessage(unsigned long currentTime, const String& curre
     // snprintfでフォーマットされた文字列を生成
     // 注意: AVRベースのArduinoでは、浮動小数点数のサポートに特別な設定が必要な場合があります
     snprintf(_logBuffer, sizeof(_logBuffer),
-             "%lu,%s,%d,%.6f,%.6f,%.2f,%.2f,%.2f,%d,%d,%d,%d,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.2f,%.2f,%.2f",
+             "%lu,%s,%.6f,%.6f,%.2f,%.2f,%.2f,%d,%d,%d,%d,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.2f,%.2f,%.2f",
              currentTime,
              currentDate.c_str(),
-             state,
              lat, lng, alt,
              distance, direction,
              mr_pwm, ml_pwm,
@@ -63,12 +62,12 @@ const char* Logger::createMessage(unsigned long currentTime, const String& curre
     return _logBuffer;
 }
 
-const char* Logger::createMessage(const String& currentDate, int state,
+const char* Logger::createMessage(const String& currentDate,
                                   double lat, double lng, double alt,
                                   int mr_pwm, int ml_pwm) {
     snprintf(_logBuffer, sizeof(_logBuffer),
-             "%s,%d,%.6f,%.6f,%.2f,%d,%d",
-             currentDate.c_str(), state, lat, lng, alt, mr_pwm, ml_pwm);
+             "%s,%.6f,%.6f,%.2f,%d,%d",
+             currentDate.c_str(), lat, lng, alt, mr_pwm, ml_pwm);
     return _logBuffer;
 }
 

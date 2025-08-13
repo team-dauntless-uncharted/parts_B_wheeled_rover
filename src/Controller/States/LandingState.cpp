@@ -1,0 +1,25 @@
+#include "LandingState.hpp"
+#include "NavigationState.hpp"
+#include "Controller/CansatController.hpp"
+
+void LandingState::onEnter() {
+	_ctx.getSerialWriter().log("Entering LandingState");
+}
+
+void LandingState::onUpdate() {
+	_ctx.getSerialWriter().log("Updating LandingState");
+
+    // パラシュートの切り離し
+    delay(5000);
+
+    // ニクロム線を加熱してテグスを切る
+    _ctx.getHeater().heat(150, 10000);
+
+    delay(5000);
+
+	_ctx.changeState(std::make_unique<NavigationState>(_ctx));
+}
+
+void LandingState::onExit() {
+	_ctx.getSerialWriter().log("Exiting LandingState");
+}
