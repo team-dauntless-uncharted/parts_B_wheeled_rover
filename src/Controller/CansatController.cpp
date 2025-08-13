@@ -13,6 +13,7 @@ CansatController::CansatController()
       _led{Led(0), Led(1), Led(2), Led(3)},
       _speaker(9),
       _heater(6),
+      _twelite(),
       _logger(),
       _camera(),
       _distanceToGoal(10000.0),
@@ -21,106 +22,69 @@ CansatController::CansatController()
 }
 
 void CansatController::begin() {
-    Serial.println("CansatController: Starting begin()");
+    _writer.begin();
+    _writer.log("CansatController: Starting begin()");
     
-    Serial.println("CansatController: Initializing GNSS...");
+    _writer.log("CansatController: Initializing GNSS...");
     if (!_gnss.begin()) {
-        Serial.println("CansatController: GNSS initialization failed!");
+        _writer.log("CansatController: GNSS initialization failed!");
     } else {
-        Serial.println("CansatController: GNSS initialized successfully");
+        _writer.log("CansatController: GNSS initialized successfully");
     }
     
-    Serial.println("CansatController: Initializing IMU...");
+    _writer.log("CansatController: Initializing IMU...");
     if (!_imu.begin()) {
-        Serial.println("CansatController: IMU initialization failed!");
+        _writer.log("CansatController: IMU initialization failed!");
     } else {
-        Serial.println("CansatController: IMU initialized successfully");
+        _writer.log("CansatController: IMU initialized successfully");
     }
     
-    Serial.println("CansatController: Initializing Logger...");
+    _writer.log("CansatController: Initializing Logger...");
     if (!_logger.begin()) {
-        Serial.println("CansatController: Logger initialization failed!");
+        _writer.log("CansatController: Logger initialization failed!");
     } else {
-        Serial.println("CansatController: Logger initialized successfully");
+        _writer.log("CansatController: Logger initialized successfully");
+    }
+
+    _writer.log("CansatController: Initializing Twelite...");
+    if (!_twelite.begin()) {
+        _writer.log("CansatController: Twelite initialization failed!");
+    } else {
+        _writer.log("CansatController: Twelite initialized successfully");
     }
 
     // init camera
-    Serial.println("Prepare camera");
+    _writer.log("Prepare camera");
     if (!_camera.begin()) {
-        Serial.println("Camera init failed");
-        return;
+        _writer.log("Camera init failed");
     }
     
     // 1. 高解像度設定（物体認識に適した解像度）
     // 1280x960に設定
-    Serial.println("Setting high resolution for object detection...");
+    _writer.log("Setting high resolution for object detection...");
     if (!_camera.setStillPictureImageFormat(CAM_IMGSIZE_VGA_H, CAM_IMGSIZE_VGA_V, CAM_IMAGE_PIX_FMT_JPG)) {
-        Serial.println("Failed to set high resolution");
+        _writer.log("Failed to set high resolution");
     }
     
     // 2. 高品質JPEG設定（機械学習の精度向上）
     // 圧縮率が低いほど、画質が良くなる
-    Serial.println("Setting high JPEG quality...");
+    _writer.log("Setting high JPEG quality...");
     if (!_camera.setJPEGQuality(95)) {
-        Serial.println("Failed to set JPEG quality");
+        _writer.log("Failed to set JPEG quality");
     }
     
-    // 3. ブレ軽減のための設定
-    // 自動ISO感度無効（手動制御）
-    // シャッタースピードを手動で設定するため、自動ISO感度を無効にする
-    if (!_camera.setAutoISOSensitivity(false)) {
-        Serial.println("Failed to disable auto ISO");
-    }
-    
-    // 高ISO感度で露光時間短縮（ブレ軽減）
-    // ISO感度が高いほど、暗い場所での撮影や、シャッタースピードを早くして手ブレを軽減することができる
-    if (!_camera.setISOSensitivity(CAM_ISO_SENSITIVITY_50)) {
-        Serial.println("Failed to set ISO sensitivity");
-    }
-    
-    // 自動露光無効（手動制御）
-    // シャッタースピードを手動で設定するため、自動露光を無効にする
-    if (!_camera.setAutoExposure(false)) {
-        Serial.println("Failed to disable auto exposure");
-    }
-    
-    // 短い露光時間設定（ブレ軽減）
-    // 露光時間が短いほど、ブレが軽減される
-    if (!_camera.setAbsoluteExposure(1000)) { // 100ms
-        Serial.println("Failed to set exposure time");
-    }
-    
-    // 4. ホワイトバランス設定（自然光下での正確な色再現）
-    Serial.println("Setting white balance for natural light...");
-    if (!_camera.setAutoWhiteBalanceMode(CAM_WHITE_BALANCE_DAYLIGHT)) {
-        Serial.println("Failed to set white balance");
-    }
-    
-    // 5. 色効果無効（自然な色で物体認識）
-    Serial.println("Disabling color effects for natural colors...");
-    if (!_camera.setColorEffect(CAM_COLOR_FX_NONE)) {
-        Serial.println("Failed to disable color effects");
-    }
-    
-    Serial.println("Camera setup completed for Cansat landing site capture");
-    Serial.println("Start streaming");
+    _writer.log("Camera setup completed for Cansat landing site capture");
+    _writer.log("Start streaming");
     if (!_camera.startStreaming()) {
-        Serial.println("Failed to start streaming");
+        _writer.log("Failed to start streaming");
     }
     
     _currentTime = millis();
     
-    // 無線通信初期化
-    Serial.println("CansatController: Initializing wireless communication...");
-    Serial2.begin(115200);
-    while(!Serial2) {}
-    Serial.println("CansatController: Wireless communication initialized");
-    
     // 初期メッセージ送信
-    Serial2.print("Hello 100kinSAT!!!\n");
-    Serial.println("CansatController: Initial message sent");
+    _writer.log("CansatController: Initial message sent");
     
-    Serial.println("CansatController: begin() completed");
+    _writer.log("CansatController: begin() completed");
 
     _speaker.playStart();
 }
@@ -306,15 +270,14 @@ void CansatController::handleNavigation() {
     void* imgBuff = nullptr;
     size_t imgSize = 0;
     if (_camera.takePicture(&imgBuff, &imgSize)) {
-        Serial.println("Save taken picture to SD card...");
-        _logger.saveImage(imgBuff, imgSize);
+        _writer.log("Save taken picture to SD card...");
+        _logger.saveJPEGImage(imgBuff, imgSize);
     } else {
-        Serial.println("Failed to take picture");
+        _writer.log("Failed to take picture");
     }
 }
 
 void CansatController::handleGoal() {
-    // だんご大家族を演奏する
     // LED2を点灯する
     update();
     appendLog();

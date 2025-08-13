@@ -5,6 +5,7 @@
 
 Logger::Logger() : _sd(), _myFile() {}
 
+// 初期化
 bool Logger::begin() {
     if (!sdInit()) {
         return false;
@@ -14,11 +15,13 @@ bool Logger::begin() {
         return false;
     }
 
-    refreshFilenameIndex();
+    refreshJPEGFileNameIndex();
+    refreshPPMFileNameIndex();
     
     return true;
 }
 
+// ログの追加
 bool Logger::appendLog(const char* message) {
     _myFile = _sd.open("log/log.csv", FILE_WRITE);
     
@@ -30,11 +33,11 @@ bool Logger::appendLog(const char* message) {
     _myFile.close();
     
     Serial.println(message);
-    tweliteSend(message); // 無線でログを送信
     
     return true;
 }
 
+// ログの作成
 const char* Logger::createMessage(unsigned long currentTime, const String& currentDate, 
                            int state, double lat, double lng, double alt,
                            double distance, double direction, int mr_pwm, int ml_pwm,
@@ -86,33 +89,65 @@ bool Logger::createLogFile() {
     return true;
 }
 
-void Logger::tweliteSend(const char* message) {
-    TweliteSend(message);
-}
-
-bool Logger::saveImage(void* buff, size_t size) {
-    File myFile = _sd.open(_imageFilename, FILE_WRITE);
-    if (!myFile) {
+// JPEGファイルの保存
+bool Logger::saveJPEGImage(void* buff, size_t size) {
+    _myFile = _sd.open(_jpegFileName, FILE_WRITE);
+    if (!_myFile) {
         Serial.println("Failed to open file for writing");
         return false;
     }
-    myFile.write((uint8_t*)buff, size);
-    myFile.close();
+    _myFile.write((uint8_t*)buff, size);
+    _myFile.close();
 
-    shiftImageFilename();
+    shiftJPEGFileName();
     return true;
 }
 
-void Logger::shiftImageFilename() {
-    sprintf(_imageFilename, "/Image_%04d.jpg", _imageNameCount);
-    _imageNameCount++;
-}
-
-void Logger::refreshFilenameIndex() {
+//_jpegFileNameCountの開始番号を決める
+void Logger::refreshJPEGFileNameIndex() {
     while (true) {
-        shiftImageFilename();
-        if (!_sd.exists(_imageFilename)) {
+        shiftJPEGFileName();
+        if (!_sd.exists(_jpegFileNameCount)) {
             break;
         }
     }
+}
+
+// JPEGファイルのインクリメント
+void Logger::shiftJPEGFileName() {
+    sprintf(_jpegFileName, "/explore_%04d.jpg", _jpegFileNameCount);
+    _jpegFileNameCount++;
+}
+
+// TODO: PPMファイルの保存
+bool Logger::savePPMImage(void* buff, size_t size) {
+    _myFile = _sd.open(_ppmFileName, FILE_WRITE);
+    if (!_myFile) {
+        Serial.println("Failed to open file for writing");
+        return false;
+    }
+
+    _myFile.printf("P6\n%lu %lu\n255\n", 96, 96);
+
+    _myFile.write((uint8_t*)buff, size);
+    _myFile.close();
+    
+    shiftPPMFileName();
+    return true;
+}
+
+// TODO: _ppmFileNameCountの開始番号を決める
+void Logger::refreshPPMFileNameIndex() {
+    while (true) {
+        shiftPPMFileName();
+        if (!_sd.exists(_ppmFileNameCount)) {
+            break;
+        }
+    }
+}
+
+// TODO: PPMファイルのインクリメント
+void Logger::shiftPPMFileName() {
+    sprintf(_ppmFileName, "/detection_%4d.ppm", _ppmFileNameCount);
+    _ppmFileNameCount++;
 }

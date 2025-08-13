@@ -15,3 +15,6 @@ upload:
 		--fqbn $(BOARD) \
 		-p $(PORT) \
 		$(SKETCH)
+
+monitor:
+	arduino-cli monitor -p $(PORT) -c baudrate=115200
