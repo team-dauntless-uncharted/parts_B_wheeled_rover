@@ -65,43 +65,6 @@ void CansatController::begin() {
         Serial.println("Failed to set JPEG quality");
     }
     
-    // 3. ブレ軽減のための設定
-    // 自動ISO感度無効（手動制御）
-    // シャッタースピードを手動で設定するため、自動ISO感度を無効にする
-    if (!_camera.setAutoISOSensitivity(false)) {
-        Serial.println("Failed to disable auto ISO");
-    }
-    
-    // 高ISO感度で露光時間短縮（ブレ軽減）
-    // ISO感度が高いほど、暗い場所での撮影や、シャッタースピードを早くして手ブレを軽減することができる
-    if (!_camera.setISOSensitivity(CAM_ISO_SENSITIVITY_50)) {
-        Serial.println("Failed to set ISO sensitivity");
-    }
-    
-    // 自動露光無効（手動制御）
-    // シャッタースピードを手動で設定するため、自動露光を無効にする
-    if (!_camera.setAutoExposure(false)) {
-        Serial.println("Failed to disable auto exposure");
-    }
-    
-    // 短い露光時間設定（ブレ軽減）
-    // 露光時間が短いほど、ブレが軽減される
-    if (!_camera.setAbsoluteExposure(1000)) { // 100ms
-        Serial.println("Failed to set exposure time");
-    }
-    
-    // 4. ホワイトバランス設定（自然光下での正確な色再現）
-    Serial.println("Setting white balance for natural light...");
-    if (!_camera.setAutoWhiteBalanceMode(CAM_WHITE_BALANCE_DAYLIGHT)) {
-        Serial.println("Failed to set white balance");
-    }
-    
-    // 5. 色効果無効（自然な色で物体認識）
-    Serial.println("Disabling color effects for natural colors...");
-    if (!_camera.setColorEffect(CAM_COLOR_FX_NONE)) {
-        Serial.println("Failed to disable color effects");
-    }
-    
     Serial.println("Camera setup completed for Cansat landing site capture");
     Serial.println("Start streaming");
     if (!_camera.startStreaming()) {
@@ -307,7 +270,7 @@ void CansatController::handleNavigation() {
     size_t imgSize = 0;
     if (_camera.takePicture(&imgBuff, &imgSize)) {
         Serial.println("Save taken picture to SD card...");
-        _logger.saveImage(imgBuff, imgSize);
+        _logger.saveJPEGImage(imgBuff, imgSize);
     } else {
         Serial.println("Failed to take picture");
     }
