@@ -22,62 +22,69 @@ CansatController::CansatController()
 }
 
 void CansatController::begin() {
-    Serial.println("CansatController: Starting begin()");
+    _writer.begin();
+    _writer.log("CansatController: Starting begin()");
     
-    Serial.println("CansatController: Initializing GNSS...");
+    _writer.log("CansatController: Initializing GNSS...");
     if (!_gnss.begin()) {
-        Serial.println("CansatController: GNSS initialization failed!");
+        _writer.log("CansatController: GNSS initialization failed!");
     } else {
-        Serial.println("CansatController: GNSS initialized successfully");
+        _writer.log("CansatController: GNSS initialized successfully");
     }
     
-    Serial.println("CansatController: Initializing IMU...");
+    _writer.log("CansatController: Initializing IMU...");
     if (!_imu.begin()) {
-        Serial.println("CansatController: IMU initialization failed!");
+        _writer.log("CansatController: IMU initialization failed!");
     } else {
-        Serial.println("CansatController: IMU initialized successfully");
+        _writer.log("CansatController: IMU initialized successfully");
     }
     
-    Serial.println("CansatController: Initializing Logger...");
+    _writer.log("CansatController: Initializing Logger...");
     if (!_logger.begin()) {
-        Serial.println("CansatController: Logger initialization failed!");
+        _writer.log("CansatController: Logger initialization failed!");
     } else {
-        Serial.println("CansatController: Logger initialized successfully");
+        _writer.log("CansatController: Logger initialized successfully");
+    }
+
+    _writer.log("CansatController: Initializing Twelite...");
+    if (!_twelite.begin()) {
+        _writer.log("CansatController: Twelite initialization failed!");
+    } else {
+        _writer.log("CansatController: Twelite initialized successfully");
     }
 
     // init camera
-    Serial.println("Prepare camera");
+    _writer.log("Prepare camera");
     if (!_camera.begin()) {
-        Serial.println("Camera init failed");
-        return;
+        _writer.log("Camera init failed");
     }
     
     // 1. 高解像度設定（物体認識に適した解像度）
     // 1280x960に設定
-    Serial.println("Setting high resolution for object detection...");
+    _writer.log("Setting high resolution for object detection...");
     if (!_camera.setStillPictureImageFormat(CAM_IMGSIZE_VGA_H, CAM_IMGSIZE_VGA_V, CAM_IMAGE_PIX_FMT_JPG)) {
-        Serial.println("Failed to set high resolution");
+        _writer.log("Failed to set high resolution");
     }
     
     // 2. 高品質JPEG設定（機械学習の精度向上）
     // 圧縮率が低いほど、画質が良くなる
-    Serial.println("Setting high JPEG quality...");
+    _writer.log("Setting high JPEG quality...");
     if (!_camera.setJPEGQuality(95)) {
-        Serial.println("Failed to set JPEG quality");
+        _writer.log("Failed to set JPEG quality");
     }
     
-    Serial.println("Camera setup completed for Cansat landing site capture");
-    Serial.println("Start streaming");
+    _writer.log("Camera setup completed for Cansat landing site capture");
+    _writer.log("Start streaming");
     if (!_camera.startStreaming()) {
-        Serial.println("Failed to start streaming");
+        _writer.log("Failed to start streaming");
     }
     
     _currentTime = millis();
     
     // 初期メッセージ送信
-    Serial.println("CansatController: Initial message sent");
+    _writer.log("CansatController: Initial message sent");
     
-    Serial.println("CansatController: begin() completed");
+    _writer.log("CansatController: begin() completed");
 
     _speaker.playStart();
 }
@@ -263,10 +270,10 @@ void CansatController::handleNavigation() {
     void* imgBuff = nullptr;
     size_t imgSize = 0;
     if (_camera.takePicture(&imgBuff, &imgSize)) {
-        Serial.println("Save taken picture to SD card...");
+        _writer.log("Save taken picture to SD card...");
         _logger.saveJPEGImage(imgBuff, imgSize);
     } else {
-        Serial.println("Failed to take picture");
+        _writer.log("Failed to take picture");
     }
 }
 

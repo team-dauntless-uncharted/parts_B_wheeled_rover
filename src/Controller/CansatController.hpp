@@ -10,6 +10,7 @@
 #include "Utils/GeoUtils/GeoUtils.hpp"
 #include "Utils/Twelite/Twelite.hpp"
 #include "Utils/Logger/Logger.hpp"
+#include "Utils/Serial/SerialWriter.hpp"
 
 #include <array>
 
@@ -56,9 +57,8 @@ public:
 
     // データのやり取り
     TweliteController &getTwelite() { return _twelite; }
-
-    // ロガー
     Logger &getLogger() { return _logger; }
+    SerialWriter &getSerialWriter() { return _writer; }
     
     // センサ値の取得メソッド
     double getCurrentAlt() const;
@@ -107,6 +107,7 @@ private:
     // データのやり取り
     TweliteController _twelite;
     Logger _logger;
+    SerialWriter _writer;
 
     CameraController _camera;
     
