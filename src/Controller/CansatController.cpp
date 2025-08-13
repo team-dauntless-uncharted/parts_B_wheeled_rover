@@ -13,6 +13,7 @@ CansatController::CansatController()
       _led{Led(0), Led(1), Led(2), Led(3)},
       _speaker(9),
       _heater(6),
+      _twelite(),
       _logger(),
       _camera(),
       _distanceToGoal(10000.0),

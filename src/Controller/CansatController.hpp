@@ -8,6 +8,7 @@
 #include "Actuator/Speaker/Speaker.hpp"
 #include "Actuator/Heater/Heater.hpp"
 #include "Utils/GeoUtils/GeoUtils.hpp"
+#include "Utils/Twelite/Twelite.hpp"
 #include "Utils/Logger/Logger.hpp"
 
 #include <array>
@@ -53,6 +54,9 @@ public:
     Heater &getHeater() { return _heater; }
     Speaker &getSpeaker() { return _speaker; }
 
+    // データのやり取り
+    TweliteController &getTwelite() { return _twelite; }
+
     // ロガー
     Logger &getLogger() { return _logger; }
     
@@ -87,16 +91,21 @@ private:
     int _mr_pwm;
     int _ml_pwm;
     
-    // センサ・アクチュエータ
+    // センサ
     GnssSensor _gnss;
     ImuSensor _imu;
     CdSSensor _cds;
+
+    // アクチュエータ
     int _motorR_pins[3];
     int _motorL_pins[3];
     Motor _motor;
     std::array<Led, 4> _led;
     Speaker _speaker;
     Heater _heater;
+
+    // データのやり取り
+    TweliteController _twelite;
     Logger _logger;
 
     CameraController _camera;
