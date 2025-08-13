@@ -10,7 +10,7 @@ CansatController::CansatController()
       _motorL_pins{7, 2, 3},
       _cds(A0),
       _motor(_motorR_pins, _motorL_pins),
-      _led0(0), _led1(1), _led2(2), _led3(3),
+      _led{Led(0), Led(1), Led(2), Led(3)},
       _speaker(9),
       _heater(6),
       _logger(),

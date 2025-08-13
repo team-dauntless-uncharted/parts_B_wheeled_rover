@@ -10,6 +10,8 @@
 #include "Utils/GeoUtils/GeoUtils.hpp"
 #include "Utils/Logger/Logger.hpp"
 
+#include <array>
+
 enum class CansatState {
     CALIBRATION,
     STAND_BY,
@@ -38,6 +40,21 @@ public:
     void runState();
     CansatState state;
     UserConfig userConfig;
+
+    // センサアクセス
+    GnssSensor &getGnss() { return _gnss; }
+    ImuSensor &getImu() { return _imu; }
+    CdSSensor &getCds() { return _cds; }
+    CameraController &getCamera() { return _camera; }
+
+    // アクチュエータアクセス
+    Motor &getMotor() { return _motor; }
+    Led &getLed(int idx);
+    Heater &getHeater() { return _heater; }
+    Speaker &getSpeaker() { return _speaker; }
+
+    // ロガー
+    Logger &getLogger() { return _logger; }
     
     // センサ値の取得メソッド
     double getCurrentAlt() const;
@@ -77,7 +94,7 @@ private:
     int _motorR_pins[3];
     int _motorL_pins[3];
     Motor _motor;
-    Led _led0, _led1, _led2, _led3;
+    std::array<Led, 4> _led;
     Speaker _speaker;
     Heater _heater;
     Logger _logger;
