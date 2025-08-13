@@ -12,6 +12,8 @@
 #include "Utils/Logger/Logger.hpp"
 #include "Utils/Serial/SerialWriter.hpp"
 
+#include "Controller/ICansatState.hpp"
+
 #include <array>
 
 enum class CansatState {
@@ -39,6 +41,7 @@ public:
     CansatController();
     void begin();
     void update();
+    void changeState(std::unique_ptr<ICansatState> newState);
     void runState();
     CansatState state;
     UserConfig userConfig;
@@ -69,6 +72,7 @@ public:
     double getAcceleration() const;
     
 private:
+    std::unique_ptr<ICansatState> _state;
     // 状態処理メソッド
     void handleCalibration();
     void handleStandBy();

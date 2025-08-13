@@ -1,5 +1,6 @@
-#include "CansatController.hpp"
 #include <Arduino.h>
+#include "CansatController.hpp"
+#include "Controller/States/CalibrationState.hpp"
 
 CansatController::CansatController()
     : state(CansatState::NAVIGATION),
@@ -87,6 +88,8 @@ void CansatController::begin() {
     _writer.log("CansatController: begin() completed");
 
     _speaker.playStart();
+
+    changeState(std::make_unique<CalibrationState>(*this));
 }
 
 void CansatController::update() {
@@ -103,6 +106,18 @@ void CansatController::update() {
         _gnss.getLatitude(), _gnss.getLongitude(), 
         userConfig.goalLat, userConfig.goalLng
     );
+
+    if (_state) _state->onUpdate();
+}
+
+void CansatController::changeState(std::unique_ptr<ICansatState> newState) {
+    if (_state) _state->onExit();
+    _state = std::move(newState);
+    if (_state) _state->onEnter();
+}
+
+Led& CansatController::getLed(int idx) {
+    return _led[idx];
 }
 
 void CansatController::runState() {
