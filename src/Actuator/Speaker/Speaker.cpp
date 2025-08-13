@@ -25,17 +25,14 @@ void Speaker::beep(int freq, int duration) {
 }
 
 void Speaker::playStart() {
-  Serial.println("Speaker: called playStart()");
   _play(_start, sizeof(_start)/sizeof(float), 150);
 }
 
 void Speaker::playError() {
-  Serial.println("Speaker: called playError()");
   _play(_error, sizeof(_error)/sizeof(float), 300);
 }
 
 void Speaker::playBeep() {
-  Serial.println("Speaker: called playBeep()");
   _play(_bell, sizeof(_bell)/sizeof(float), 200);
 }
 

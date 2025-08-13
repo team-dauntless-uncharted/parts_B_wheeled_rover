@@ -1,8 +1,6 @@
 #include "Logger.hpp"
 #include <Arduino.h>
 
-#define TweliteSend(c) Serial2.println(c)
-
 Logger::Logger() : _sd(), _myFile() {}
 
 // 初期化
@@ -31,8 +29,6 @@ bool Logger::appendLog(const char* message) {
     
     _myFile.println(message);
     _myFile.close();
-    
-    Serial.println(message);
     
     return true;
 }
@@ -92,7 +88,6 @@ bool Logger::createLogFile() {
 bool Logger::saveJPEGImage(void* buff, size_t size) {
     _myFile = _sd.open(_jpegFileName, FILE_WRITE);
     if (!_myFile) {
-        Serial.println("Failed to open file for writing");
         return false;
     }
     _myFile.write((uint8_t*)buff, size);
@@ -122,7 +117,6 @@ void Logger::shiftJPEGFileName() {
 bool Logger::savePPMImage(void* buff, size_t size) {
     _myFile = _sd.open(_ppmFileName, FILE_WRITE);
     if (!_myFile) {
-        Serial.println("Failed to open file for writing");
         return false;
     }
 
