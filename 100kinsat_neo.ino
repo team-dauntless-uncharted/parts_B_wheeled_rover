@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "src/Controller/CansatController.hpp"
+#include "Controller/CansatController.hpp"
 
 CansatController cansat;
 

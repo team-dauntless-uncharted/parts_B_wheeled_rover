@@ -7,7 +7,7 @@ all:compile
 compile:
 	arduino-cli compile \
 		--fqbn $(BOARD) \
-		--build-property build.extra_flags="-Isrc -Isrc/Sensor -Isrc/Actuator" \
+		--build-property build.extra_flags="-Isrc" \
 		$(SKETCH)
 
 upload:
