@@ -53,13 +53,6 @@ void CansatController::begin() {
         _writer.log("CansatController: Logger initialized successfully");
     }
 
-    _writer.log("CansatController: Initializing Twelite...");
-    if (!_twelite.begin()) {
-        _writer.log("CansatController: Twelite initialization failed!");
-    } else {
-        _writer.log("CansatController: Twelite initialized successfully");
-    }
-
     // init camera
     _writer.log("Prepare camera");
     if (!_camera.begin()) {
@@ -92,7 +85,6 @@ void CansatController::begin() {
     _writer.log("CansatController: Initial message sent");
     
     _writer.log("CansatController: begin() completed");
-    _twelite.send("CansatController: begin() completed");
 
     _speaker.playStart();
 
@@ -162,8 +154,8 @@ void CansatController::appendLog() {
         _imu.getRoll(), _imu.getPitch(), _imu.getHeading()
     );
 
+    _writer.log(message);
     _logger.appendLog(message);
-    _twelite.send(message);
 }
 
 // センサ値取得メソッド

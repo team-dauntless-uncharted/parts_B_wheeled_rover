@@ -4,6 +4,13 @@
 
 void DropState::onEnter() {
 	_ctx.getSerialWriter().log("Entering DropState");
+
+  _ctx.getSerialWriter().log("CansatController: Initializing Twelite...");
+  if (!_ctx.getTwelite().begin()) {
+      _ctx.getSerialWriter().log("CansatController: Twelite initialization failed!");
+  } else {
+      _ctx.getSerialWriter().log("CansatController: Twelite initialized successfully");
+  }
 }
 
 void DropState::onUpdate() {
