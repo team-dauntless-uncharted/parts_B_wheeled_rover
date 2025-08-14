@@ -29,9 +29,7 @@ void DropState::onUpdate() {
 
   String packet = _ctx.getTwelite().receive();
   if (packet != "") {
-    _ctx.getSpeaker().playStart();
     if (packet == "H") {
-      _ctx.getSpeaker().playBeep();
       _ctx.changeState(std::make_unique<NavigationState>(_ctx));
     }
   }
