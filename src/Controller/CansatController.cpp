@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include "CansatController.hpp"
 #include "Controller/States/CalibrationState.hpp"
+#include "Controller/States/DropState.hpp"
 
 CansatController::CansatController()
     : userConfig{35.7100152, 139.8107594, 20, 0, 400, 0, 5},
@@ -32,12 +33,12 @@ void CansatController::begin() {
         _writer.log("CansatController: GNSS initialized successfully");
     }
 
-    _writer.log("CansatController: Waiting for GNSS position fix...");
-    if (!_gnss.waitReceive()) {
-        _writer.log("CansatController: GNSS position fix failed!");
-    } else {
-        _writer.log("CansatController: GNSS position fix succeeded");
-    }
+    // _writer.log("CansatController: Waiting for GNSS position fix...");
+    // if (!_gnss.waitReceive()) {
+    //     _writer.log("CansatController: GNSS position fix failed!");
+    // } else {
+    //     _writer.log("CansatController: GNSS position fix succeeded");
+    // }
     
     _writer.log("CansatController: Initializing IMU...");
     if (!_imu.begin()) {
@@ -96,7 +97,7 @@ void CansatController::begin() {
 
     _speaker.playStart();
 
-    changeState(std::make_unique<CalibrationState>(*this));
+    changeState(std::make_unique<DropState>(*this));
 }
 
 void CansatController::update() {
@@ -113,6 +114,8 @@ void CansatController::update() {
         _gnss.getLatitude(), _gnss.getLongitude(), 
         userConfig.goalLat, userConfig.goalLng
     );
+
+    _currentTime = millis();
 
     appendLog();
 

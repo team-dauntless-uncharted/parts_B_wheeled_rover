@@ -12,4 +12,6 @@ public:
 
 private:
 	CansatController& _ctx;
+
+	unsigned long _startTime;
 };

@@ -99,7 +99,7 @@ private:
     bool _timeFlag;
     bool _cdsFlag;
     bool _accFlag;
-    long _currentTime;
+    unsigned long _currentTime;
     int _mOutputTime;
     int _mr_pwm;
     int _ml_pwm;
