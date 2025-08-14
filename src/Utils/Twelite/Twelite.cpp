@@ -27,6 +27,15 @@ void TweliteController::send(const char* message) {
     Serial2.println(message);
 }
 
+void TweliteController::sendf(const char* fmt, ...) {
+	char buffer[80];
+	va_list args;
+	va_start(args, fmt);
+	vsnprintf(buffer, sizeof(buffer), fmt, args);
+	va_end(args);
+	Serial2.println(buffer);
+}
+
 /**
  * @brief 受信バッファに読み取り可能なデータがあるか確認します。
  * @return 読み取り可能なバイト数
