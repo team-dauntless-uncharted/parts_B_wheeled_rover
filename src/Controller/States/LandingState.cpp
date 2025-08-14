@@ -23,3 +23,7 @@ void LandingState::onUpdate() {
 void LandingState::onExit() {
 	_ctx.getSerialWriter().log("Exiting LandingState");
 }
+
+State LandingState::getState() const {
+	return State::LANDING;
+}

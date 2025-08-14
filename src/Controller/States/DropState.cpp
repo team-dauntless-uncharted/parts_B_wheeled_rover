@@ -27,3 +27,7 @@ void DropState::onUpdate() {
 void DropState::onExit() {
 	_ctx.getSerialWriter().log("Exiting DropState");
 }
+
+State DropState::getState() const {
+	return State::DROP;
+}

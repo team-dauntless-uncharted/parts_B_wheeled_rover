@@ -68,3 +68,7 @@ void NavigationState::onUpdate() {
 void NavigationState::onExit() {
 	_ctx.getSerialWriter().log("Exiting NavigationState");
 }
+
+State NavigationState::getState() const {
+	return State::NAVIGATION;
+}

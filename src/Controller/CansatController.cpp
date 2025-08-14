@@ -47,7 +47,7 @@ void CansatController::begin() {
     }
     
     _writer.log("CansatController: Initializing Logger...");
-    if (!_logger.begin()) {
+    if (!_logger.begin(CSV_HEADER)) {
         _writer.log("CansatController: Logger initialization failed!");
     } else {
         _writer.log("CansatController: Logger initialized successfully");
@@ -92,6 +92,7 @@ void CansatController::begin() {
     _writer.log("CansatController: Initial message sent");
     
     _writer.log("CansatController: begin() completed");
+    _twelite.send("CansatController: begin() completed");
 
     _speaker.playStart();
 
@@ -124,23 +125,45 @@ void CansatController::changeState(std::unique_ptr<ICansatState> newState) {
     if (_state) _state->onEnter();
 }
 
-void CansatController::appendLog() {
-    // char *message = _logger.createMessage(
-    //     millis(), _gnss.getCurrentDate(),
-    //     _gnss.getLatitude(), _gnss.getLongitude(), _gnss.getAltitude(),
-    //     _distanceToGoal, _directionToGoal, _mr_pwm, _ml_pwm, _mOutputTime,
-    //     getCdsValue(), _imu.getAccX(), _imu.getAccY(), _imu.getAccZ(),
-    //     _imu.getGyroX(), _imu.getGyroY(), _imu.getGyroZ(),
-    //     _imu.getMagX(), _imu.getMagY(), _imu.getMagZ(),
-    //     _imu.getRoll(), _imu.getPitch(), _imu.getHeading()
-    // );
+// ログの作成
+const char* CansatController::createMessage(unsigned long currentTime, const String& currentDate, State state,
+                           double lat, double lng, double alt,
+                           double distance, double direction, int mr_pwm, int ml_pwm,
+                           int mOutputTime, int cds, double ax, double ay, double az,
+                           double gx, double gy, double gz, double mx, double my, double mz,
+                           double roll, double pitch, double heading) {
+    // snprintfでフォーマットされた文字列を生成
+    // 注意: AVRベースのArduinoでは、浮動小数点数のサポートに特別な設定が必要な場合があります
+    snprintf(_logBuffer, sizeof(_logBuffer),
+             "%lu,%s,%d,%.6f,%.6f,%.2f,%.2f,%.2f,%d,%d,%d,%d,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.2f,%.2f,%.2f",
+             currentTime,
+             currentDate.c_str(),
+             state,
+             lat, lng, alt,
+             distance, direction,
+             mr_pwm, ml_pwm,
+             mOutputTime, cds,
+             ax, ay, az,
+             gx, gy, gz,
+             mx, my, mz,
+             roll, pitch, heading);
 
-    char *message = _logger.createMessage(
-        _gnss.getCurrentDate(),
+    return _logBuffer;
+}
+
+void CansatController::appendLog() {
+    char *message = createMessage(
+        millis(), _gnss.getCurrentDate(), _state->getState(),
         _gnss.getLatitude(), _gnss.getLongitude(), _gnss.getAltitude(),
-        _mr_pwm, _ml_pwm
+        _distanceToGoal, _directionToGoal, _mr_pwm, _ml_pwm, _mOutputTime,
+        getCdsValue(), _imu.getAccX(), _imu.getAccY(), _imu.getAccZ(),
+        _imu.getGyroX(), _imu.getGyroY(), _imu.getGyroZ(),
+        _imu.getMagX(), _imu.getMagY(), _imu.getMagZ(),
+        _imu.getRoll(), _imu.getPitch(), _imu.getHeading()
     );
+
     _logger.appendLog(message);
+    _twelite.send(message);
 }
 
 // センサ値取得メソッド

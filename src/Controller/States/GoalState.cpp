@@ -18,3 +18,7 @@ void GoalState::onUpdate() {
 void GoalState::onExit() {
 	_ctx.getSerialWriter().log("Exiting GoalState");
 }
+
+State GoalState::getState() const {
+	return State::GOAL;
+}

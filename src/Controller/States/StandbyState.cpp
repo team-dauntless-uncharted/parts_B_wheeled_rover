@@ -27,3 +27,7 @@ void StandbyState::onUpdate() {
 void StandbyState::onExit() {
 	_ctx.getSerialWriter().log("Exiting StandbyState");
 }
+
+State StandbyState::getState() const {
+	return State::STANDBY;
+}

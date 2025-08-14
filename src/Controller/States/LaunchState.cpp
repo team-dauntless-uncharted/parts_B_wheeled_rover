@@ -22,3 +22,7 @@ void LaunchState::onUpdate() {
 void LaunchState::onExit() {
 	_ctx.getSerialWriter().log("Exiting LaunchState");
 }
+
+State LaunchState::getState() const {
+	return State::LAUNCH;
+}

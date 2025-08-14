@@ -78,16 +78,21 @@ public:
     int getMlPwm() { return _ml_pwm; }
     
 private:
-    std::unique_ptr<ICansatState> _state;
-    void handleStandBy();
-    void handleLaunch();
-    void handleDrop();
-    void handleLanding();
-    void handleNavigation();
-    void handleGoal();
-    
     // ログ出力
     void appendLog();
+
+    const char* createMessage(unsigned long currentTime, const String& currentDate, State state,
+                        double lat, double lng, double alt,
+                        double distance, double direction, int mr_pwm, int ml_pwm,
+                        int mOutputTime, int cds, double ax, double ay, double az,
+                        double gx, double gy, double gz, double mx, double my, double mz,
+                        double roll, double pitch, double heading);
+
+    // CSVファイル
+    const String CSV_HEADER = "time,date,mode,lat,lng,alt,distance,direction,mr_pwm,ml_pwm,mOutputTime,cds,ax,ay,az,gx,gy,gz,mx,my,mz,roll,pitch,heading";
+    char _logBuffer[300];
+
+    std::unique_ptr<ICansatState> _state;
     
     // 状態管理用メンバ変数
     bool _altFlag;

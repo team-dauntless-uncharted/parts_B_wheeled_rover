@@ -2,6 +2,16 @@
 
 class CansatController;
 
+enum State {
+    CALIBRATION = 0,
+    STANDBY,
+    LAUNCH,
+    DROP,
+    LANDING,
+    NAVIGATION,
+    GOAL,
+};
+
 class ICansatState {
 public:
 	virtual ~ICansatState() = default;
@@ -17,7 +27,12 @@ public:
 	virtual void onUpdate() {}
 
 	/**
-	 * 状態終了時に1回だけ呼ぶ処理
+	 * @brief 状態終了時に1回だけ呼ぶ処理
 	 */
 	virtual void onExit() {}
+
+	/**
+	 * @brief 現在の状態を返す
+	 */
+	virtual State getState() const {}
 };

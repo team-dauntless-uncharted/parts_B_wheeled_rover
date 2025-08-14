@@ -16,3 +16,7 @@ void CalibrationState::onUpdate() {
 void CalibrationState::onExit() {
 	_ctx.getSerialWriter().log("Exiting CalibrationState");
 }
+
+State CalibrationState::getState() const {
+	return State::CALIBRATION;
+}

@@ -4,12 +4,12 @@
 Logger::Logger() : _sd(), _myFile() {}
 
 // 初期化
-bool Logger::begin() {
+bool Logger::begin(String csvHeader) {
     if (!sdInit()) {
         return false;
     }
     
-    if (!createLogFile()) {
+    if (!createLogFile(csvHeader)) {
         return false;
     }
 
@@ -33,40 +33,6 @@ bool Logger::appendLog(const char* message) {
     return true;
 }
 
-// ログの作成
-const char* Logger::createMessage(unsigned long currentTime, const String& currentDate, 
-                           double lat, double lng, double alt,
-                           double distance, double direction, int mr_pwm, int ml_pwm,
-                           int mOutputTime, int cds, double ax, double ay, double az,
-                           double gx, double gy, double gz, double mx, double my, double mz,
-                           double roll, double pitch, double heading) {
-    // snprintfでフォーマットされた文字列を生成
-    // 注意: AVRベースのArduinoでは、浮動小数点数のサポートに特別な設定が必要な場合があります
-    snprintf(_logBuffer, sizeof(_logBuffer),
-             "%lu,%s,%.6f,%.6f,%.2f,%.2f,%.2f,%d,%d,%d,%d,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.2f,%.2f,%.2f",
-             currentTime,
-             currentDate.c_str(),
-             lat, lng, alt,
-             distance, direction,
-             mr_pwm, ml_pwm,
-             mOutputTime, cds,
-             ax, ay, az,
-             gx, gy, gz,
-             mx, my, mz,
-             roll, pitch, heading);
-
-    return _logBuffer;
-}
-
-const char* Logger::createMessage(const String& currentDate,
-                                  double lat, double lng, double alt,
-                                  int mr_pwm, int ml_pwm) {
-    snprintf(_logBuffer, sizeof(_logBuffer),
-             "%s,%.6f,%.6f,%.2f,%d,%d",
-             currentDate.c_str(), lat, lng, alt, mr_pwm, ml_pwm);
-    return _logBuffer;
-}
-
 bool Logger::sdInit() {
     if (!_sd.begin()) {
         return false;
@@ -74,12 +40,12 @@ bool Logger::sdInit() {
     return true;
 }
 
-bool Logger::createLogFile() {
+bool Logger::createLogFile(String header) {
     _myFile = _sd.open("log/log.csv", FILE_WRITE);
     if (!_myFile) {
         return false;
     }
-    _myFile.println(CSV_HEADER);
+    _myFile.println(header);
     _myFile.close();
     return true;
 }
