@@ -21,7 +21,7 @@ bool Logger::begin(String csvHeader) {
 
 // ログの追加
 bool Logger::appendLog(const char* message) {
-    _myFile = _sd.open("log/log.csv", FILE_WRITE);
+    _myFile = _sd.open("/log.csv", FILE_WRITE);
     
     if (!_myFile) {
         return false;
@@ -41,7 +41,7 @@ bool Logger::sdInit() {
 }
 
 bool Logger::createLogFile(String header) {
-    _myFile = _sd.open("log/log.csv", FILE_WRITE);
+    _myFile = _sd.open("/log.csv", FILE_WRITE);
     if (!_myFile) {
         return false;
     }
