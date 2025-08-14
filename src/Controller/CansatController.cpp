@@ -61,6 +61,8 @@ void CansatController::begin() {
         _writer.log("CansatController: Twelite initialized successfully");
     }
 
+    _twelite.configMode();
+
     // init camera
     _writer.log("Prepare camera");
     if (!_camera.begin()) {

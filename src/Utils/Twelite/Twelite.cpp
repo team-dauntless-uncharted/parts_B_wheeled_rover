@@ -27,6 +27,15 @@ void TweliteController::send(const char* message) {
     Serial2.println(message);
 }
 
+void SerialWriter::logf(const char* fmt, ...) {
+	char buffer[80];
+	va_list args;
+	va_start(args, fmt);
+	vsnprintf(buffer, sizeof(buffer), fmt, args);
+	va_end(args);
+	Serial2.println(buffer);
+}
+
 /**
  * @brief 受信バッファに読み取り可能なデータがあるか確認します。
  * @return 読み取り可能なバイト数
@@ -46,4 +55,25 @@ String TweliteController::receive() {
         return message;
     }
     return "";
+}
+
+void TweliteController::sendTweliteCommand(const char *cmd) {
+  Serial2.print(cmd);
+  Serial2.print("\r\n"); // コマンド終端
+  delay(100); // コマンド処理待ち
+}
+
+void TweliteController::configMode() {
+    delay(250);
+    Serial2.print("+++");
+    delay(250);
+
+    sendTweliteCommand("app 2");
+    sendTweliteCommand("set ch=18");
+    sendTweliteCommand("set mode=0");
+
+    sendTweliteCommand("appsave");
+    sendTweliteCommand("reset");
+
+    delay(500);
 }
