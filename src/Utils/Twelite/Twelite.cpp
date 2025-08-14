@@ -27,7 +27,7 @@ void TweliteController::send(const char* message) {
     Serial2.println(message);
 }
 
-void SerialWriter::logf(const char* fmt, ...) {
+void TweliteController::sendf(const char* fmt, ...) {
 	char buffer[80];
 	va_list args;
 	va_start(args, fmt);
@@ -55,25 +55,4 @@ String TweliteController::receive() {
         return message;
     }
     return "";
-}
-
-void TweliteController::sendTweliteCommand(const char *cmd) {
-  Serial2.print(cmd);
-  Serial2.print("\r\n"); // コマンド終端
-  delay(100); // コマンド処理待ち
-}
-
-void TweliteController::configMode() {
-    delay(250);
-    Serial2.print("+++");
-    delay(250);
-
-    sendTweliteCommand("app 2");
-    sendTweliteCommand("set ch=18");
-    sendTweliteCommand("set mode=0");
-
-    sendTweliteCommand("appsave");
-    sendTweliteCommand("reset");
-
-    delay(500);
 }

@@ -1,5 +1,5 @@
 #include "DropState.hpp"
-#include "LandingState.hpp"
+#include "NavigationState.hpp"
 #include "Controller/CansatController.hpp"
 
 void DropState::onEnter() {
@@ -17,14 +17,15 @@ void DropState::onUpdate() {
   // 30秒経過したらLandingStateに移行する
   if (elapsedTime > 30000) {
     _ctx.getSerialWriter().log("30sec elapsed");
-    _ctx.changeState(std::make_unique<LandingState>(_ctx));
+    _ctx.changeState(std::make_unique<NavigationState>(_ctx));
   }
 
   String packet = _ctx.getTwelite().receive();
   if (packet != "") {
+    _ctx.getSpeaker().playStart();
     if (packet == "H") {
       _ctx.getSpeaker().playBeep();
-      _ctx.changeState(std::make_unique<LandingState>(_ctx));
+      _ctx.changeState(std::make_unique<NavigationState>(_ctx));
     }
   }
 
