@@ -52,6 +52,38 @@ bool Logger::createLogFile(String header) {
     return true;
 }
 
+// ファイル名のインデックスを開始位置に設定
+void Logger::refreshFileNameIndex(char* fileNameBuf, size_t bufSize, const char* format, uint16_t& counter) {
+    while (true) {
+        shiftFileName(fileNameBuf, bufSize, format, counter);
+        if (!_sd.exists(fileNameBuf)) {
+            break;
+        }
+    }
+}
+
+// ファイル名をインクリメントして更新
+void Logger::shiftFileName(char* fileNameBuf, size_t bufSize, const char* format, uint16_t& counter) {
+    snprintf(fileNameBuf, bufSize, format, counter);
+    counter++;
+}
+
+void Logger::refreshJPEGFileNameIndex() {
+    refreshFileNameIndex(_jpegFileName, sizeof(_jpegFileName), "/explore_%04d.jpg", _jpegFileNameCount);
+}
+
+void Logger::shiftJPEGFileName() {
+    shiftFileName(_jpegFileName, sizeof(_jpegFileName), "/explore_%04d.jpg", _jpegFileNameCount);
+}
+
+void Logger::refreshPPMFileNameIndex() {
+    refreshFileNameIndex(_ppmFileName, sizeof(_ppmFileName), "/detection_%04d.ppm", _ppmFileNameCount);
+}
+
+void Logger::shiftPPMFileName() {
+    shiftFileName(_ppmFileName, sizeof(_ppmFileName), "/detection_%04d.ppm", _ppmFileNameCount);
+}
+
 // JPEGファイルの保存
 bool Logger::saveJPEGImage(void* buff, size_t size) {
     File jpegFile = _sd.open(_jpegFileName, FILE_WRITE);
@@ -63,22 +95,6 @@ bool Logger::saveJPEGImage(void* buff, size_t size) {
 
     shiftJPEGFileName();
     return true;
-}
-
-//_jpegFileNameCountの開始番号を決める
-void Logger::refreshJPEGFileNameIndex() {
-    while (true) {
-        shiftJPEGFileName();
-        if (!_sd.exists(_jpegFileNameCount)) {
-            break;
-        }
-    }
-}
-
-// JPEGファイルのインクリメント
-void Logger::shiftJPEGFileName() {
-    sprintf(_jpegFileName, "/explore_%04d.jpg", _jpegFileNameCount);
-    _jpegFileNameCount++;
 }
 
 // TODO: PPMファイルの保存
@@ -95,22 +111,6 @@ bool Logger::savePPMImage(void* buff, size_t size) {
     
     shiftPPMFileName();
     return true;
-}
-
-// TODO: _ppmFileNameCountの開始番号を決める
-void Logger::refreshPPMFileNameIndex() {
-    while (true) {
-        shiftPPMFileName();
-        if (!_sd.exists(_ppmFileNameCount)) {
-            break;
-        }
-    }
-}
-
-// TODO: PPMファイルのインクリメント
-void Logger::shiftPPMFileName() {
-    sprintf(_ppmFileName, "/detection_%4d.ppm", _ppmFileNameCount);
-    _ppmFileNameCount++;
 }
 
 // AVI

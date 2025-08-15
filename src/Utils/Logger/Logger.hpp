@@ -33,6 +33,10 @@ private:
     AviLibrary _avi;
     File _aviFile;
 
+    // log
+    char _logFileName[32];
+    uint16_t _logFileNameCount = 0;
+
     // JPEGファイル
     char _jpegFileName[32];
     uint16_t _jpegFileNameCount = 0;
@@ -43,6 +47,9 @@ private:
     
     bool sdInit();
     bool createLogFile(String header);
+
+    void refreshFileNameIndex(char* fileNameBuf, size_t bufSize, const char* format, uint16_t& counter);
+    void shiftFileName(char* fileNameBuf, size_t bufSize, const char* format, uint16_t& counter);
 
     // _jpegFileNameCountの開始番号を決める
     void refreshJPEGFileNameIndex();
