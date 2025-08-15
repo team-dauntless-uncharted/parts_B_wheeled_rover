@@ -1,7 +1,7 @@
-#include "Logger.hpp"
+#include "Utils/Logger/Logger.hpp"
 #include <Arduino.h>
 
-Logger::Logger() : _sd(), _myFile() {}
+Logger::Logger() : _sd() {}
 
 // 初期化
 bool Logger::begin(String csvHeader) {
@@ -21,14 +21,14 @@ bool Logger::begin(String csvHeader) {
 
 // ログの追加
 bool Logger::appendLog(const char* message) {
-    _myFile = _sd.open("/log.csv", FILE_WRITE);
+    File csvFile = _sd.open("/log.csv", FILE_WRITE);
     
-    if (!_myFile) {
+    if (!csvFile) {
         return false;
     }
     
-    _myFile.println(message);
-    _myFile.close();
+    csvFile.println(message);
+    csvFile.close();
     
     return true;
 }
@@ -41,23 +41,25 @@ bool Logger::sdInit() {
 }
 
 bool Logger::createLogFile(String header) {
-    _myFile = _sd.open("/log.csv", FILE_WRITE);
-    if (!_myFile) {
+    File csvFile = _sd.open("/log.csv", FILE_WRITE);
+    if (!csvFile) {
         return false;
     }
-    _myFile.println(header);
-    _myFile.close();
+
+    csvFile.println(header);
+    csvFile.close();
+
     return true;
 }
 
 // JPEGファイルの保存
 bool Logger::saveJPEGImage(void* buff, size_t size) {
-    _myFile = _sd.open(_jpegFileName, FILE_WRITE);
-    if (!_myFile) {
+    File jpegFile = _sd.open(_jpegFileName, FILE_WRITE);
+    if (!jpegFile) {
         return false;
     }
-    _myFile.write((uint8_t*)buff, size);
-    _myFile.close();
+    jpegFile.write((uint8_t*)buff, size);
+    jpegFile.close();
 
     shiftJPEGFileName();
     return true;
@@ -81,15 +83,15 @@ void Logger::shiftJPEGFileName() {
 
 // TODO: PPMファイルの保存
 bool Logger::savePPMImage(void* buff, size_t size) {
-    _myFile = _sd.open(_ppmFileName, FILE_WRITE);
-    if (!_myFile) {
+    File ppmFile = _sd.open(_ppmFileName, FILE_WRITE);
+    if (!ppmFile) {
         return false;
     }
 
-    _myFile.printf("P6\n%lu %lu\n255\n", 96, 96);
+    ppmFile.printf("P6\n%lu %lu\n255\n", 96, 96);
 
-    _myFile.write((uint8_t*)buff, size);
-    _myFile.close();
+    ppmFile.write((uint8_t*)buff, size);
+    ppmFile.close();
     
     shiftPPMFileName();
     return true;
@@ -109,4 +111,25 @@ void Logger::refreshPPMFileNameIndex() {
 void Logger::shiftPPMFileName() {
     sprintf(_ppmFileName, "/detection_%4d.ppm", _ppmFileNameCount);
     _ppmFileNameCount++;
+}
+
+// AVI
+void Logger::aviInit(int width, int height) {
+    _aviFile = _sd.open("/video.avi", FILE_WRITE);
+    _avi.begin(_aviFile, width, height);
+}
+
+void Logger::aviStart() {
+    _avi.startRecording();
+}
+
+// AVI動画撮影
+void Logger::aviRecord(void* buff, size_t size) {
+    _avi.addFrame(buff, size);
+}
+
+// AVI撮影終了
+void Logger::aviEnd() {
+    _avi.endRecording();
+    _avi.end();
 }

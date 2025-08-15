@@ -1,4 +1,4 @@
-#include "ImuSensor.hpp"
+#include "Sensor/Imu/ImuSensor.hpp"
 
 ImuSensor::ImuSensor() : _accX(0), _accY(0), _accZ(0), _gyroX(0), _gyroY(0), _gyroZ(0), _magX(0), _magY(0), _magZ(0), _heading(0), _roll(0), _pitch(0) {}
 
@@ -8,19 +8,30 @@ bool ImuSensor::begin() {
 
 void ImuSensor::update() {
 	sensors_event_t event;
-	_bno.getEvent(&event);
+
+	// 加速度
+	_bno.getEvent(&event, Adafruit_BNO055::VECTOR_ACCELEROMETER);
 	_accX = event.acceleration.x;
 	_accY = event.acceleration.y;
 	_accZ = event.acceleration.z;
+
+	// ジャイロ
+	_bno.getEvent(&event, Adafruit_BNO055::VECTOR_GYROSCOPE);
 	_gyroX = event.gyro.x;
 	_gyroY = event.gyro.y;
 	_gyroZ = event.gyro.z;
+
+	// 磁力
+	_bno.getEvent(&event, Adafruit_BNO055::VECTOR_MAGNETOMETER);
 	_magX = event.magnetic.x;
 	_magY = event.magnetic.y;
 	_magZ = event.magnetic.z;
+
+	// オイラー角
+	_bno.getEvent(&event, Adafruit_BNO055::VECTOR_EULER);
 	_heading = event.orientation.x;
-	_pitch = event.orientation.y;
-	_roll = event.orientation.z;
+	_pitch   = event.orientation.y;
+	_roll    = event.orientation.z;
 }
 
 float ImuSensor::getAccX() const {

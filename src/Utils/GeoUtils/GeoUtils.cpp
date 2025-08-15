@@ -1,6 +1,6 @@
 #define _USE_MATH_DEFINES // For M_PI on Windows/MSVC etc.
 #include <cmath>
-#include "GeoUtils.hpp"
+#include "Utils/GeoUtils/GeoUtils.hpp"
 
 namespace GeoUtils {
 	double toRadians(double degrees) {

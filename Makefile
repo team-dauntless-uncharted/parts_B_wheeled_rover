@@ -7,6 +7,7 @@ all:compile
 compile:
 	arduino-cli compile \
 		--fqbn $(BOARD) \
+		--libraries libraries \
 		--build-property build.extra_flags="-Isrc" \
 		--build-property compiler.cpp.extra_flags="-std=gnu++14" \
 		$(SKETCH)

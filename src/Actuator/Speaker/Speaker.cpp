@@ -1,4 +1,4 @@
-#include "Speaker.hpp"
+#include "Actuator/Speaker/Speaker.hpp"
 #include <Arduino.h>
 
 // --- メロディーの定義 (周波数: Hz) ---

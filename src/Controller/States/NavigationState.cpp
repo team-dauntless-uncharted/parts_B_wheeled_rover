@@ -1,5 +1,5 @@
-#include "NavigationState.hpp"
-#include "GoalState.hpp"
+#include "Controller/States/NavigationState.hpp"
+#include "Controller/States/GoalState.hpp"
 #include "Controller/CansatController.hpp"
 
 void NavigationState::onEnter() {
