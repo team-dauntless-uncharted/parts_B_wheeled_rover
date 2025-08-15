@@ -36,7 +36,7 @@ public:
      * @brief ストリーミングの開始
      * @return true: 成功, false: 失敗
      */
-    bool startStreaming();
+    bool startStreaming(bool enable);
 
     /**
      * @brief 写真の撮影

@@ -61,7 +61,7 @@ void CansatController::begin() {
     
     _writer.log("Camera setup completed for Cansat landing site capture");
     _writer.log("Start streaming");
-    if (!_camera.startStreaming()) {
+    if (!_camera.startStreaming(true)) {
         _writer.log("Failed to start streaming");
     }
     

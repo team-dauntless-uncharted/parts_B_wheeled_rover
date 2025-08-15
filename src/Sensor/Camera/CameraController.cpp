@@ -62,8 +62,8 @@ void CameraController::end() {
  * @brief ストリーミングの開始
  * @return true: 成功, false: 失敗
  */
-bool CameraController::startStreaming() {
-    CamErr err = theCamera.startStreaming(true, nullptr); // コールバックは未使用
+bool CameraController::startStreaming(bool enable) {
+    CamErr err = theCamera.startStreaming(enable, nullptr); // コールバックは未使用
     return checkCameraError(err);
 }
 

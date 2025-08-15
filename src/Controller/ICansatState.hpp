@@ -8,6 +8,7 @@ enum State {
     LAUNCH,
     DROP,
     LANDING,
+	RECORDING,
     NAVIGATION,
     GOAL,
 };

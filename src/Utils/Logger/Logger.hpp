@@ -2,6 +2,8 @@
 #include <SDHCI.h>
 #include <File.h>
 
+#include <AviLibrary.h>
+
 class Logger {
 public:
     Logger();
@@ -17,9 +19,18 @@ public:
     // PPMファイルの保存
     bool savePPMImage(void* buff, size_t size);
 
+    // AVI
+    void aviInit(int width, int height);
+    // AVI動画撮影
+    void aviRecord(void* buff, size_t size);
+    // AVI撮影終了
+    void aviEnd();
+
 private:
     SDClass _sd;
-    File _myFile;
+
+    AviLibrary _avi;
+    File _aviFile;
 
     // JPEGファイル
     char _jpegFileName[32];

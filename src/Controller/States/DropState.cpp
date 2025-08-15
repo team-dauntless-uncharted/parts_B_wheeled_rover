@@ -1,5 +1,5 @@
 #include "DropState.hpp"
-#include "LandingState.hpp"
+#include "RecordingState.hpp"
 #include "Controller/CansatController.hpp"
 
 void DropState::onEnter() {
@@ -26,7 +26,7 @@ void DropState::onUpdate() {
     }
 
     if (_ctx.getAccFlag()) {
-		_ctx.changeState(std::make_unique<LandingState>(_ctx));
+		_ctx.changeState(std::make_unique<RecordingState>(_ctx));
     }
 
 }
