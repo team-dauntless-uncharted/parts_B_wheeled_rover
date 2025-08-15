@@ -3,14 +3,10 @@
 #include "Controller/CansatController.hpp"
 
 void DropState::onEnter() {
-	_ctx.getSerialWriter().log("Entering DropState");
+  _ctx.writeSystemLog("Entering DropState");
 
-  _ctx.getSerialWriter().log("CansatController: Initializing Twelite...");
-  if (!_ctx.getTwelite().begin()) {
-      _ctx.getSerialWriter().log("CansatController: Twelite initialization failed!");
-  } else {
-      _ctx.getSerialWriter().log("CansatController: Twelite initialized successfully");
-  }
+  _ctx.writeSystemLog("CansatController: Twelite initialization started");
+  _ctx.getTwelite().begin();
 }
 
 void DropState::onUpdate() {
@@ -22,17 +18,19 @@ void DropState::onUpdate() {
 
     // しきい値以下になったら着地と判断する
     if (acc < _ctx.userConfig.accThreshold) {
-		_ctx.setAccFlag(true);
+		  _ctx.setAccFlag(true);
+      _ctx.writeSystemLog("Detect landing");
     }
 
     if (_ctx.getAccFlag()) {
-		_ctx.changeState(std::make_unique<RecordingState>(_ctx));
+      _ctx.writeSystemLog("Changing to LandingState");
+		  _ctx.changeState(std::make_unique<RecordingState>(_ctx));
     }
 
 }
 
 void DropState::onExit() {
-	_ctx.getSerialWriter().log("Exiting DropState");
+  _ctx.writeSystemLog("Exiting DropState");
 }
 
 State DropState::getState() const {

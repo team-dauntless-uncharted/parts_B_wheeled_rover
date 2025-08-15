@@ -6,7 +6,7 @@ class ImuSensor {
 public:
 	ImuSensor();
 	bool begin();
-	void update();
+	bool update();
 	float getAccX() const;
 	float getAccY() const;
 	float getAccZ() const;
@@ -34,4 +34,6 @@ private:
 	float _heading;
 	float _roll;
 	float _pitch;
+
+	void resetAllValues();
 };

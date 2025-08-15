@@ -3,7 +3,7 @@
 #include "Controller/CansatController.hpp"
 
 void LandingState::onEnter() {
-	_ctx.getSerialWriter().log("Entering LandingState");
+	_ctx.writeSystemLog("Entering LandingState");
 }
 
 void LandingState::onUpdate() {
@@ -17,11 +17,12 @@ void LandingState::onUpdate() {
 
     delay(5000);
 
+	_ctx.writeSystemLog("Changing to NavigationState");
 	_ctx.changeState(std::make_unique<NavigationState>(_ctx));
 }
 
 void LandingState::onExit() {
-	_ctx.getSerialWriter().log("Exiting LandingState");
+	_ctx.writeSystemLog("Exiting LandingState");
 }
 
 State LandingState::getState() const {

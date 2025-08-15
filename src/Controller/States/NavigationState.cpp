@@ -3,7 +3,7 @@
 #include "Controller/CansatController.hpp"
 
 void NavigationState::onEnter() {
-	_ctx.getSerialWriter().log("Entering NavigationState");
+    _ctx.writeSystemLog("Entering NavigationState");
 }
 
 void NavigationState::onUpdate() {
@@ -14,6 +14,8 @@ void NavigationState::onUpdate() {
     double beforeDistance = _ctx.getDistanceToGoal();
     // ゴールとの距離がしきい値以下の場合、ゴール状態へ遷移
     if (beforeDistance < _ctx.userConfig.distanceThreshold) {
+        _ctx.writeSystemLog("Reached the goal");
+        _ctx.writeSystemLog("Changing to GoalState");
 		_ctx.changeState(std::make_unique<GoalState>(_ctx));
         return;
     }
@@ -61,12 +63,12 @@ void NavigationState::onUpdate() {
         _ctx.getSerialWriter().log("Save taken picture to SD card...");
         _ctx.getLogger().saveJPEGImage(imgBuff, imgSize);
     } else {
-		_ctx.getSerialWriter().log("Failed to take picture");
+        _ctx.writeSystemLog("Failed to take picture");
     }
 }
 
 void NavigationState::onExit() {
-	_ctx.getSerialWriter().log("Exiting NavigationState");
+    _ctx.writeSystemLog("Exiting NavigationState");
 }
 
 State NavigationState::getState() const {

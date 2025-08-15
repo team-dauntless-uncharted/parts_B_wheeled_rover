@@ -3,18 +3,19 @@
 #include "Controller/CansatController.hpp"
 
 void CalibrationState::onEnter() {
-	_ctx.getSerialWriter().log("Entering CalibrationState");
+	_ctx.writeSystemLog("Entering CalibrationState");
 }
 
 // センサのキャリブレーション
 void CalibrationState::onUpdate() {
 	_ctx.getSerialWriter().log("Updating CalibrationState");
 
+	_ctx.writeSystemLog("Change to StandbyState");
 	_ctx.changeState(std::make_unique<StandbyState>(_ctx));
 }
 
 void CalibrationState::onExit() {
-	_ctx.getSerialWriter().log("Exiting CalibrationState");
+	_ctx.writeSystemLog("Exiting CalibrationState");
 }
 
 State CalibrationState::getState() const {

@@ -3,7 +3,7 @@
 #include "Controller/CansatController.hpp"
 
 void StandbyState::onEnter() {
-	_ctx.getSerialWriter().log("Entering StandbyState");
+	_ctx.writeSystemLog("Entering StandbyState");
 }
 
 void StandbyState::onUpdate() {
@@ -11,21 +11,24 @@ void StandbyState::onUpdate() {
 
 	if (_ctx.getCurrentAlt() > _ctx.userConfig.altThreshold) {
 		_ctx.setAltFlag(true);
+		_ctx.writeSystemLog("above a certain altitude");
 	}
 
     long elapsedTime = millis() - _ctx.getCurrentTime();
     if (elapsedTime > _ctx.userConfig.timeThreshold) {
 		_ctx.setTimeFlag(true);
+		_ctx.writeSystemLog("above a certain time");
     }
 
     // 高度または時間の条件を満たしたらモード変更
     if (_ctx.getAltFlag() || _ctx.getTimeFlag()) {
+		_ctx.writeSystemLog("Changing to LaunchState");
 		_ctx.changeState(std::make_unique<LaunchState>(_ctx));
     }
 }
 
 void StandbyState::onExit() {
-	_ctx.getSerialWriter().log("Exiting StandbyState");
+	_ctx.writeSystemLog("Exiting StandbyState");
 }
 
 State StandbyState::getState() const {

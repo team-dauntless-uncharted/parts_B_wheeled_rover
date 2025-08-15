@@ -6,7 +6,7 @@ bool ImuSensor::begin() {
 	return _bno.begin();
 }
 
-void ImuSensor::update() {
+bool ImuSensor::update() {
 	sensors_event_t event;
 
 	// 加速度
@@ -15,11 +15,22 @@ void ImuSensor::update() {
 	_accY = event.acceleration.y;
 	_accZ = event.acceleration.z;
 
+	// 加速度がすべて0ならメンバを0にしてfalseを返す
+    if (_accX == 0.0f && _accY == 0.0f && _accZ == 0.0f) {
+        resetAllValues();
+        return false;
+    }
+
 	// ジャイロ
 	_bno.getEvent(&event, Adafruit_BNO055::VECTOR_GYROSCOPE);
 	_gyroX = event.gyro.x;
 	_gyroY = event.gyro.y;
 	_gyroZ = event.gyro.z;
+
+	if (_gyroX == 0.0f && _gyroY == 0.0f && _gyroZ == 0.0f) {
+		resetAllValues();
+		return false;
+	}
 
 	// 磁力
 	_bno.getEvent(&event, Adafruit_BNO055::VECTOR_MAGNETOMETER);
@@ -27,11 +38,23 @@ void ImuSensor::update() {
 	_magY = event.magnetic.y;
 	_magZ = event.magnetic.z;
 
+	if (_magX == 0.0f && _magY == 0.0f && _magZ == 0.0f) {
+		resetAllValues();
+		return false;
+	}
+
 	// オイラー角
 	_bno.getEvent(&event, Adafruit_BNO055::VECTOR_EULER);
 	_heading = event.orientation.x;
 	_pitch   = event.orientation.y;
 	_roll    = event.orientation.z;
+
+	if (_heading == 0.0f && _pitch == 0.0f && _roll == 0.0f) {
+		resetAllValues();
+		return false;
+	}
+
+	return true;
 }
 
 float ImuSensor::getAccX() const {
@@ -80,4 +103,19 @@ float ImuSensor::getRoll() const {
 
 float ImuSensor::getPitch() const {
 	return _pitch;
+}
+
+void ImuSensor::resetAllValues() {
+	_accX = 0.0f;
+	_accY = 0.0f;
+	_accZ = 0.0f;
+	_gyroX = 0.0f;
+	_gyroY = 0.0f;
+	_gyroZ = 0.0f;
+	_magX = 0.0f;
+	_magY = 0.0f;
+	_magZ = 0.0f;
+	_heading = 0.0f;
+	_roll = 0.0f;
+	_pitch = 0.0f;
 }

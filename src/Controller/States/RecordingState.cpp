@@ -6,18 +6,19 @@ RecordingState* RecordingState::_instance = nullptr;
 
 void RecordingState::onEnter() {
 	_instance = this;
-	_ctx.getSerialWriter().log("Entering RecordingState");
+	_ctx.writeSystemLog("Entering RecordingState");
 }
 
 void RecordingState::onUpdate() {
 	_ctx.getSerialWriter().log("Updating RecordingState");
 	record(10000);
+	_ctx.writeSystemLog("Changing to NavigationState");
 	_ctx.changeState(std::make_unique<NavigationState>(_ctx));
 }
 
 void RecordingState::onExit() {
 	_instance = nullptr;
-	_ctx.getSerialWriter().log("Exiting RecordingState");
+	_ctx.writeSystemLog("Exiting RecordingState");
 	_ctx.getCamera().end();
 }
 
@@ -31,18 +32,22 @@ void RecordingState::setRecordingMode() {
 	delay(1000);
 	
 	if (!_ctx.getCamera().begin(VIDEO_MODE)) {
-		_ctx.getSerialWriter().log("Camera init failed");
+		_ctx.writeSystemLog("Camera VIDEO MODE init failed");
+	} else {
+		_ctx.writeSystemLog("Camera VIDEO MODE init succeeded");
 	}
 
 	_ctx.getLogger().aviInit(CAM_IMGSIZE_QVGA_H, CAM_IMGSIZE_QVGA_V);
 	if (!_ctx.getCamera().startStreaming(true, CamCB)) {
-		_ctx.getSerialWriter().log("Failed to start streaming");
+		_ctx.writeSystemLog("Failed to start streaming");
+	} else {
+		_ctx.writeSystemLog("Streaming started");
 	}
 	_ctx.getLogger().aviStart();
 }
 
 void RecordingState::record(int time_ms) {
-	_ctx.getSerialWriter().log("Recording started");
+	_ctx.writeSystemLog("Recording started");
 	setRecordingMode();
 
 	uint32_t start_time = millis();
@@ -56,7 +61,7 @@ void RecordingState::record(int time_ms) {
 
 	_ctx.getLogger().aviEnd();
 	_ctx.getCamera().startStreaming(false);
-	_ctx.getSerialWriter().log("Recording finished");
+	_ctx.writeSystemLog("Recording finished");
 }
 
 void RecordingState::CamCB(CamImage img) {
@@ -71,8 +76,7 @@ void RecordingState::handleCameraImage(CamImage img) {
 		size_t imgSize = img.getImgSize();
 
 		_ctx.getLogger().aviRecord(imgBuff, imgSize);
-		_ctx.getSerialWriter().log("Image captured");
 	} else {
-		_ctx.getSerialWriter().log("Failed to capture image");
+		_ctx.writeSystemLog("Camera image is not available");
 	}
 }

@@ -8,6 +8,8 @@ CansatController::CansatController()
       _currentTime(0), _mOutputTime(0), _mr_pwm(0), _ml_pwm(0),
       _motorR_pins{8, 4, 5},
       _motorL_pins{7, 2, 3},
+      _gnss(1000),
+      _imu(),
       _cds(A0),
       _motor(_motorR_pins, _motorL_pins),
       _led{Led(0), Led(1), Led(2), Led(3)},
@@ -21,57 +23,55 @@ CansatController::CansatController()
 {
 }
 
+void CansatController::writeSystemLog(const char* message) {
+    _logger.appendSystemLog(message);
+    _writer.log(message);
+}
+
 void CansatController::begin() {
     _writer.begin();
     _writer.log("CansatController: Starting begin()");
     
-    _writer.log("CansatController: Initializing Logger...");
     if (!_logger.begin(CSV_HEADER)) {
         _writer.log("CansatController: Logger initialization failed!");
     } else {
         _writer.log("CansatController: Logger initialized successfully");
     }
+    _logger.appendSystemLog("CansatController: begin() started");
 
-    _writer.log("CansatController: Initializing GNSS...");
     if (!_gnss.begin()) {
-        _writer.log("CansatController: GNSS initialization failed!");
+        writeSystemLog("CansatController: GNSS initialization failed!");
     } else {
-        _writer.log("CansatController: GNSS initialized successfully");
+        writeSystemLog("CansatController: GNSS initialized successfully");
     }
 
-    // _writer.log("CansatController: Waiting for GNSS position fix...");
     // if (!_gnss.waitReceive()) {
-    //     _writer.log("CansatController: GNSS position fix failed!");
+    //     writeSystemLog("CansatController: GNSS position fix failed!");
     // } else {
-    //     _writer.log("CansatController: GNSS position fix succeeded");
+    //     writeSystemLog("CansatController: GNSS position fix succeeded");
     // }
     
-    _writer.log("CansatController: Initializing IMU...");
     if (!_imu.begin()) {
-        _writer.log("CansatController: IMU initialization failed!");
+        writeSystemLog("CansatController: IMU initialization failed!");
     } else {
-        _writer.log("CansatController: IMU initialized successfully");
+        writeSystemLog("CansatController: IMU initialized successfully");
     }
     
     // init camera
-    _writer.log("Prepare camera");
-    if (!_camera.begin(EXPLORE_MODE)) {
-        _writer.log("Camera init failed");
+    if (!_camera.begin(DETECTION_MODE)) {
+        writeSystemLog("CansatController: Camera initialization failed!");
+    } else {
+        writeSystemLog("CansatController: Camera initialized successfully");
     }
     
-    _writer.log("Camera setup completed for Cansat landing site capture");
-    _writer.log("Start streaming");
     if (!_camera.startStreaming(true)) {
-        _writer.log("Failed to start streaming");
+        writeSystemLog("CansatController: Failed to start streaming");
+    } else {
+        writeSystemLog("CansatController: Streaming started");
     }
     
     _currentTime = millis();
     
-    // 初期メッセージ送信
-    _writer.log("CansatController: Initial message sent");
-    
-    _writer.log("CansatController: begin() completed");
-
     // _speaker.playStart();
 
     changeState(std::make_unique<CalibrationState>(*this));
@@ -91,7 +91,7 @@ void CansatController::update() {
         userConfig.goalLat, userConfig.goalLng
     );
 
-    appendLog();
+    appendSensorLog();
 
     if (_state) _state->onUpdate();
 }
@@ -128,7 +128,7 @@ const char* CansatController::createMessage(unsigned long currentTime, const Str
     return _logBuffer;
 }
 
-void CansatController::appendLog() {
+void CansatController::appendSensorLog() {
     char *message = createMessage(
         millis(), _gnss.getCurrentDate(), _state->getState(),
         _gnss.getLatitude(), _gnss.getLongitude(), _gnss.getAltitude(),
