@@ -4,9 +4,9 @@
 
 class GnssSensor {
 public:
-	GnssSensor();
+	GnssSensor(int timeout_ms);
 	bool begin();
-	void update();
+	bool update();
 	double getLatitude() const;
 	double getLongitude() const;
 	double getAltitude() const;
@@ -23,4 +23,6 @@ private:
 	bool _posFix;
 	static const int STRING_BUFFER_SIZE = 128;
 	char _currentDate[STRING_BUFFER_SIZE];
+
+	int _timeout_ms = 1000;
 };

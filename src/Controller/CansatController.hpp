@@ -34,6 +34,8 @@ public:
     void changeState(std::unique_ptr<ICansatState> newState);
     UserConfig userConfig;
 
+    void writeSystemLog(const char* message);
+
     // センサアクセス
     GnssSensor &getGnss() { return _gnss; }
     ImuSensor &getImu() { return _imu; }
@@ -79,7 +81,7 @@ public:
     
 private:
     // ログ出力
-    void appendLog();
+    void appendSensorLog();
 
     const char* createMessage(unsigned long currentTime, const String& currentDate, State state,
                         double lat, double lng, double alt,

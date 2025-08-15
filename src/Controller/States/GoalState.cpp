@@ -2,7 +2,7 @@
 #include "Controller/CansatController.hpp"
 
 void GoalState::onEnter() {
-	_ctx.getSerialWriter().log("Entering GoalState");
+	_ctx.writeSystemLog("Entering GoalState");
 }
 
 void GoalState::onUpdate() {
@@ -16,7 +16,7 @@ void GoalState::onUpdate() {
 }
 
 void GoalState::onExit() {
-	_ctx.getSerialWriter().log("Exiting GoalState");
+	_ctx.writeSystemLog("Exiting GoalState");
 }
 
 State GoalState::getState() const {

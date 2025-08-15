@@ -1,7 +1,7 @@
 #include "Sensor/Gnss/GnssSensor.hpp"
 #include <Arduino.h>
 
-GnssSensor::GnssSensor() : _gnss(), _latitude(0), _longitude(0), _altitude(0), _currentDate(""), _posFix(false) {}
+GnssSensor::GnssSensor(int timeout_ms) : _gnss(), _latitude(0), _longitude(0), _altitude(0), _currentDate(""), _posFix(false), _timeout_ms(timeout_ms) {}
 
 bool GnssSensor::begin() {
 	if (_gnss.begin() != 0) {
@@ -37,30 +37,34 @@ bool GnssSensor::waitReceive() {
 	return true;
 }
 
-void GnssSensor::update() {
-	static bool posFixFlag = false;
+bool GnssSensor::update() {
+    static bool posFixFlag = false;
 
-	if (_gnss.waitUpdate(-1)) {
-		SpNavData navData;
-		_gnss.getNavData(&navData);
+    // タイムアウトを設定（-1は無限待機だったので置き換え）
+    if (!_gnss.waitUpdate(_timeout_ms)) {
+        // タイムアウトまたは更新失敗
+        return false;
+    }
 
-		bool ledSat = ((navData.posDataExist) && (navData.posFixMode != FixInvalid));
-		if (posFixFlag != ledSat) {
-			_posFix = ledSat;
-			posFixFlag = ledSat;
-		}
+    SpNavData navData;
+    _gnss.getNavData(&navData);
 
-		if (navData.posDataExist == 0) {
-			// No position data
-		} else {
-			sprintf(_currentDate, "%04d/%02d/%02d %02d:%02d:%02dZ", 
-				navData.time.year, navData.time.month, navData.time.day,
-				navData.time.hour, navData.time.minute, navData.time.sec);
-			_latitude = navData.latitude;
-			_longitude = navData.longitude;
-			_altitude = navData.altitude;
-		}
-	}
+    bool ledSat = ((navData.posDataExist) && (navData.posFixMode != FixInvalid));
+    if (posFixFlag != ledSat) {
+        _posFix = ledSat;
+        posFixFlag = ledSat;
+    }
+
+    if (navData.posDataExist != 0) {
+        sprintf(_currentDate, "%04d/%02d/%02d %02d:%02d:%02dZ", 
+            navData.time.year, navData.time.month, navData.time.day,
+            navData.time.hour, navData.time.minute, navData.time.sec);
+        _latitude = navData.latitude;
+        _longitude = navData.longitude;
+        _altitude = navData.altitude;
+    }
+
+    return true;
 }
 
 double GnssSensor::getLatitude() const {
