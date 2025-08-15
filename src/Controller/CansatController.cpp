@@ -55,22 +55,8 @@ void CansatController::begin() {
 
     // init camera
     _writer.log("Prepare camera");
-    if (!_camera.begin()) {
+    if (!_camera.begin(DETECTION_MODE)) {
         _writer.log("Camera init failed");
-    }
-    
-    // 1. 高解像度設定（物体認識に適した解像度）
-    // 1280x960に設定
-    _writer.log("Setting high resolution for object detection...");
-    if (!_camera.setStillPictureImageFormat(CAM_IMGSIZE_VGA_H, CAM_IMGSIZE_VGA_V, CAM_IMAGE_PIX_FMT_JPG)) {
-        _writer.log("Failed to set high resolution");
-    }
-    
-    // 2. 高品質JPEG設定（機械学習の精度向上）
-    // 圧縮率が低いほど、画質が良くなる
-    _writer.log("Setting high JPEG quality...");
-    if (!_camera.setJPEGQuality(95)) {
-        _writer.log("Failed to set JPEG quality");
     }
     
     _writer.log("Camera setup completed for Cansat landing site capture");

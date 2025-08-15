@@ -9,16 +9,45 @@
 CameraController::CameraController() {}
 CameraController::~CameraController() {}
 
-/**
- * @brief カメラの初期化
- * @return true: 成功, false: 失敗
- */
-bool CameraController::begin() {
-    CamErr err = theCamera.begin();
+bool CameraController::checkCameraError(CamErr err) {
     if (err != CAM_ERR_SUCCESS) {
         printError(err);
         return false;
     }
+    return true;
+}
+
+/**
+ * @brief カメラの初期化
+ * @param mode カメラのモード
+ * @return true: 成功, false: 失敗
+ */
+bool CameraController::begin(CameraMode mode) {
+    CamErr err;
+    switch (mode) {
+        case DETECTION_MODE:
+            err = theCamera.begin();
+            if (!checkCameraError(err)) return false;
+            
+            err = theCamera.setAutoWhiteBalanceMode(CAM_WHITE_BALANCE_AUTO);
+            if (!checkCameraError(err)) return false;
+
+            err = theCamera.setStillPictureImageFormat(CAM_IMGSIZE_QQVGA_H, CAM_IMGSIZE_QQVGA_V, CAM_IMAGE_PIX_FMT_YUV422);
+            if (!checkCameraError(err)) return false;
+
+            break;
+        case VIDEO_MODE:
+            err = theCamera.begin(2, CAM_VIDEO_FPS_30, CAM_IMGSIZE_QVGA_H, CAM_IMGSIZE_QVGA_V, CAM_IMAGE_PIX_FMT_JPG, 3);
+            if (!checkCameraError(err)) return false;
+
+            break;
+        case EXPLORE_MODE:
+            // TODO 追加予定
+            break;
+        default:
+            break;
+    }
+
     return true;
 }
 
@@ -35,11 +64,7 @@ void CameraController::end() {
  */
 bool CameraController::startStreaming() {
     CamErr err = theCamera.startStreaming(true, nullptr); // コールバックは未使用
-    if (err != CAM_ERR_SUCCESS) {
-        printError(err);
-        return false;
-    }
-    return true;
+    return checkCameraError(err);
 }
 
 /**
@@ -104,11 +129,7 @@ void CameraController::printError(enum CamErr err) {
 // カメラパラメータ設定関数の実装
 bool CameraController::setJPEGQuality(int quality) {
     CamErr err = theCamera.setJPEGQuality(quality);
-    if (err != CAM_ERR_SUCCESS) {
-        printError(err);
-        return false;
-    }
-    return true;
+    return checkCameraError(err);
 }
 
 int CameraController::getJPEGQuality() {
@@ -122,11 +143,7 @@ int CameraController::getJPEGQuality() {
 
 bool CameraController::setISOSensitivity(int iso_sense) {
     CamErr err = theCamera.setISOSensitivity(iso_sense);
-    if (err != CAM_ERR_SUCCESS) {
-        printError(err);
-        return false;
-    }
-    return true;
+    return checkCameraError(err);
 }
 
 int CameraController::getISOSensitivity() {
@@ -140,47 +157,27 @@ int CameraController::getISOSensitivity() {
 
 bool CameraController::setAutoISOSensitivity(bool enable) {
     CamErr err = theCamera.setAutoISOSensitivity(enable);
-    if (err != CAM_ERR_SUCCESS) {
-        printError(err);
-        return false;
-    }
-    return true;
+    return checkCameraError(err);
 }
 
 bool CameraController::setAutoWhiteBalanceMode(CAM_WHITE_BALANCE wb) {
     CamErr err = theCamera.setAutoWhiteBalanceMode(wb);
-    if (err != CAM_ERR_SUCCESS) {
-        printError(err);
-        return false;
-    }
-    return true;
+    return checkCameraError(err);
 }
 
 bool CameraController::setAutoWhiteBalance(bool enable) {
     CamErr err = theCamera.setAutoWhiteBalance(enable);
-    if (err != CAM_ERR_SUCCESS) {
-        printError(err);
-        return false;
-    }
-    return true;
+    return checkCameraError(err);
 }
 
 bool CameraController::setAutoExposure(bool enable) {
     CamErr err = theCamera.setAutoExposure(enable);
-    if (err != CAM_ERR_SUCCESS) {
-        printError(err);
-        return false;
-    }
-    return true;
+    return checkCameraError(err);
 }
 
 bool CameraController::setAbsoluteExposure(int32_t exposure_time) {
     CamErr err = theCamera.setAbsoluteExposure(exposure_time);
-    if (err != CAM_ERR_SUCCESS) {
-        printError(err);
-        return false;
-    }
-    return true;
+    return checkCameraError(err);
 }
 
 int32_t CameraController::getAbsoluteExposure() {
@@ -194,11 +191,7 @@ int32_t CameraController::getAbsoluteExposure() {
 
 bool CameraController::setHDR(CAM_HDR_MODE mode) {
     CamErr err = theCamera.setHDR(mode);
-    if (err != CAM_ERR_SUCCESS) {
-        printError(err);
-        return false;
-    }
-    return true;
+    return checkCameraError(err);
 }
 
 CAM_HDR_MODE CameraController::getHDR() {
@@ -212,11 +205,7 @@ CAM_HDR_MODE CameraController::getHDR() {
 
 bool CameraController::setColorEffect(CAM_COLOR_FX effect) {
     CamErr err = theCamera.setColorEffect(effect);
-    if (err != CAM_ERR_SUCCESS) {
-        printError(err);
-        return false;
-    }
-    return true;
+    return checkCameraError(err);
 }
 
 int CameraController::getFrameInterval() {
@@ -235,9 +224,5 @@ CAM_DEVICE_TYPE CameraController::getDeviceType() {
 // 解像度・フレームレート設定関数の実装
 bool CameraController::setStillPictureImageFormat(int width, int height, CAM_IMAGE_PIX_FMT format) {
     CamErr err = theCamera.setStillPictureImageFormat(width, height, format);
-    if (err != CAM_ERR_SUCCESS) {
-        printError(err);
-        return false;
-    }
-    return true;
+    return checkCameraError(err);
 }

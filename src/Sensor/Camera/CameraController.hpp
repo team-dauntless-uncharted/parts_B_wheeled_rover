@@ -6,6 +6,12 @@
 #pragma once
 #include <Camera.h>
 
+enum CameraMode {
+    DETECTION_MODE = 0,
+    VIDEO_MODE = 1,
+    EXPLORE_MODE = 2,
+};
+
 /**
  * @brief カメラの制御を行うクラス
  */
@@ -16,9 +22,10 @@ public:
 
     /**
      * @brief カメラの初期化
+     * @param mode カメラのモード
      * @return true: 成功, false: 失敗
      */
-    bool begin();
+    bool begin(CameraMode mode);
 
     /**
      * @brief カメラの終了
@@ -154,4 +161,7 @@ public:
      * @return true: 成功, false: 失敗
      */
     bool setStillPictureImageFormat(int width, int height, CAM_IMAGE_PIX_FMT format);
+
+private:
+    bool checkCameraError(CamErr err);
 };
