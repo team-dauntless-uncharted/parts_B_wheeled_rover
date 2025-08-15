@@ -43,6 +43,15 @@ bool CameraController::begin(CameraMode mode) {
             break;
         case EXPLORE_MODE:
             // TODO 追加予定
+            err = theCamera.begin();
+            if (!checkCameraError(err)) return false;
+
+            err = theCamera.setStillPictureImageFormat(CAM_IMGSIZE_VGA_H, CAM_IMGSIZE_VGA_V, CAM_IMAGE_PIX_FMT_JPG);
+            if (!checkCameraError(err)) return false;
+
+            err = theCamera.setJPEGQuality(80);
+            if (!checkCameraError(err)) return false;
+
             break;
         default:
             break;
@@ -62,8 +71,8 @@ void CameraController::end() {
  * @brief ストリーミングの開始
  * @return true: 成功, false: 失敗
  */
-bool CameraController::startStreaming(bool enable) {
-    CamErr err = theCamera.startStreaming(enable, nullptr); // コールバックは未使用
+bool CameraController::startStreaming(bool enable, camera_cb_t cb) {
+    CamErr err = theCamera.startStreaming(enable, cb);
     return checkCameraError(err);
 }
 

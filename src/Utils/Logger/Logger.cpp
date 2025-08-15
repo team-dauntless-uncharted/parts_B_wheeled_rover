@@ -55,7 +55,7 @@ bool Logger::createLogFile(String header) {
 // JPEGファイルの保存
 bool Logger::saveJPEGImage(void* buff, size_t size) {
     File jpegFile = _sd.open(_jpegFileName, FILE_WRITE);
-    if (jpegFile) {
+    if (!jpegFile) {
         return false;
     }
     jpegFile.write((uint8_t*)buff, size);
@@ -117,6 +117,9 @@ void Logger::shiftPPMFileName() {
 void Logger::aviInit(int width, int height) {
     _aviFile = _sd.open("/video.avi", FILE_WRITE);
     _avi.begin(_aviFile, width, height);
+}
+
+void Logger::aviStart() {
     _avi.startRecording();
 }
 

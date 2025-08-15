@@ -21,6 +21,7 @@ public:
 
     // AVI
     void aviInit(int width, int height);
+    void aviStart();
     // AVI動画撮影
     void aviRecord(void* buff, size_t size);
     // AVI撮影終了

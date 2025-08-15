@@ -55,7 +55,7 @@ void CansatController::begin() {
 
     // init camera
     _writer.log("Prepare camera");
-    if (!_camera.begin(DETECTION_MODE)) {
+    if (!_camera.begin(EXPLORE_MODE)) {
         _writer.log("Camera init failed");
     }
     
@@ -80,7 +80,6 @@ void CansatController::begin() {
 void CansatController::update() {
     _gnss.update();
     _imu.update();
-    _cds.read();
     
     // 距離・方位の計算
     _distanceToGoal = GeoUtils::haversineDistance(
