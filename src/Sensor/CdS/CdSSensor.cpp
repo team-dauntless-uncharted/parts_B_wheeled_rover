@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "CdSSensor.hpp"
+#include "Sensor/CdS/CdSSensor.hpp"
 
 CdSSensor::CdSSensor(int pin) : _pin(pin) {
     // ピン初期化など必要ならここで

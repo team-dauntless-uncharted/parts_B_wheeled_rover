@@ -1,5 +1,5 @@
-#include "DropState.hpp"
-#include "NavigationState.hpp"
+#include "Controller/States/DropState.hpp"
+#include "Controller/States/NavigationState.hpp"
 #include "Controller/CansatController.hpp"
 
 void DropState::onEnter() {

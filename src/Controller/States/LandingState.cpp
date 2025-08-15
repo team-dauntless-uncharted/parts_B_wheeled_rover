@@ -1,5 +1,5 @@
-#include "LandingState.hpp"
-#include "NavigationState.hpp"
+#include "Controller/States/LandingState.hpp"
+#include "Controller/States/NavigationState.hpp"
 #include "Controller/CansatController.hpp"
 
 void LandingState::onEnter() {

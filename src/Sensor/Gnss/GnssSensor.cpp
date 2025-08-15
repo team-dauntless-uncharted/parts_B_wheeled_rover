@@ -1,4 +1,4 @@
-#include "GnssSensor.hpp"
+#include "Sensor/Gnss/GnssSensor.hpp"
 #include <Arduino.h>
 
 GnssSensor::GnssSensor() : _gnss(), _latitude(0), _longitude(0), _altitude(0), _currentDate(""), _posFix(false) {}

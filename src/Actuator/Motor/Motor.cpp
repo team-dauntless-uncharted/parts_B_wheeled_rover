@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "Motor.hpp"
+#include "Actuator/Motor/Motor.hpp"
 
 Motor::Motor(int pinR[3], int pinL[3]) {
 	for (int i = 0; i < 3; ++i) {

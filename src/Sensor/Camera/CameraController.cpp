@@ -3,7 +3,7 @@
  * @brief カメラの制御を行うクラスの実装
  */
 
-#include "CameraController.hpp"
+#include "Sensor/Camera/CameraController.hpp"
 #include <Arduino.h>
 
 CameraController::CameraController() {}

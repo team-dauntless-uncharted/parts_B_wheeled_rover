@@ -1,4 +1,4 @@
-#include "ImuSensor.hpp"
+#include "Sensor/Imu/ImuSensor.hpp"
 
 ImuSensor::ImuSensor() : _accX(0), _accY(0), _accZ(0), _gyroX(0), _gyroY(0), _gyroZ(0), _magX(0), _magY(0), _magZ(0), _heading(0), _roll(0), _pitch(0) {}
 
