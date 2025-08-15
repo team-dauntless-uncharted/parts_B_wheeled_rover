@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "CansatController.hpp"
+#include "Controller/CansatController.hpp"
 #include "Controller/States/CalibrationState.hpp"
 
 CansatController::CansatController()

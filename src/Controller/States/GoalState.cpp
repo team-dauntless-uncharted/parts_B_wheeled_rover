@@ -1,4 +1,4 @@
-#include "GoalState.hpp"
+#include "Controller/States/GoalState.hpp"
 #include "Controller/CansatController.hpp"
 
 void GoalState::onEnter() {

@@ -1,5 +1,5 @@
-#include "RecordingState.hpp"
-#include "NavigationState.hpp"
+#include "Controller/States/RecordingState.hpp"
+#include "Controller/States/NavigationState.hpp"
 #include "Controller/CansatController.hpp"
 
 void RecordingState::onEnter() {

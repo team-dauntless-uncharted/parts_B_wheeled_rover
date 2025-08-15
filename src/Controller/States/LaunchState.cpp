@@ -1,5 +1,5 @@
-#include "LaunchState.hpp"
-#include "DropState.hpp"
+#include "Controller/States/LaunchState.hpp"
+#include "Controller/States/DropState.hpp"
 #include "Controller/CansatController.hpp"
 
 void LaunchState::onEnter() {
