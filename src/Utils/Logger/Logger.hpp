@@ -10,8 +10,9 @@ public:
     // 初期化
     bool begin(String csvHeader);
 
-    // ログの追加
-    bool appendLog(const char* message);
+    bool appendSystemLog(const char* message);
+
+    bool appendSensorLog(const char* message);
 
     // JPEGファイルの保存
     bool saveJPEGImage(void* buff, size_t size);
@@ -22,9 +23,7 @@ public:
     // AVI
     void aviInit(int width, int height);
     void aviStart();
-    // AVI動画撮影
     void aviRecord(void* buff, size_t size);
-    // AVI撮影終了
     void aviEnd();
 
 private:
@@ -33,31 +32,55 @@ private:
     AviLibrary _avi;
     File _aviFile;
 
-    // log
-    char _logFileName[32];
-    uint16_t _logFileNameCount = 0;
-
-    // JPEGファイル
-    char _jpegFileName[32];
-    uint16_t _jpegFileNameCount = 0;
-
-    // PPMファイル
-    char _ppmFileName[32];
-    uint16_t _ppmFileNameCount = 0;
-    
     bool sdInit();
-    bool createLogFile(String header);
+
+    bool appendLog(const char* filename, const char* message);
 
     void refreshFileNameIndex(char* fileNameBuf, size_t bufSize, const char* format, uint16_t& counter);
     void shiftFileName(char* fileNameBuf, size_t bufSize, const char* format, uint16_t& counter);
 
-    // _jpegFileNameCountの開始番号を決める
+    /**
+     * SystemLog
+     */
+    char _systemLogFileName[24];
+    uint16_t _systemLogFileNameCount = 0;
+
+    void refreshSystemLogFileNameIndex();
+    void shiftSystemLogFileName();
+
+    /**
+     * SensorLog
+     */
+    char _sensorLogFileName[24];
+    uint16_t _sensorLogFileNameCount = 0;
+
+    void refreshSensorLogFileNameIndex();
+    void shiftSensorLogFileName();
+
+    /**
+     * .jpg
+     */
+    char _jpegFileName[24];
+    uint16_t _jpegFileNameCount = 0;
+
     void refreshJPEGFileNameIndex();
-    // JPEGファイルのインクリメント
     void shiftJPEGFileName();
 
-    // _ppmFileNameCountの開始番号を決める
+    /**
+     * .ppm 
+     */
+    char _ppmFileName[24];
+    uint16_t _ppmFileNameCount = 0;
+
     void refreshPPMFileNameIndex();
-    // PPMファイルのインクリメント
     void shiftPPMFileName();
+
+    /**
+     * .avi
+     */
+    char _aviFileName[24];
+    uint16_t _aviFileNameCount = 0;
+
+    void refreshAVIFileNameIndex();
+    void shiftAVIFileName();
 };

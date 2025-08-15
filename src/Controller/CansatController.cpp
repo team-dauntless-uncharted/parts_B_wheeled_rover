@@ -25,6 +25,13 @@ void CansatController::begin() {
     _writer.begin();
     _writer.log("CansatController: Starting begin()");
     
+    _writer.log("CansatController: Initializing Logger...");
+    if (!_logger.begin(CSV_HEADER)) {
+        _writer.log("CansatController: Logger initialization failed!");
+    } else {
+        _writer.log("CansatController: Logger initialized successfully");
+    }
+
     _writer.log("CansatController: Initializing GNSS...");
     if (!_gnss.begin()) {
         _writer.log("CansatController: GNSS initialization failed!");
@@ -32,12 +39,12 @@ void CansatController::begin() {
         _writer.log("CansatController: GNSS initialized successfully");
     }
 
-    _writer.log("CansatController: Waiting for GNSS position fix...");
-    if (!_gnss.waitReceive()) {
-        _writer.log("CansatController: GNSS position fix failed!");
-    } else {
-        _writer.log("CansatController: GNSS position fix succeeded");
-    }
+    // _writer.log("CansatController: Waiting for GNSS position fix...");
+    // if (!_gnss.waitReceive()) {
+    //     _writer.log("CansatController: GNSS position fix failed!");
+    // } else {
+    //     _writer.log("CansatController: GNSS position fix succeeded");
+    // }
     
     _writer.log("CansatController: Initializing IMU...");
     if (!_imu.begin()) {
@@ -46,13 +53,6 @@ void CansatController::begin() {
         _writer.log("CansatController: IMU initialized successfully");
     }
     
-    _writer.log("CansatController: Initializing Logger...");
-    if (!_logger.begin(CSV_HEADER)) {
-        _writer.log("CansatController: Logger initialization failed!");
-    } else {
-        _writer.log("CansatController: Logger initialized successfully");
-    }
-
     // init camera
     _writer.log("Prepare camera");
     if (!_camera.begin(EXPLORE_MODE)) {
@@ -72,7 +72,7 @@ void CansatController::begin() {
     
     _writer.log("CansatController: begin() completed");
 
-    _speaker.playStart();
+    // _speaker.playStart();
 
     changeState(std::make_unique<CalibrationState>(*this));
 }
@@ -140,7 +140,7 @@ void CansatController::appendLog() {
     );
 
     _writer.log(message);
-    _logger.appendLog(message);
+    _logger.appendSensorLog(message);
 }
 
 // センサ値取得メソッド

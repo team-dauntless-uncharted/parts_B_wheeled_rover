@@ -9,46 +9,42 @@ bool Logger::begin(String csvHeader) {
         return false;
     }
     
-    if (!createLogFile(csvHeader)) {
-        return false;
-    }
-
+    refreshSystemLogFileNameIndex();
+    refreshSensorLogFileNameIndex();
     refreshJPEGFileNameIndex();
     refreshPPMFileNameIndex();
+
+    appendSensorLog(csvHeader.c_str());
     
     return true;
 }
 
 // ログの追加
-bool Logger::appendLog(const char* message) {
-    File csvFile = _sd.open("/log.csv", FILE_WRITE);
+bool Logger::appendLog(const char* filename, const char* message) {
+    File logFile = _sd.open(filename, FILE_WRITE);
     
-    if (!csvFile) {
+    if (!logFile) {
         return false;
     }
     
-    csvFile.println(message);
-    csvFile.close();
+    logFile.println(message);
+    logFile.close();
     
     return true;
+}
+
+bool Logger::appendSystemLog(const char* message) {
+    return appendLog(_systemLogFileName, message);
+}
+
+bool Logger::appendSensorLog(const char* message) {
+    return appendLog(_sensorLogFileName, message);
 }
 
 bool Logger::sdInit() {
     if (!_sd.begin()) {
         return false;
     }
-    return true;
-}
-
-bool Logger::createLogFile(String header) {
-    File csvFile = _sd.open("/log.csv", FILE_WRITE);
-    if (!csvFile) {
-        return false;
-    }
-
-    csvFile.println(header);
-    csvFile.close();
-
     return true;
 }
 
@@ -68,6 +64,22 @@ void Logger::shiftFileName(char* fileNameBuf, size_t bufSize, const char* format
     counter++;
 }
 
+void Logger::refreshSystemLogFileNameIndex() {
+    refreshFileNameIndex(_systemLogFileName, sizeof(_systemLogFileName), "/system_%04d.log", _systemLogFileNameCount);
+}
+
+void Logger::shiftSystemLogFileName() {
+    shiftFileName(_systemLogFileName, sizeof(_systemLogFileName), "/system_%04d.log", _systemLogFileNameCount);
+}
+
+void Logger::refreshSensorLogFileNameIndex() {
+    refreshFileNameIndex(_sensorLogFileName, sizeof(_sensorLogFileName), "/sensor_%04d.csv", _sensorLogFileNameCount);
+}
+
+void Logger::shiftSensorLogFileName() {
+    shiftFileName(_sensorLogFileName, sizeof(_sensorLogFileName), "/sensor_%04d.csv", _sensorLogFileNameCount);
+}
+
 void Logger::refreshJPEGFileNameIndex() {
     refreshFileNameIndex(_jpegFileName, sizeof(_jpegFileName), "/explore_%04d.jpg", _jpegFileNameCount);
 }
@@ -84,6 +96,14 @@ void Logger::shiftPPMFileName() {
     shiftFileName(_ppmFileName, sizeof(_ppmFileName), "/detection_%04d.ppm", _ppmFileNameCount);
 }
 
+void Logger::refreshAVIFileNameIndex() {
+    refreshFileNameIndex(_aviFileName, sizeof(_aviFileName), "/video_%04d.avi", _aviFileNameCount);
+}
+
+void Logger::shiftAVIFileName() {
+    shiftFileName(_aviFileName, sizeof(_aviFileName), "/video_%04d.avi", _aviFileNameCount);
+}
+
 // JPEGファイルの保存
 bool Logger::saveJPEGImage(void* buff, size_t size) {
     File jpegFile = _sd.open(_jpegFileName, FILE_WRITE);
@@ -97,7 +117,7 @@ bool Logger::saveJPEGImage(void* buff, size_t size) {
     return true;
 }
 
-// TODO: PPMファイルの保存
+// PPMファイルの保存
 bool Logger::savePPMImage(void* buff, size_t size) {
     File ppmFile = _sd.open(_ppmFileName, FILE_WRITE);
     if (!ppmFile) {
@@ -115,7 +135,8 @@ bool Logger::savePPMImage(void* buff, size_t size) {
 
 // AVI
 void Logger::aviInit(int width, int height) {
-    _aviFile = _sd.open("/video.avi", FILE_WRITE);
+    refreshAVIFileNameIndex();
+    _aviFile = _sd.open(_aviFileName, FILE_WRITE);
     _avi.begin(_aviFile, width, height);
 }
 
