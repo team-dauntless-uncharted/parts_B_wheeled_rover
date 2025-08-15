@@ -29,6 +29,7 @@ void DropState::onUpdate() {
 
   String packet = _ctx.getTwelite().receive();
   if (packet != "") {
+    _ctx.getSerialWriter().logf("Received packet: %s", packet.c_str());
     if (packet == "H") {
       _ctx.changeState(std::make_unique<NavigationState>(_ctx));
     }

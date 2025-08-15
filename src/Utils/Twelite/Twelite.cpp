@@ -24,7 +24,9 @@ bool TweliteController::begin(unsigned long baud) {
  * @param message 送信する文字列
  */
 void TweliteController::send(const char* message) {
-    Serial2.println(message);
+    Serial2.print(message);
+    Serial2.print("\r\n");
+    Serial2.flush();
 }
 
 void TweliteController::sendf(const char* fmt, ...) {
@@ -33,7 +35,9 @@ void TweliteController::sendf(const char* fmt, ...) {
 	va_start(args, fmt);
 	vsnprintf(buffer, sizeof(buffer), fmt, args);
 	va_end(args);
-	Serial2.println(buffer);
+	Serial2.print(buffer);
+    Serial2.print("\r\n");
+    Serial2.flush();
 }
 
 /**
