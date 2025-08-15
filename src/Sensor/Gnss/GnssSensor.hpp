@@ -12,6 +12,8 @@ public:
 	double getAltitude() const;
 	char *getCurrentDate() const;
 	bool isPosFix() const;
+	// データが受信できるまで待つ
+	bool waitReceive();
 
 private:
 	SpGnss _gnss;

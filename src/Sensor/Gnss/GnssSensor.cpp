@@ -16,7 +16,10 @@ bool GnssSensor::begin() {
 		return false;
 	}
 
-	Serial.println("Waiting for GNSS position fix...");
+ 	return true;
+}
+
+bool GnssSensor::waitReceive() {
 	unsigned long startTime = millis();
 	// タイムアウトを5分(300秒)に設定
 	const unsigned long timeout = 300000; 
@@ -24,17 +27,14 @@ bool GnssSensor::begin() {
 	while (!isPosFix()) {
 		update(); // 内部でwaitUpdate(-1)が呼ばれ、データ更新までブロックされる
 		if (millis() - startTime > timeout) {
-			Serial.println("\nGNSS position fix timed out.");
 			return false;
 		}
-		Serial.print(".");
 	}
 
-	Serial.println("\nGNSS position fix acquired.");
 	// 測位が完了したので、最新のデータを取得しておく
 	update();
 
- 	return true;
+	return true;
 }
 
 void GnssSensor::update() {
