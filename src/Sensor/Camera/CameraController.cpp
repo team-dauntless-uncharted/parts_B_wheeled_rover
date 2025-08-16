@@ -49,7 +49,7 @@ bool CameraController::begin(CameraMode mode) {
             err = theCamera.setStillPictureImageFormat(CAM_IMGSIZE_VGA_H, CAM_IMGSIZE_VGA_V, CAM_IMAGE_PIX_FMT_JPG);
             if (!checkCameraError(err)) return false;
 
-            err = theCamera.setJPEGQuality(80);
+            err = theCamera.setJPEGQuality(1);
             if (!checkCameraError(err)) return false;
 
             break;

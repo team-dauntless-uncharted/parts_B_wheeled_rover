@@ -9,6 +9,7 @@ enum State {
     DROP,
     LANDING,
 	RECORDING,
+	EXPLORE,
     NAVIGATION,
     GOAL,
 };

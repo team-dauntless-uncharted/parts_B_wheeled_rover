@@ -1,5 +1,5 @@
 #include "Controller/States/RecordingState.hpp"
-#include "Controller/States/NavigationState.hpp"
+#include "Controller/States/ExploreState.hpp"
 #include "Controller/CansatController.hpp"
 
 RecordingState* RecordingState::_instance = nullptr;
@@ -12,8 +12,8 @@ void RecordingState::onEnter() {
 void RecordingState::onUpdate() {
 	_ctx.getSerialWriter().log("Updating RecordingState");
 	record(10000);
-	_ctx.writeSystemLog("Changing to NavigationState");
-	_ctx.changeState(std::make_unique<NavigationState>(_ctx));
+	_ctx.writeSystemLog("Changing to ExploreState");
+	_ctx.changeState(std::make_unique<ExploreState>(_ctx));
 }
 
 void RecordingState::onExit() {
