@@ -6,27 +6,31 @@ void DropState::onEnter() {
   _ctx.writeSystemLog("Entering DropState");
 
   _ctx.writeSystemLog("CansatController: Twelite initialization started");
-  _ctx.getTwelite().begin();
+  _ctx.getTwelite().begin(Serial2, 115200);
+
+  _startTime = _ctx.getCurrentTime();
 }
 
 void DropState::onUpdate() {
 	_ctx.getSerialWriter().log("Updating DropState");
 
-    // 着地を検知したら LANDING モードに遷移する
-    // 加速度センサのxyz軸の平方和を計算
-    double acc = _ctx.getAcceleration();
+  unsigned long elapsedTime = _ctx.getCurrentTime() - _startTime;
 
-    // しきい値以下になったら着地と判断する
-    if (acc < _ctx.userConfig.accThreshold) {
-		  _ctx.setAccFlag(true);
-      _ctx.writeSystemLog("Detect landing");
+  _ctx.getSerialWriter().logf("Elapsed time: %lu", elapsedTime);
+  
+  // 30秒経過したらLandingStateに移行する
+  if (elapsedTime > 30000) {
+    _ctx.getSerialWriter().log("30sec elapsed");
+    _ctx.changeState(std::make_unique<RecordingState>(_ctx));
+  }
+
+  twelite::Packet pkt;
+  if (_ctx.getTwelite().receivePacket(pkt)) {
+    if (twelite::TwelitePacket::match(pkt, twelite::C_PARTS, twelite::BROADCAST, twelite::DeployComplete)) {
+      _ctx.getSerialWriter().log("DeployComplete received");
+      _ctx.changeState(std::make_unique<RecordingState>(_ctx));
     }
-
-    if (_ctx.getAccFlag()) {
-      _ctx.writeSystemLog("Changing to LandingState");
-		  _ctx.changeState(std::make_unique<RecordingState>(_ctx));
-    }
-
+  }
 }
 
 void DropState::onExit() {

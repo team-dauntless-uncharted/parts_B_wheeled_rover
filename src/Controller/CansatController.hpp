@@ -8,9 +8,9 @@
 #include "Actuator/Speaker/Speaker.hpp"
 #include "Actuator/Heater/Heater.hpp"
 #include "Utils/GeoUtils/GeoUtils.hpp"
-#include "Utils/Twelite/Twelite.hpp"
 #include "Utils/Logger/Logger.hpp"
 #include "Utils/Serial/SerialWriter.hpp"
+#include <TwelitePacket.h>
 
 #include "Controller/ICansatState.hpp"
 
@@ -49,7 +49,7 @@ public:
     Speaker &getSpeaker() { return _speaker; }
 
     // データのやり取り
-    TweliteController &getTwelite() { return _twelite; }
+    twelite::TwelitePacket &getTwelite() { return _twelite; }
     Logger &getLogger() { return _logger; }
     SerialWriter &getSerialWriter() { return _writer; }
     
@@ -121,7 +121,7 @@ private:
     Heater _heater;
 
     // データのやり取り
-    TweliteController _twelite;
+    twelite::TwelitePacket _twelite;
     Logger _logger;
     SerialWriter _writer;
 
