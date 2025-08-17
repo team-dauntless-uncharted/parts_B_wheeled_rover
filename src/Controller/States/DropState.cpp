@@ -4,14 +4,10 @@
 
 void DropState::onEnter() {
 	_ctx.getSerialWriter().log("Entering DropState");
-  _startTime = millis();
 
-  _ctx.getSerialWriter().log("CansatController: Initializing Twelite...");
-  if (!_ctx.getTwelite().begin()) {
-      _ctx.getSerialWriter().log("CansatController: Twelite initialization failed!");
-  } else {
-      _ctx.getSerialWriter().log("CansatController: Twelite initialized successfully");
-  }
+  _ctx.getTwelite().begin(Serial2, 115200);
+
+  _startTime = _ctx.getCurrentTime();
 }
 
 void DropState::onUpdate() {
@@ -27,26 +23,13 @@ void DropState::onUpdate() {
     _ctx.changeState(std::make_unique<NavigationState>(_ctx));
   }
 
-  String packet = _ctx.getTwelite().receive();
-  if (packet != "") {
-    _ctx.getSerialWriter().logf("Received packet: %s", packet.c_str());
-    if (packet == "H") {
+  twelite::Packet pkt;
+  if (_ctx.getTwelite().receivePacket(pkt)) {
+    if (twelite::TwelitePacket::match(pkt, twelite::C_PARTS, twelite::BROADCAST, twelite::DeployComplete)) {
+      _ctx.getSerialWriter().log("DeployComplete received");
       _ctx.changeState(std::make_unique<NavigationState>(_ctx));
     }
   }
-
-  // 着地を検知したら LANDING モードに遷移する
-  // 加速度センサのxyz軸の平方和を計算
-  // double acc = _ctx.getAcceleration();
-
-  // しきい値以下になったら着地と判断する
-  // if (acc < _ctx.userConfig.accThreshold) {
-	// 	_ctx.setAccFlag(true);
-  // }
-
-  // if (_ctx.getAccFlag()) {
-	// 	_ctx.changeState(std::make_unique<LandingState>(_ctx));
-  // }
 }
 
 void DropState::onExit() {
