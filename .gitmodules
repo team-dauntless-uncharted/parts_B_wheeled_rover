@@ -13,3 +13,6 @@
 [submodule "libraries/AviLibrary"]
 	path = libraries/AviLibrary
 	url = git@github.com:YoshinoTaro/AviLibrary_Arduino.git
+[submodule "libraries/TwelitePacket"]
+	path = libraries/TwelitePacket
+	url = git@github.com:team-dauntless-uncharted/twelite_packet.git
