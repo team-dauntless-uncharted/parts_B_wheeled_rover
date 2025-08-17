@@ -33,12 +33,12 @@ void CansatController::begin() {
         _writer.log("CansatController: GNSS initialized successfully");
     }
 
-    // _writer.log("CansatController: Waiting for GNSS position fix...");
-    // if (!_gnss.waitReceive()) {
-    //     _writer.log("CansatController: GNSS position fix failed!");
-    // } else {
-    //     _writer.log("CansatController: GNSS position fix succeeded");
-    // }
+    _writer.log("CansatController: Waiting for GNSS position fix...");
+    if (!_gnss.waitReceive()) {
+        _writer.log("CansatController: GNSS position fix failed!");
+    } else {
+        _writer.log("CansatController: GNSS position fix succeeded");
+    }
     
     _writer.log("CansatController: Initializing IMU...");
     if (!_imu.begin()) {
