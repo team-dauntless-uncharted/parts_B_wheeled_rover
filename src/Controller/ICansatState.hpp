@@ -11,6 +11,7 @@ enum State {
 	DETECTION,
 	RECORDING,
 	EXPLORE,
+	HELPING,
     NAVIGATION,
     GOAL,
 };

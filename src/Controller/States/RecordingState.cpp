@@ -12,7 +12,7 @@ void RecordingState::onEnter() {
 void RecordingState::onUpdate() {
 	_ctx.getSerialWriter().log("Updating RecordingState");
 
-	Packet pkt = twelite::TwelitePacket::makePacket(
+	twelite::Packet pkt = twelite::TwelitePacket::makePacket(
 		twelite::B_PARTS,
 		twelite::A_PARTS,
 		twelite::ReadyForCapture,
