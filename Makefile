@@ -1,4 +1,4 @@
-BOARD := SPRESENSE:spresense:spresense:Core=Main
+BOARD := SPRESENSE:spresense:spresense:Core=Main,Memory=1536
 PORT ?= $(shell arduino-cli board list | grep SPRESENSE | awk '{print $$1}')
 SKETCH := 100kinsat_neo.ino
 
