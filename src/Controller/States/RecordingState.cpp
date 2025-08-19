@@ -11,6 +11,32 @@ void RecordingState::onEnter() {
 
 void RecordingState::onUpdate() {
 	_ctx.getSerialWriter().log("Updating RecordingState");
+
+	Packet pkt = twelite::TwelitePacket::makePacket(
+		twelite::B_PARTS,
+		twelite::A_PARTS,
+		twelite::ReadyForCapture,
+		0,
+		NULL
+	);
+	_ctx.getTwelite().sendPacket(pkt);
+
+	unsigned long timeout_ms = millis();
+
+	while (true) {
+		if (_ctx.getTwelite().receivePacket(pkt)) {
+			if (twelite::TwelitePacket::match(pkt, twelite::A_PARTS, twelite::B_PARTS, twelite::ReadyForCaptureAck)) {
+				_ctx.writeSystemLog("ReadyForCaptureAck received");
+				break;
+			}
+		}
+
+		if ((millis() - timeout_ms) > 20000) {
+			_ctx.writeSystemLog("A Parts timeout");
+			break;
+		}
+	}
+
 	record(10000);
 	_ctx.writeSystemLog("Changing to ExploreState");
 	_ctx.changeState(std::make_unique<ExploreState>(_ctx));

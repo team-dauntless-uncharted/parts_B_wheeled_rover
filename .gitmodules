@@ -16,3 +16,6 @@
 [submodule "libraries/TwelitePacket"]
 	path = libraries/TwelitePacket
 	url = git@github.com:team-dauntless-uncharted/twelite_packet.git
+[submodule "libraries/spresense_fomo_inferencing"]
+	path = libraries/spresense_fomo_inferencing
+	url = git@github.com:team-dauntless-uncharted/spresense_fomo_inferencing.git
