@@ -7,7 +7,6 @@
 #include "Actuator/Led/Led.hpp"
 #include "Actuator/Speaker/Speaker.hpp"
 #include "Actuator/Heater/Heater.hpp"
-#include "Utils/GeoUtils/GeoUtils.hpp"
 #include "Utils/Logger/Logger.hpp"
 #include "Utils/Serial/SerialWriter.hpp"
 #include <TwelitePacket.h>

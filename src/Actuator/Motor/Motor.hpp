@@ -9,6 +9,13 @@ public:
 	void turnLeft(int pwm);
 	void stop();
 
+	void rightForward(int pwm);
+	void leftForward(int pwm);
+	void rightBackward(int pwm);
+	void leftBackward(int pwm);
+	void rightStop();
+	void leftStop();
+
 private:
 	int _motorR[3];
 	int _motorL[3];

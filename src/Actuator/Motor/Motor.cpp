@@ -21,10 +21,10 @@ void Motor::forward(int pwm) {
 
 void Motor::backward(int pwm) {
 	digitalWrite(_motorR[0], LOW);
-	digitalWrite(_motorR[0], HIGH);
+	digitalWrite(_motorR[1], HIGH);
 	analogWrite(_motorR[2], pwm);
 	digitalWrite(_motorL[0], LOW);
-	digitalWrite(_motorL[0], HIGH);
+	digitalWrite(_motorL[1], HIGH);
 	analogWrite(_motorL[2], pwm);
 }
 
@@ -49,4 +49,36 @@ void Motor::turnLeft(int pwm) {
 void Motor::stop() {
 	analogWrite(_motorR[2], 0);
 	analogWrite(_motorL[2], 0);
+}
+
+void Motor::rightForward(int pwm) {
+    digitalWrite(_motorR[0], HIGH);
+    digitalWrite(_motorR[1], LOW);
+    analogWrite(_motorR[2], pwm);
+}
+
+void Motor::leftForward(int pwm) {
+    digitalWrite(_motorL[0], HIGH);
+    digitalWrite(_motorL[1], LOW);
+    analogWrite(_motorL[2], pwm);
+}
+
+void Motor::rightBackward(int pwm) {
+    digitalWrite(_motorR[0], LOW);
+    digitalWrite(_motorR[1], HIGH);
+    analogWrite(_motorR[2], pwm);
+}
+
+void Motor::leftBackward(int pwm) {
+    digitalWrite(_motorL[0], LOW);
+    digitalWrite(_motorL[1], HIGH);
+    analogWrite(_motorL[2], pwm);
+}
+
+void Motor::rightStop() {
+    analogWrite(_motorR[2], 0);
+}
+
+void Motor::leftStop() {
+    analogWrite(_motorL[2], 0);
 }

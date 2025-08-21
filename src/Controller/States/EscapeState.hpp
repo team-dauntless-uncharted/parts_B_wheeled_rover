@@ -12,4 +12,12 @@ public:
 
 private:
 	CansatController& _ctx;
+
+	double _startLatitude;
+	double _startLongitude;
+
+	// 脱出アルゴリズム
+	void pulseForward(int pwm, int repeat);
+	void rockingEscape(int pwm, int repeat);
+	void phaseEscape(int pwm, int repeat);
 };
