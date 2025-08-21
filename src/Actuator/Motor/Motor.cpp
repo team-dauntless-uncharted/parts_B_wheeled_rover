@@ -19,6 +19,15 @@ void Motor::forward(int pwm) {
 	analogWrite(_motorL[2], pwm);
 }
 
+void Motor::backward(int pwm) {
+	digitalWrite(_motorR[0], LOW);
+	digitalWrite(_motorR[0], HIGH);
+	analogWrite(_motorR[2], pwm);
+	digitalWrite(_motorL[0], LOW);
+	digitalWrite(_motorL[0], HIGH);
+	analogWrite(_motorL[2], pwm);
+}
+
 void Motor::turnRight(int pwm) {
 	digitalWrite(_motorR[0], HIGH);
 	digitalWrite(_motorR[1], LOW);

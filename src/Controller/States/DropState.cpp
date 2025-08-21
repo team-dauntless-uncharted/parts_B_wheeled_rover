@@ -1,5 +1,5 @@
 #include "Controller/States/DropState.hpp"
-#include "Controller/States/DetectionState.hpp"
+#include "Controller/States/EscapeState.hpp"
 #include "Controller/CansatController.hpp"
 
 void DropState::onEnter() {
@@ -20,14 +20,14 @@ void DropState::onUpdate() {
   
   if (elapsedTime > 30000) {
     _ctx.getSerialWriter().log("30sec elapsed");
-    _ctx.changeState(std::make_unique<DetectionState>(_ctx));
+    _ctx.changeState(std::make_unique<EscapeState>(_ctx));
   }
 
   twelite::Packet pkt;
   if (_ctx.getTwelite().receivePacket(pkt)) {
     if (twelite::TwelitePacket::match(pkt, twelite::C_PARTS, twelite::BROADCAST, twelite::DeployComplete)) {
       _ctx.getSerialWriter().log("DeployComplete received");
-      _ctx.changeState(std::make_unique<DetectionState>(_ctx));
+      _ctx.changeState(std::make_unique<EscapeState>(_ctx));
     }
   }
 }

@@ -8,6 +8,7 @@ enum State {
     LAUNCH,
     DROP,
     LANDING,
+	ESCAPE,
 	DETECTION,
 	RECORDING,
 	EXPLORE,

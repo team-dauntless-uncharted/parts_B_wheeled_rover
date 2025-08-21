@@ -4,6 +4,7 @@ class Motor {
 public:
 	Motor(int pinR[3], int pinL[3]);
 	void forward(int pwm);
+	void backward(int pwm);
 	void turnRight(int pwm);
 	void turnLeft(int pwm);
 	void stop();

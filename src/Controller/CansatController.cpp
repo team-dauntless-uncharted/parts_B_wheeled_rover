@@ -2,6 +2,8 @@
 #include "Controller/CansatController.hpp"
 #include "Controller/States/CalibrationState.hpp"
 
+#include "Controller/States/EscapeState.hpp"
+
 CansatController::CansatController()
     : userConfig{35.7100152, 139.8107594, 20, 0, 400, 0, 5},
       _altFlag(false), _timeFlag(false), _cdsFlag(false), _accFlag(false),
@@ -74,7 +76,7 @@ void CansatController::begin() {
     
     // _speaker.playStart();
 
-    changeState(std::make_unique<CalibrationState>(*this));
+    changeState(std::make_unique<EscapeState>(*this));
 }
 
 void CansatController::update() {
