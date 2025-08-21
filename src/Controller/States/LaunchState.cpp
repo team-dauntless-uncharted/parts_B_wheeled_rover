@@ -10,7 +10,7 @@ void LaunchState::onUpdate() {
 	_ctx.getSerialWriter().log("Updating LaunchState");
 
 	// 放出を検知したら DROP モードに遷移する
-    if (_ctx.getCds().read() < _ctx.userConfig.cdsThreshold) {
+    if (_ctx.getCds().read() < _ctx.getUserConfig().launchStateCdsThreshold) {
 		_ctx.setCdsFlag(true);
 		_ctx.writeSystemLog("Detect separation");
     }

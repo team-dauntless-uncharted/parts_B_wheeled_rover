@@ -11,13 +11,13 @@ void StandbyState::onEnter() {
 void StandbyState::onUpdate() {
 	_ctx.getSerialWriter().log("Updating StandbyState");
 
-	if (_ctx.getGnss().getAltitude() > _ctx.userConfig.altThreshold) {
+	if (_ctx.getGnss().getAltitude() > _ctx.getUserConfig().standbyStateAltThreshold) {
 		_ctx.setAltFlag(true);
 		_ctx.writeSystemLog("above a certain altitude");
 	}
 
     long elapsedTime = millis() - _startTime;
-    if (elapsedTime > _ctx.userConfig.timeThreshold) {
+    if (elapsedTime > _ctx.getUserConfig().standbyStateTimeThreshold) {
 		_ctx.setTimeFlag(true);
 		_ctx.writeSystemLog("above a certain time");
     }

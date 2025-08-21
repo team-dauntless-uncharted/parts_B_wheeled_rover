@@ -19,20 +19,19 @@
 struct UserConfig {
     double goalLat;
     double goalLng;
-    int altThreshold;
-    long timeThreshold;
-    int cdsThreshold;
-    double accThreshold;
-    int distanceThreshold;
+
+    double standbyStateAltThreshold;
+    long standbyStateTimeThreshold;
+    int launchStateCdsThreshold;
+    long dropStateTimeThreshold;
 };
 
 class CansatController {
 public:
     CansatController();
-    void begin();
+    void begin(UserConfig config);
     void update();
     void changeState(std::unique_ptr<ICansatState> newState);
-    UserConfig userConfig;
 
     void writeSystemLog(const char* message);
 
@@ -62,8 +61,12 @@ public:
     bool getTimeFlag() { return _timeFlag; }
     bool getCdsFlag() { return _cdsFlag; }
     bool getAccFlag() { return _accFlag; }
+
+    UserConfig getUserConfig() { return _config; }
     
 private:
+    UserConfig _config;
+
     // ログ出力
     void appendSensorLog();
 

@@ -3,8 +3,7 @@
 #include "Controller/States/CalibrationState.hpp"
 
 CansatController::CansatController()
-    : userConfig{35.7100152, 139.8107594, 20, 0, 400, 0, 5},
-      _altFlag(false), _timeFlag(false), _cdsFlag(false), _accFlag(false),
+    : _altFlag(false), _timeFlag(false), _cdsFlag(false), _accFlag(false),
       _motorR_pins{8, 4, 5},
       _motorL_pins{7, 2, 3},
       _gnss(1000),
@@ -25,7 +24,9 @@ void CansatController::writeSystemLog(const char* message) {
     _writer.log(message);
 }
 
-void CansatController::begin() {
+void CansatController::begin(UserConfig config) {
+    _config = config;
+
     _writer.begin();
     _writer.log("CansatController: Starting begin()");
     

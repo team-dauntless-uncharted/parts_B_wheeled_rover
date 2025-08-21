@@ -2,18 +2,18 @@
 #include "Controller/CansatController.hpp"
 
 CansatController cansat;
+UserConfig config;
 
 void setup() {
     // ユーザ設定
-    cansat.userConfig.goalLat = 35.7487860;
-    cansat.userConfig.goalLng = 139.8070711;
-    cansat.userConfig.altThreshold = 20;
-    cansat.userConfig.cdsThreshold = 400;
-    cansat.userConfig.accThreshold = 0;
-    cansat.userConfig.distanceThreshold = 5;
-    cansat.userConfig.timeThreshold = 30000; // 30秒
-    
-    cansat.begin();
+    config.goalLat = 35.7487860;
+    config.goalLng = 139.8070711;
+    config.standbyStateAltThreshold = 20;
+    config.standbyStateTimeThreshold = 30000;
+    config.launchStateCdsThreshold = 400;
+    config.dropStateTimeThreshold = 30000;
+
+    cansat.begin(config);
     delay(2000);
 }
 

@@ -18,7 +18,7 @@ void DropState::onUpdate() {
 
   _ctx.getSerialWriter().logf("Elapsed time: %lu", elapsedTime);
   
-  if (elapsedTime > 30000) {
+  if (elapsedTime > _ctx.getUserConfig().dropStateTimeThreshold) {
     _ctx.getSerialWriter().log("30sec elapsed");
     _ctx.changeState(std::make_unique<EscapeState>(_ctx));
   }
