@@ -8,13 +8,13 @@ void DropState::onEnter() {
   _ctx.writeSystemLog("CansatController: Twelite initialization started");
   _ctx.getTwelite().begin(Serial2, 115200);
 
-  _startTime = _ctx.getCurrentTime();
+  _startTime = millis();
 }
 
 void DropState::onUpdate() {
 	_ctx.getSerialWriter().log("Updating DropState");
 
-  unsigned long elapsedTime = _ctx.getCurrentTime() - _startTime;
+  unsigned long elapsedTime = millis() - _startTime;
 
   _ctx.getSerialWriter().logf("Elapsed time: %lu", elapsedTime);
   

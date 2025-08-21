@@ -53,31 +53,15 @@ public:
     Logger &getLogger() { return _logger; }
     SerialWriter &getSerialWriter() { return _writer; }
     
-    // センサ値の取得メソッド
-    double getCurrentAlt() const;
-    double getDistanceToGoal() const;
-    double getDirectionToGoal() const;
-    double getHeading() const;
-    int getCdsValue() const;
-    double getAcceleration() const;
-
     void setAltFlag(bool altFlag) { _altFlag = altFlag; }
     void setTimeFlag(bool timeFlag) { _timeFlag = timeFlag; }
     void setCdsFlag(bool cdsFlag) { _cdsFlag = cdsFlag; }
     void setAccFlag(bool accFlag) { _accFlag = accFlag; }
-    void setCurrentTime(long currentTime) { _currentTime = currentTime; }
-    void setmOutputTime(int mOutputTime) { _mOutputTime = mOutputTime; }
-    void setMrPwm(int mrPwm) { _mr_pwm = mrPwm; }
-    void setMlPwm(int mlPwm) { _ml_pwm = mlPwm; }
 
     bool getAltFlag() { return _altFlag; }
     bool getTimeFlag() { return _timeFlag; }
     bool getCdsFlag() { return _cdsFlag; }
     bool getAccFlag() { return _accFlag; }
-    long getCurrentTime() { return _currentTime; }
-    int getmOutputTime() { return _mOutputTime; }
-    int getMrPwm() { return _mr_pwm; }
-    int getMlPwm() { return _ml_pwm; }
     
 private:
     // ログ出力
@@ -85,8 +69,7 @@ private:
 
     const char* createMessage(unsigned long currentTime, const String& currentDate, State state,
                         double lat, double lng, double alt,
-                        double distance, double direction, int mr_pwm, int ml_pwm,
-                        int mOutputTime, int cds, double ax, double ay, double az,
+                        int cds, double ax, double ay, double az,
                         double gx, double gy, double gz, double mx, double my, double mz,
                         double roll, double pitch, double heading);
 
@@ -101,10 +84,6 @@ private:
     bool _timeFlag;
     bool _cdsFlag;
     bool _accFlag;
-    long _currentTime;
-    int _mOutputTime;
-    int _mr_pwm;
-    int _ml_pwm;
     
     // センサ
     GnssSensor _gnss;
@@ -124,8 +103,4 @@ private:
     twelite::TwelitePacket _twelite;
     Logger _logger;
     SerialWriter _writer;
-
-    // 計算値
-    double _distanceToGoal;
-    double _directionToGoal;
 };
