@@ -7,14 +7,11 @@ enum State {
     STANDBY,
     LAUNCH,
     DROP,
-    LANDING,
 	ESCAPE,
 	DETECTION,
 	RECORDING,
 	EXPLORE,
 	HELPING,
-    NAVIGATION,
-    GOAL,
 };
 
 class ICansatState {
