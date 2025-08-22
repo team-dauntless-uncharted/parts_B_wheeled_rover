@@ -9,6 +9,7 @@
 #include "Actuator/Heater/Heater.hpp"
 #include "Utils/Logger/Logger.hpp"
 #include "Utils/Serial/SerialWriter.hpp"
+#include "Utils/PowerController/PowerController.hpp"
 #include <TwelitePacket.h>
 
 #include "Controller/ICansatState.hpp"
@@ -63,20 +64,21 @@ public:
 
     UserConfig getUserConfig() { return _config; }
     
+    void appendSensorLog();
+
 private:
     UserConfig _config;
 
     // ログ出力
-    void appendSensorLog();
 
     const char* createMessage(unsigned long currentTime, const String& currentDate, State state,
                         double lat, double lng, double alt,
                         int cds, double ax, double ay, double az,
                         double gx, double gy, double gz, double mx, double my, double mz,
-                        double roll, double pitch, double heading);
+                        double roll, double pitch, double heading, int voltage);
 
     // CSVファイル
-    const String CSV_HEADER = "time,date,mode,lat,lng,alt,distance,direction,mr_pwm,ml_pwm,mOutputTime,cds,ax,ay,az,gx,gy,gz,mx,my,mz,roll,pitch,heading";
+    const String CSV_HEADER = "time,date,mode,lat,lng,alt,distance,direction,mr_pwm,ml_pwm,mOutputTime,cds,ax,ay,az,gx,gy,gz,mx,my,mz,roll,pitch,heading,voltage";
     char _logBuffer[300];
 
     std::unique_ptr<ICansatState> _state;
@@ -100,6 +102,8 @@ private:
     std::array<Led, 4> _led;
     Speaker _speaker;
     Heater _heater;
+
+    PowerController _power;
 
     // データのやり取り
     twelite::TwelitePacket _twelite;

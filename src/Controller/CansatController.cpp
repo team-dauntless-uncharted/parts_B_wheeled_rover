@@ -15,7 +15,8 @@ CansatController::CansatController()
       _heater(6),
       _twelite(),
       _logger(),
-      _camera()
+      _camera(),
+      _power()
 {
 }
 
@@ -36,6 +37,8 @@ void CansatController::begin(UserConfig config) {
         _writer.log("CansatController: Logger initialized successfully");
     }
     _logger.appendSystemLog("CansatController: begin() started");
+
+    _power.begin();
 
     if (!_gnss.begin()) {
         writeSystemLog("CansatController: GNSS initialization failed!");
@@ -93,11 +96,11 @@ const char* CansatController::createMessage(unsigned long currentTime, const Str
                            double lat, double lng, double alt,
                            int cds, double ax, double ay, double az,
                            double gx, double gy, double gz, double mx, double my, double mz,
-                           double roll, double pitch, double heading) {
+                           double roll, double pitch, double heading, int voltage) {
     // snprintfでフォーマットされた文字列を生成
     // 注意: AVRベースのArduinoでは、浮動小数点数のサポートに特別な設定が必要な場合があります
     snprintf(_logBuffer, sizeof(_logBuffer),
-             "%lu,%s,%d,%.6f,%.6f,%.2f,%d,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.2f,%.2f,%.2f",
+             "%lu,%s,%d,%.6f,%.6f,%.2f,%d,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.2f,%.2f,%.2f,%d",
              currentTime,
              currentDate.c_str(),
              state,
@@ -105,7 +108,8 @@ const char* CansatController::createMessage(unsigned long currentTime, const Str
              ax, ay, az,
              gx, gy, gz,
              mx, my, mz,
-             roll, pitch, heading);
+             roll, pitch, heading,
+             voltage);
 
     return _logBuffer;
 }
@@ -117,7 +121,7 @@ void CansatController::appendSensorLog() {
         _cds.read(), _imu.getAccX(), _imu.getAccY(), _imu.getAccZ(),
         _imu.getGyroX(), _imu.getGyroY(), _imu.getGyroZ(),
         _imu.getMagX(), _imu.getMagY(), _imu.getMagZ(),
-        _imu.getRoll(), _imu.getPitch(), _imu.getHeading()
+        _imu.getRoll(), _imu.getPitch(), _imu.getHeading(), _power.getVoltage()
     );
 
     _writer.log(message);
