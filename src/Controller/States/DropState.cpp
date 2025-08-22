@@ -21,6 +21,7 @@ void DropState::onUpdate() {
   if (elapsedTime > _ctx.getUserConfig().dropStateTimeThreshold) {
     _ctx.getSerialWriter().log("30sec elapsed");
     _ctx.changeState(std::make_unique<EscapeState>(_ctx));
+    return;
   }
 
   twelite::Packet pkt;

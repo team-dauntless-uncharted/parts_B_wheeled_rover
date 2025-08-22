@@ -18,6 +18,7 @@ void LaunchState::onUpdate() {
     if (_ctx.getCdsFlag()) {
 		_ctx.writeSystemLog("Changing to DropState");
 		_ctx.changeState(std::make_unique<DropState>(_ctx));
+		return;
     }
 }
 

@@ -50,6 +50,7 @@ void ExploreState::onUpdate() {
 		// HELPING_STATE
 		_ctx.writeSystemLog("Changing to HELPING_STATE");
 		_ctx.changeState(std::make_unique<HelpingState>(_ctx));
+		return;
 	}
 
 	_prevLatitude = latitude;

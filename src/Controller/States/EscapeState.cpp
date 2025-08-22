@@ -14,24 +14,20 @@ void EscapeState::onEnter() {
 void EscapeState::onUpdate() {
 	_ctx.getSerialWriter().log("Updating EscapeState");
 
-	while (true) {
-		pulseForward(150, 5);
-		rockingEscape(150, 3);
-		phaseEscape(150, 3);
+	pulseForward(150, 5);
+	rockingEscape(150, 3);
+	phaseEscape(150, 3);
 
-		double latitude = _ctx.getGnss().getLatitude();
-		double longitude = _ctx.getGnss().getLongitude();
+	double latitude = _ctx.getGnss().getLatitude();
+	double longitude = _ctx.getGnss().getLongitude();
 
-		double distance = GeoUtils::haversineDistance(_startLatitude, _startLongitude, latitude, longitude);
+	double distance = GeoUtils::haversineDistance(_startLatitude, _startLongitude, latitude, longitude);
 
-		if (distance >= 0.5) {
-			_ctx.writeSystemLog("Escape succeeded");
-			break;
-		}
+	if (distance >= 0.5) {
+		_ctx.writeSystemLog("Change to DetectionState");
+		_ctx.changeState(std::make_unique<DetectionState>(_ctx));
+		return;
 	}
-
-	_ctx.writeSystemLog("Change to DetectionState");
-	_ctx.changeState(std::make_unique<DetectionState>(_ctx));
 }
 
 void EscapeState::onExit() {

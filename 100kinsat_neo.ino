@@ -11,7 +11,7 @@ void setup() {
     config.standbyStateAltThreshold = 20;
     config.standbyStateTimeThreshold = 30000;
     config.launchStateCdsThreshold = 400;
-    config.dropStateTimeThreshold = 30000;
+    config.dropStateTimeThreshold = 60000;
 
     cansat.begin(config);
     delay(2000);

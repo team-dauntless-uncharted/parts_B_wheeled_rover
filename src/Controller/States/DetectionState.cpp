@@ -54,6 +54,7 @@ void DetectionState::onUpdate() {
 		    if (x >= 43 && x <= 52) {
 				_ctx.writeSystemLog("Changing to RecordingState");
 				_ctx.changeState(std::make_unique<RecordingState>(_ctx));
+				return;
 		    } else if (x >= 0 && x <= 42) {
 				// 右に回転
 				_ctx.getMotor().turnRight(150);
