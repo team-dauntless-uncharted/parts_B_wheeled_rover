@@ -5,23 +5,12 @@
 void HelpingState::onEnter() {
 	_ctx.writeSystemLog("Entering HelpingState");
 
-	double latitude = _ctx.getGnss().getLatitude();
-	double longitude = _ctx.getGnss().getLongitude();
+	if (!_ctx.isInitTwelite()) {
+    	_ctx.getTwelite().begin(Serial2, 115200);
+    	_ctx.setInitTwelite(true);
+  	}
 
-	uint8_t payloadLength = sizeof(double) * 2;
-	uint8_t payload[payloadLength];
-
-	memcpy(payload, &latitude, sizeof(double));
-	memcpy(payload + sizeof(double), &longitude, sizeof(double));
-
-	twelite::Packet pkt = twelite::TwelitePacket::makePacket(
-		twelite::B_PARTS,
-		twelite::A_PARTS,
-		twelite::TurnSignal,
-		payloadLength,
-		payload
-	);
-	_ctx.getTwelite().sendPacket(pkt);
+	sendTurnSignal();
 
 	_ctx.writeSystemLog("TurnSignal sent");
 }
@@ -40,4 +29,24 @@ void HelpingState::onExit() {
 
 State HelpingState::getState() const {
 	return State::HELPING;
+}
+
+void HelpingState::sendTurnSignal() {
+	double latitude = _ctx.getGnss().getLatitude();
+	double longitude = _ctx.getGnss().getLongitude();
+
+	uint8_t payloadLength = sizeof(double) * 2;
+	uint8_t payload[payloadLength];
+
+	memcpy(payload, &latitude, sizeof(double));
+	memcpy(payload + sizeof(double), &longitude, sizeof(double));
+
+	twelite::Packet pkt = twelite::TwelitePacket::makePacket(
+		twelite::B_PARTS,
+		twelite::A_PARTS,
+		twelite::TurnSignal,
+		payloadLength,
+		payload
+	);
+	_ctx.getTwelite().sendPacket(pkt);
 }

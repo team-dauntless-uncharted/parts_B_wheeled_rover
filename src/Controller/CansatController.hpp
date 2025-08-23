@@ -56,11 +56,13 @@ public:
     void setTimeFlag(bool timeFlag) { _timeFlag = timeFlag; }
     void setCdsFlag(bool cdsFlag) { _cdsFlag = cdsFlag; }
     void setAccFlag(bool accFlag) { _accFlag = accFlag; }
+    void setInitTwelite(bool initTwelite) { _initTwelite = initTwelite; }
 
     bool getAltFlag() { return _altFlag; }
     bool getTimeFlag() { return _timeFlag; }
     bool getCdsFlag() { return _cdsFlag; }
     bool getAccFlag() { return _accFlag; }
+    bool isInitTwelite() { return _initTwelite; }
 
     UserConfig getUserConfig() { return _config; }
     
@@ -85,10 +87,12 @@ private:
     std::unique_ptr<ICansatState> _state;
     
     // 状態管理用メンバ変数
-    bool _altFlag;
-    bool _timeFlag;
-    bool _cdsFlag;
-    bool _accFlag;
+    bool _altFlag = false;
+    bool _timeFlag = false;
+    bool _cdsFlag = false;
+    bool _accFlag = false;
+
+    bool _initTwelite = false;
     
     // センサ
     GnssSensor _gnss;

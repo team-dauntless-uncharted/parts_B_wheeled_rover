@@ -7,6 +7,11 @@ RecordingState* RecordingState::_instance = nullptr;
 void RecordingState::onEnter() {
 	_instance = this;
 	_ctx.writeSystemLog("Entering RecordingState");
+
+	if (!_ctx.isInitTwelite()) {
+		_ctx.getTwelite().begin(Serial2, 115200);
+		_ctx.setInitTwelite(true);
+	}
 }
 
 void RecordingState::onUpdate() {
