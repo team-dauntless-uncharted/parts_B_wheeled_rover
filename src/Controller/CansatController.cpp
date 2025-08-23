@@ -90,7 +90,10 @@ void CansatController::changeState(std::unique_ptr<ICansatState> newState) {
 void CansatController::configState() {
     State state;
     if (!_sdLogger.readState((int&)state)) {
-        // Flash
+#ifdef USE_FLASH
+        _writer.log("Use Flash");
+        _flash.readState((int&)state);
+#endif // USE_FLASH
     }
 
     switch (state) {

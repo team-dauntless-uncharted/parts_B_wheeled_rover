@@ -1,6 +1,6 @@
 #include "SDLogger.hpp"
 
-SDLogger::SDLogger() {}
+SDLogger::SDLogger() : BaseFileIO() {}
 
 const char *SDLogger::getBasePath() const {
     return "/mnt/sd0";

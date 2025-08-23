@@ -3,17 +3,21 @@
 #include "Sensor/Imu/ImuSensor.hpp"
 #include "Sensor/CdS/CdSSensor.hpp"
 #include "Sensor/Camera/CameraController.hpp"
+
 #include "Actuator/Motor/Motor.hpp"
 #include "Actuator/Led/Led.hpp"
 #include "Actuator/Speaker/Speaker.hpp"
 #include "Actuator/Heater/Heater.hpp"
+
 #include "Utils/FileIO/SDLogger.hpp"
-#include "Utils/Serial/SerialWriter.hpp"
+#ifdef USE_FLASH
+#include "Utils/FileIO/FlashIO.hpp"
+#endif // USE_FLASH
 #include "Utils/PowerController/PowerController.hpp"
+#include "Utils/Serial/SerialWriter.hpp"
 #include <TwelitePacket.h>
 
 #include "Controller/ICansatState.hpp"
-
 #include <array>
 
 #define SENSOR_BUFFER_SIZE 4096 
@@ -52,6 +56,9 @@ public:
     // データのやり取り
     twelite::TwelitePacket &getTwelite() { return _twelite; }
     SDLogger &getSDLogger() { return _sdLogger; }
+#ifdef USE_FLASH
+    FlashIO &getFlashIO() { return _flash; }
+#endif // USE_FLASH
     SerialWriter &getSerialWriter() { return _writer; }
     
     void setAltFlag(bool altFlag) { _altFlag = altFlag; }
@@ -109,5 +116,8 @@ private:
     // データのやり取り
     twelite::TwelitePacket _twelite;
     SDLogger _sdLogger;
+#ifdef USE_FLASH
+    FlashIO _flash;
+#endif // USE_FLASH
     SerialWriter _writer;
 };

@@ -25,10 +25,15 @@ void LaunchState::onUpdate() {
 void LaunchState::onExit() {
 	_ctx.writeSystemLog("Exiting LaunchState");
 
-	if (!_ctx.getSDLogger().writeState(State::DROP)) {
+	if (!_ctx.getSDLogger().writeState((int)State::DROP)) {
 		_ctx.writeSystemLog("Failed to write state");
-		// Flash
 	}
+
+#ifdef USE_FLASH
+	if (!_ctx.getFlashIO().writeState((int)State::DROP)) {
+		_ctx.writeSystemLog("Failed to write state");
+	}
+#endif // USE_FLASH
 }
 
 State LaunchState::getState() const {

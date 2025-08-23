@@ -66,10 +66,15 @@ void ExploreState::onExit() {
 		endExploreMode();
 	}
 
-	if (!_ctx.getSDLogger().writeState(State::HELPING)) {
+	if (!_ctx.getSDLogger().writeState((int)State::HELPING)) {
 		_ctx.writeSystemLog("Failed to write state");
-		// Flash
 	}
+
+#ifdef USE_FLASH
+	if (!_ctx.getFlashIO().writeState((int)State::HELPING)) {
+		_ctx.writeSystemLog("Failed to write state");
+	}
+#endif // USE_FLASH
 }
 
 State ExploreState::getState() const {

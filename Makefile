@@ -2,6 +2,9 @@ BOARD := SPRESENSE:spresense:spresense:Core=Main,Memory=1536
 PORT ?= $(shell arduino-cli board list | grep SPRESENSE | awk '{print $$1}')
 SKETCH := 100kinsat_neo.ino
 
+# FEATURE_FLAG="-D USE_FLASH"
+FEATURE_FLAG ?=
+
 all:compile
 
 compile:
@@ -9,7 +12,7 @@ compile:
 		--fqbn $(BOARD) \
 		--libraries libraries \
 		--build-property build.extra_flags="-Isrc" \
-		--build-property compiler.cpp.extra_flags="-std=gnu++14" \
+		--build-property compiler.cpp.extra_flags="-std=gnu++14 $(FEATURE_FLAG)" \
 		$(SKETCH)
 
 upload:
