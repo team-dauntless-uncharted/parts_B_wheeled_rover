@@ -33,10 +33,15 @@ void EscapeState::onUpdate() {
 void EscapeState::onExit() {
 	_ctx.writeSystemLog("Exiting EscapeState");
 
-	if (!_ctx.getLogger().writeState(State::DETECTION)) {
+	if (!_ctx.getSDLogger().writeState((int)State::DETECTION)) {
 		_ctx.writeSystemLog("Failed to write state");
-		// Flash
 	}
+
+#ifdef USE_FLASH
+	if (!_ctx.getFlashIO().writeState((int)State::DETECTION)) {
+		_ctx.writeSystemLog("Failed to write state");
+	}
+#endif // USE_FLASH
 }
 
 State EscapeState::getState() const {

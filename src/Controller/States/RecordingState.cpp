@@ -59,10 +59,16 @@ void RecordingState::onExit() {
 		endRecordingMode();
 	}
 
-	if (!_ctx.getLogger().writeState(State::EXPLORE)) {
+	if (!_ctx.getSDLogger().writeState((int)State::EXPLORE)) {
 		_ctx.writeSystemLog("Failed to write state");
-		// Flash
 	}
+
+#ifdef USE_FLASH
+	if (!_ctx.getFlashIO().writeState((int)State::EXPLORE)) {
+		_ctx.writeSystemLog("Failed to write state");
+	}
+#endif // USE_FLASH
+
 	_instance = nullptr;
 }
 
@@ -93,12 +99,12 @@ void RecordingState::record(int time_ms) {
 	_ctx.writeSystemLog("Recording started");
 	
 	// 修正: aviInitの戻り値をチェック
-	if (!_ctx.getLogger().aviInit(CAM_IMGSIZE_QVGA_H, CAM_IMGSIZE_QVGA_V)) {
+	if (!_ctx.getSDLogger().aviInit(CAM_IMGSIZE_QVGA_H, CAM_IMGSIZE_QVGA_V)) {
 		_ctx.writeSystemLog("AVI initialization failed");
 		return;
 	}
 	
-	_ctx.getLogger().aviStart();
+	_ctx.getSDLogger().aviStart();
 
 	uint32_t start_time = millis();
 
@@ -109,7 +115,7 @@ void RecordingState::record(int time_ms) {
 		delay(10);
 	}
 
-	_ctx.getLogger().aviEnd();
+	_ctx.getSDLogger().aviEnd();
 	_ctx.getCamera().startStreaming(false);
 	_ctx.writeSystemLog("Recording finished");
 }
@@ -129,7 +135,7 @@ void RecordingState::handleCameraImage(CamImage img) {
 		void* imgBuff = img.getImgBuff();
 		size_t imgSize = img.getImgSize();
 
-		_ctx.getLogger().aviRecord(imgBuff, imgSize);
+		_ctx.getSDLogger().aviRecord(imgBuff, imgSize);
 	} else {
 		_ctx.writeSystemLog("Camera image is not available");
 	}

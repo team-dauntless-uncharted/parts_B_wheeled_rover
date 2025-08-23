@@ -23,14 +23,14 @@ CansatController::CansatController()
       _speaker(9),
       _heater(6),
       _twelite(),
-      _logger(),
+      _sdLogger(),
       _camera(),
       _power()
 {
 }
 
 void CansatController::writeSystemLog(const char* message) {
-    _logger.appendSystemLog(message);
+    _sdLogger.appendSystemLog(message);
     _writer.log(message);
 }
 
@@ -40,12 +40,12 @@ void CansatController::begin(UserConfig config) {
     _writer.begin();
     _writer.log("CansatController: Starting begin()");
     
-    if (!_logger.begin(CSV_HEADER)) {
-        _writer.log("CansatController: Logger initialization failed!");
+    if (!_sdLogger.begin(CSV_HEADER)) {
+        _writer.log("CansatController: SD Logger initialization failed!");
     } else {
-        _writer.log("CansatController: Logger initialized successfully");
+        _writer.log("CansatController: SD Logger initialized successfully");
     }
-    _logger.appendSystemLog("CansatController: begin() started");
+    _sdLogger.appendSystemLog("CansatController: begin() started");
 
     _power.begin();
 
@@ -89,8 +89,11 @@ void CansatController::changeState(std::unique_ptr<ICansatState> newState) {
 
 void CansatController::configState() {
     State state;
-    if (!_logger.readState((int&)state)) {
-        // Flash
+    if (!_sdLogger.readState((int&)state)) {
+#ifdef USE_FLASH
+        _writer.log("Use Flash");
+        _flash.readState((int&)state);
+#endif // USE_FLASH
     }
 
     switch (state) {
@@ -194,7 +197,7 @@ void CansatController::appendSensorLog() {
     // 4) バッファ境界チェック（> にして溢れを確実に回避）
     if (_head + (size_t)len > SENSOR_BUFFER_SIZE) {
         // いま溜まっている分を書き出してから新しい行を入れる
-        _logger.appendSensorLog(_sensorBuffer, _head); // バイナリ長書き出しAPIであること
+        _sdLogger.appendSensorLog(_sensorBuffer, _head); // バイナリ長書き出しAPIであること
         _head = 0;
     }
 
