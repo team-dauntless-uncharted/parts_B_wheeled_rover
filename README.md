@@ -1,41 +1,32 @@
-# 100kinSAT NEO CanSat Controller
+# 100kinsat neo
 
-これは、ARLISS (A Rocket Launch for International Student Satellites) 競技向けに開発されたCanSat（缶サット）の制御ソフトウェアです。
-GNSSとIMUセンサーを用いて自己位置を推定し、設定されたゴール地点まで自律航行することを目的としています。
+ARLISS 2025 TDU Team-Dauntless-Uncharted Bパーツ開発リポジトリ
 
-## 機能
-
-- **状態遷移**: キャリブレーションからゴールまで、ミッションのフェーズをステートマシンで管理します。
-- **自律航行**: GNSSで取得した緯度経度とIMUで取得した方位角を元に、ゴールへ向けてモーターを制御します。
-- **センサーデータ取得**: GNSS、IMU（加速度、ジャイロ、磁気）、CdS（光センサー）からデータを定期的に取得します。
-- **放出・着地検知**: CdSセンサーによる放出検知、IMUの加速度による着地検知を行います。
-- **写真撮影**: 航行中に定期的に写真を撮影し、SDカードにJPEG形式で保存します。
-- **パラシュート切り離し**: 着地後にヒーター（ニクロム線）を加熱し、パラシュートを切り離します。
-- **データロギング**: センサーデータや機体の状態をSDカードにCSV形式で記録します。
-- **無線通信**: 機体の状態を地上局へ無線（`Serial2`）で送信します。
+参考元: [ymt117/tane2024](https://github.com/ymt117/tane2024/tree/main)
 
 ## ディレクトリ構造
 
 ```
-100kinsat_neo/
-├── 100kinsat_neo.ino       # メインのArduinoスケッチ
-├── platformio.ini          # (PlatformIOを使用する場合)
-└── src/
-    ├── CansatController.cpp    # メインコントローラーの実装
-    ├── CansatController.hpp    # メインコントローラーのヘッダー
-    ├── Sensor/                 # センサー関連クラス
-    │   ├── Gnss/
-    │   ├── Imu/
-    │   ├── Camera/
-    │   └── CdS/
-    ├── Actuator/               # アクチュエーター関連クラス
-    │   ├── Motor/
-    │   ├── Led/
-    │   ├── Speaker/
-    │   └── Heater/
-    └── Utils/                  # ユーティリティクラス
-        ├── GeoUtils/           # 測地線計算
-        └── Logger/             # ロギング
+100kinsat_neo
+├── 100kinsat_neo.ino               # メインのArduinoスケッチ
+├── libraries                       # 外部ライブラリ(git submodule)
+│   ├── Adafruit_BNO055             # BNO055のセンサライブラリ
+│   ├── Adafruit_BusIO
+│   ├── Adafruit_Sensor
+│   ├── PosixAvi                    # AVIでの録画
+│   ├── spresense_fomo_inferencing  # 物体検知
+│   └── TwelitePacket               # AパーツやケースとのTwelite通信
+├── src
+│   ├── Actuator                    # アクチュエータ
+│   ├── Controller                  # Cansat制御・各State処理
+│   ├── Sensor                      # センサ・カメラ
+│   └── Utils                       # ログ・計算など
+├── Makefile                        # ビルド、書き込み、シリアルモニタ
+├── build.bat                       # Windows用
+├── README.md
+├── test
+└── tools
+    └── flash_format                # Flashフォーマット用スケッチ
 ```
 
 ## システム構成
@@ -52,7 +43,6 @@ GNSSとIMUセンサーを用いて自己位置を推定し、設定されたゴ�
   - DCモーター x2: 左右のタイヤを駆動
   - LED: 機体の状態表示
   - スピーカー: ゴール時の音楽再生など
-  - ヒーター（ニクロム線）: パラシュート切り離し
 - **その他**:
   - SDカードスロット: ログ保存用
   - 無線通信モジュール: 地上局へのデータ送信
@@ -61,66 +51,162 @@ GNSSとIMUセンサーを用いて自己位置を推定し、設定されたゴ�
 
 本ソフトウェアは、以下の状態遷移モデルに基づいて動作します。
 
-1.  **`CALIBRATION`**: 起動直後。IMUなどのセンサーキャリブレーションを行います。
-2.  **`STAND_BY`**: 打ち上げ待機状態。ロケットが一定高度に達するか、一定時間が経過すると `LAUNCH` 状態に遷移します。
-3.  **`LAUNCH`**: ロケットに搭載されている状態。CdSセンサーが強い光を検知する（=機体が放出される）と `DROP` 状態に遷移します。
-4.  **`DROP`**: パラシュートで降下中の状態。IMUの加速度から着地の衝撃を検知すると `LANDING` 状態に遷移します。
-5.  **`LANDING`**: 着地後の状態。パラシュートをヒーターで切り離し、`NAVIGATION` 状態に遷移します。
-6.  **`NAVIGATION`**: 自律航行状態。ゴール地点に向かって移動します。この状態では、定期的に写真を撮影しSDカードに保存します。ゴールに到達すると `GOAL` 状態に遷移します。
-7.  **`GOAL`**: ゴール達成。スピーカーで音楽を鳴らすなどのゴールパフォーマンスを行い、待機します。
+### 1. CALIBRATION
+
+- 動作：センサのキャリブレーションをする
+- 次のモード：STANDBY
+- 移行条件：キャリブレーションが終了次第
+
+### 2. STANDBY
+
+- 動作：高度、経過時間の監視
+- 次のモード：LAUNCH
+- 移行条件：高度が一定の高さを超える、もしくは一定時間経過する
+
+### 3. LAUNCH
+
+- 動作：CdSの値の監視
+- 次のモード：DROP
+- 移行条件：CdSが一定の値を下回る
+
+### 4. DROP
+
+- 動作：Tweliteを起動する。ケースからの信号もしくは経過時間の監視
+- 次のモード：ESCAPE
+- 移行条件：ケースから展開完了の信号を受け取る、もしくは一定時間経過する
+
+### 5. ESCAPE
+
+- 動作：ケースからの脱出
+- 次のモード：DETECTION
+- 移行条件：脱出できたら（GNSSでの移動検知）、もしくは一定時間経過する
+
+### 6. DETECTION
+
+- 動作：カメラで画像を取り、物体検知処理をする。中央に捉えるまで移動する
+- 次のモード：RECORDING
+- 移行条件：Aパーツをカメラの中央に捉えたら、もしくはタイムアウト
+
+### 7. RECORDING
+
+- 動作：カメラのモードを変更する。TweliteでAパーツと撮影準備完了のやり取りを行った後、Aパーツが発進する動画を撮影する
+- 次のモード：EXPLORE
+- 移行条件：Aパーツが発進した動画を撮り終わったら（一定時間録画した後）
+
+### 8. EXPLORE
+
+- 動作：適当に移動（散策）し、周辺環境の画像を撮影する
+- 次のモード：HELPING
+- 移行条件：一定時間、移動できなくなったら（緯度経度の値がほとんど変わらなかったら）
+
+### 9. HELPING
+
+- 動作：Tweliteで自身の位置情報を格納した救援信号をAパーツに送る
+- 次のモード：？
+- 移行条件：救助されたら
+
 
 ## セットアップと実行
 
-### 1. 設定
+**※ WindowsはPowerShellで作業することを前提としているので注意**
 
-`100kinsat_neo.ino` ファイル内の `setup()` 関数で、ユーザー設定（`userConfig`）を環境に合わせて変更します。
+### 0. 事前準備
 
-```cpp
-// 100kinsat_neo.ino
+以下のツールをインストールし、コマンドを実行できるようにしておく
+- [Arduino CLI](https://github.com/arduino/arduino-cli/releases)
+- Git
+- make (macOS、Linuxのみ)
 
-// ユーザ設定
-cansat.userConfig.goalLat = 35.7487860;      // ゴールの緯度
-cansat.userConfig.goalLng = 139.8070711;     // ゴールの経度
-cansat.userConfig.altThreshold = 20;         // LAUNCH遷移高度 [m]
-cansat.userConfig.cdsThreshold = 400;        // DROP遷移CdSしきい値
-cansat.userConfig.accThreshold = 0;          // LANDING遷移加速度しきい値
-cansat.userConfig.distanceThreshold = 5;     // GOAL遷移距離 [m]
-cansat.userConfig.timeThreshold = 30000;     // LAUNCH遷移時間 [ms]
+Spresenseボードマネージャの追加
+```bash
+$ arduino-cli config add board_manager.additional_urls https://github.com/sony/spresense-arduino-compatible/releases/download/v1.0.0/spresense-arduino-compatible-v1.0.0.zip
+$ arduino-cli core update-index
+$ arduino-cli core install SPRESENSE:spresense
 ```
 
-### 2. ビルドと書き込み
+### 1. 環境構築
 
-1.  Arduino IDEまたはPlatformIOなどの開発環境でこのプロジェクトを開きます。
-2.  必要なライブラリをインストールします。（ライブラリマネージャで追加してください）
-3.  ボードとポートを正しく設定します。
-4.  マイコンにプログラムを書き込みます。
-5.  シリアルモニター（ボーレート: 115200）を開くと、デバッグメッセージを確認できます。
+このリポジトリをクローンする
+```bash
+$ git clone https://github.com/team-dauntless-uncharted/100kinsat_neo.git
+$ git clone git@github.com:team-dauntless-uncharted/100kinsat_neo.git
+```
 
-## ログフォーマット
+100kinsat_neo直下に移動
+```bash
+$ cd 100kinsat_neo
+```
 
-SDカードには、以下の2種類のデータが記録されます。
+submoduleを取得
+```bash
+$ git submodule update --init --recursive
+```
 
-### センサーログ (CSV)
+### 2.ソースコードのビルド
 
-以下のカラムを持つCSV形式でログが記録されます。
+**macOS・Linuxの場合**
 
-1.  `Time`: 起動からの経過時間 [ms]
-2.  `Date`: 日付 [YYYYMMDD]
-3.  `State`: 機体の状態 (Enum値)
-4.  `Latitude`: 緯度
-5.  `Longitude`: 経度
-6.  `Altitude`: 高度 [m]
-7.  `DistanceToGoal`: ゴールまでの距離 [m]
-8.  `DirectionToGoal`: ゴールまでの方位 [度]
-9.  `MotorR_PWM`: 右モーターのPWM値
-10. `MotorL_PWM`: 左モーターのPWM値
-11. `MotorOutputTime`: モーター出力時間 [ms]
-12. `CdSValue`: CdSセンサーの値
-13. `AccX`, `AccY`, `AccZ`: 加速度
-14. `GyroX`, `GyroY`, `GyroZ`: 角速度
-15. `MagX`, `MagY`, `MagZ`: 磁気
-16. `Roll`, `Pitch`, `Heading`: 姿勢角
+100kinsat_neoディレクトリ直下でmakeコマンドを使用する
 
-### 画像ログ
+```bash
+$ make compile
+```
 
-`NAVIGATION` 状態で撮影された写真は、JPEGファイルとしてSDカードのルートディレクトリに保存されます。
+**Windowsの場合**
+
+100kinsat_neoディレクトリ直下でbuild.batを実行する
+```
+$ ./build.bat compile
+```
+
+### 3. 書き込み
+
+デバイスはUSBで接続して、認識していればそれを書き込み対象とする
+
+**macOS・Linuxの場合**
+
+```bash
+$ make upload
+$ make upload PORT="/dev/ttyUSB0" # 任意のポートを指定可能
+```
+
+**Windowsの場合**
+
+```bash
+$ ./build.bat upload
+```
+
+### 4. シリアルモニタ
+
+デバイスはUSBで接続して、認識していればそのデバイスのシリアルモニタを開く
+
+**macOS・Linuxの場合**
+
+```bash
+$ make monitor
+```
+
+**Windowsの場合**
+
+```bash
+$ ./build.bat monitor
+```
+
+## ビルドオプション
+
+### Flash有効化
+
+Flashは、簡単に行うのであれば、マイコンからしか読み書きできない、開発中などにむやみに書き込まんで寿命を縮めないようにするために、基本的にビルド時にオプションを付けないと使用しないようになっている
+
+ビルドする際に ``FEATURE_FLAG="-D USE_FLASH"`` を付ける
+
+```bash
+$ make compile FEATURE_FLAG="-D USE_FLASH" # Stateの確認にFlashを使用する
+```
+
+※ Flashをフォーマットしたい場合は、 ``tools/flash_format/flash_format.ino`` を書き込み、シリアルモニタからyを送ることでできる
+
+### GNSSの値取得待ちの無効化
+
+
+## ユーザ指定の値
