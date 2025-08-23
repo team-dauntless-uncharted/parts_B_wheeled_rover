@@ -17,7 +17,7 @@ void CalibrationState::onUpdate() {
 void CalibrationState::onExit() {
 	_ctx.writeSystemLog("Exiting CalibrationState");
 
-	if (!_ctx.getLogger().writeState(State::STANDBY)) {
+	if (!_ctx.getSDLogger().writeState(State::STANDBY)) {
 		_ctx.writeSystemLog("Failed to write state");
 		// Flash
 	}

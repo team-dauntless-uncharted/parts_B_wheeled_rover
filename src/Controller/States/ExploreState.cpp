@@ -35,7 +35,7 @@ void ExploreState::onUpdate() {
     size_t imgSize = 0;
     if (_ctx.getCamera().takePicture(&imgBuff, &imgSize)) {
         _ctx.getSerialWriter().log("Save taken picture to SD card...");
-        _ctx.getLogger().saveJPEGImage(imgBuff, imgSize);
+        _ctx.getSDLogger().saveJPEGImage(imgBuff, imgSize);
     } else {
         _ctx.writeSystemLog("Failed to take picture");
     }
@@ -66,7 +66,7 @@ void ExploreState::onExit() {
 		endExploreMode();
 	}
 
-	if (!_ctx.getLogger().writeState(State::HELPING)) {
+	if (!_ctx.getSDLogger().writeState(State::HELPING)) {
 		_ctx.writeSystemLog("Failed to write state");
 		// Flash
 	}

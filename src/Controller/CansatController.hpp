@@ -7,7 +7,7 @@
 #include "Actuator/Led/Led.hpp"
 #include "Actuator/Speaker/Speaker.hpp"
 #include "Actuator/Heater/Heater.hpp"
-#include "Utils/Logger/Logger.hpp"
+#include "Utils/FileIO/SDLogger.hpp"
 #include "Utils/Serial/SerialWriter.hpp"
 #include "Utils/PowerController/PowerController.hpp"
 #include <TwelitePacket.h>
@@ -51,7 +51,7 @@ public:
 
     // データのやり取り
     twelite::TwelitePacket &getTwelite() { return _twelite; }
-    Logger &getLogger() { return _logger; }
+    SDLogger &getSDLogger() { return _sdLogger; }
     SerialWriter &getSerialWriter() { return _writer; }
     
     void setAltFlag(bool altFlag) { _altFlag = altFlag; }
@@ -108,6 +108,6 @@ private:
 
     // データのやり取り
     twelite::TwelitePacket _twelite;
-    Logger _logger;
+    SDLogger _sdLogger;
     SerialWriter _writer;
 };

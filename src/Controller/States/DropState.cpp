@@ -39,7 +39,7 @@ void DropState::onUpdate() {
 void DropState::onExit() {
   _ctx.writeSystemLog("Exiting DropState");
 
-  if (!_ctx.getLogger().writeState(State::ESCAPE)) {
+  if (!_ctx.getSDLogger().writeState(State::ESCAPE)) {
 		_ctx.writeSystemLog("Failed to write state");
 		// Flash
 	}

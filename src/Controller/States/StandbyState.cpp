@@ -35,7 +35,7 @@ void StandbyState::onUpdate() {
 void StandbyState::onExit() {
 	_ctx.writeSystemLog("Exiting StandbyState");
 
-	if (!_ctx.getLogger().writeState(State::LAUNCH)) {
+	if (!_ctx.getSDLogger().writeState(State::LAUNCH)) {
 		_ctx.writeSystemLog("Failed to write state");
 		// Flash
 	}

@@ -92,7 +92,7 @@ void DetectionState::onExit() {
 		endDetectionMode();
 	}
 
-	if (!_ctx.getLogger().writeState(State::RECORDING)) {
+	if (!_ctx.getSDLogger().writeState(State::RECORDING)) {
 		_ctx.writeSystemLog("Failed to write state");
 		// Flash
 	}

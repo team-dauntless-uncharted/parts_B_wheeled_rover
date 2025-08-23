@@ -1,15 +1,11 @@
 #pragma once
 #include <Arduino.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <sys/stat.h>
-#include <cstdio>
-#include <cstring>
 #include <PosixAvi.hpp>
+#include "Utils/FileIO/BaseFileIO.hpp"
 
-class Logger {
+class SDLogger : public BaseFileIO {
 public:
-    Logger();
+    SDLogger();
 
     bool begin(const String &csvHeader);
 
@@ -28,14 +24,11 @@ public:
     bool readState(int &state);
     bool writeState(const int &state);
 
+protected:
+    const char *getBasePath() const override;
+
 private:
     bool waitForSDMount(int timeout_ms = 5000);
-
-    // POSIX ファイル操作
-    bool posixOpen(const char* filename, bool write, int &fd, bool truncate = false);
-    void posixClose(int &fd);
-    ssize_t posixWrite(int fd, const void* buf, size_t size);
-    ssize_t posixRead(int fd, void* buf, size_t size);
 
     void refreshFileNameIndex(char* fileNameBuf, size_t bufSize, const char* format, uint16_t& counter);
     void shiftFileName(char* fileNameBuf, size_t bufSize, const char* format, uint16_t& counter);
@@ -78,5 +71,4 @@ private:
     void shiftAVIFileName();
 
     PosixAviLibrary _avi;  // 変更: AviLibrary から PosixAviLibrary に変更
-    // int _aviFd;  // 削除: PosixAviLibraryが内部でファイル記述子を管理するため不要
 };
