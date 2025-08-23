@@ -34,6 +34,11 @@ void StandbyState::onUpdate() {
 
 void StandbyState::onExit() {
 	_ctx.writeSystemLog("Exiting StandbyState");
+
+	if (!_ctx.getLogger().writeState(State::LAUNCH)) {
+		_ctx.writeSystemLog("Failed to write state");
+		// Flash
+	}
 }
 
 State StandbyState::getState() const {

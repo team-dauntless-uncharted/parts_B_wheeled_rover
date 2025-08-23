@@ -58,6 +58,11 @@ void RecordingState::onExit() {
 	if (_isInitCamera) {
 		endRecordingMode();
 	}
+
+	if (!_ctx.getLogger().writeState(State::EXPLORE)) {
+		_ctx.writeSystemLog("Failed to write state");
+		// Flash
+	}
 	_instance = nullptr;
 }
 

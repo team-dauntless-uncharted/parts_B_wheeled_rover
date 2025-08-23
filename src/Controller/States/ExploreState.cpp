@@ -65,6 +65,11 @@ void ExploreState::onExit() {
 	if (_isInitCamera) {
 		endExploreMode();
 	}
+
+	if (!_ctx.getLogger().writeState(State::HELPING)) {
+		_ctx.writeSystemLog("Failed to write state");
+		// Flash
+	}
 }
 
 State ExploreState::getState() const {

@@ -91,6 +91,11 @@ void DetectionState::onExit() {
 	if (_isInitCamera) {
 		endDetectionMode();
 	}
+
+	if (!_ctx.getLogger().writeState(State::RECORDING)) {
+		_ctx.writeSystemLog("Failed to write state");
+		// Flash
+	}
 }
 
 State DetectionState::getState() const {

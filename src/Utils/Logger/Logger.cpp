@@ -179,13 +179,7 @@ bool Logger::writeState(const int &state) {
     stateFile.seek(0);
     
     // ファイルにintを書き込み
-    if (stateFile.write((uint8_t*)&state, sizeof(state)) != sizeof(state)) {
-        stateFile.close();
-        return false;
-    }
-    
-    // ファイルサイズを現在のポジションに切り詰め
-    stateFile.flush();
+    stateFile.print(state);
     stateFile.close();
     return true;
 }
