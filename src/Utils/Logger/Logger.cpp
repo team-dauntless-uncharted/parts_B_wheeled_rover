@@ -1,15 +1,24 @@
 #include "Logger.hpp"
 
-Logger::Logger() : _aviFd(-1) {}
+Logger::Logger() {}
 
 // ------------------ POSIXラッパー ------------------
 
-bool Logger::posixOpen(const char* filename, bool write, int &fd) {
+bool Logger::posixOpen(const char *path, bool write, int &fd, bool truncate = false) {
+    int flags = 0;
+
     if (write) {
-        fd = ::open(filename, O_WRONLY | O_CREAT | O_APPEND, 0666);
+        flags = O_WRONLY | O_CREAT;
+        if (truncate) {
+            flags |= O_TRUNC;
+        } else {
+            flags |= O_APPEND;
+        }
     } else {
-        fd = ::open(filename, O_RDONLY);
+        flags = O_RDONLY;
     }
+
+    fd = ::open(path, flags, 0666);
     return fd >= 0;
 }
 
@@ -113,10 +122,11 @@ bool Logger::savePPMImage(void* buff, size_t size) {
 
 // ------------------ AVI ------------------
 
-void Logger::aviInit(int width, int height) {
+bool Logger::aviInit(int width, int height) {  // 戻り値をboolに変更
     refreshAVIFileNameIndex();
-    if (!posixOpen(_aviFileName, true, _aviFd)) return;
-    _avi.begin(_aviFd, width, height);
+    
+    // POSIX API対応版は内部でファイルを管理するため、posixOpenは不要
+    return _avi.begin(_aviFileName, width, height);  // 戻り値をチェック
 }
 
 void Logger::aviStart() {
@@ -124,13 +134,17 @@ void Logger::aviStart() {
 }
 
 void Logger::aviRecord(void* buff, size_t size) {
-    _avi.addFrame(buff, size);
+    // 型変換を追加（PosixAviLibraryはconst char*を要求）
+    _avi.addFrame(static_cast<const char*>(buff), size);
 }
 
 void Logger::aviEnd() {
     _avi.endRecording();
     _avi.end();
-    posixClose(_aviFd);
+    // posixClose(_aviFd); を削除（PosixAviLibraryが内部で管理）
+    
+    // 次のファイル名に更新
+    shiftAVIFileName();
 }
 
 // ------------------ State ------------------
@@ -150,7 +164,7 @@ bool Logger::readState(int &state) {
 
 bool Logger::writeState(const int &state) {
     int fd;
-    if (!posixOpen("/mnt/sd0/state.txt", true, fd)) return false;
+    if (!posixOpen("/mnt/sd0/state.txt", true, fd, true)) return false;
 
     char buf[16];
     int n = snprintf(buf, sizeof(buf), "%d", state);

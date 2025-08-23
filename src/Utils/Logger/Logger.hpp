@@ -1,10 +1,11 @@
 #pragma once
+#include <Arduino.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/stat.h>
 #include <cstdio>
 #include <cstring>
-#include <AviLibrary.h>
+#include "Avi.hpp"
 
 class Logger {
 public:
@@ -19,7 +20,7 @@ public:
     bool saveJPEGImage(void* buff, size_t size);
     bool savePPMImage(void* buff, size_t size);
 
-    void aviInit(int width, int height);
+    bool aviInit(int width, int height);  // 変更: voidからboolに変更
     void aviStart();
     void aviRecord(void* buff, size_t size);
     void aviEnd();
@@ -31,7 +32,7 @@ private:
     bool waitForSDMount(int timeout_ms = 5000);
 
     // POSIX ファイル操作
-    bool posixOpen(const char* filename, bool write, int &fd);
+    bool posixOpen(const char* filename, bool write, int &fd, bool truncate = false);
     void posixClose(int &fd);
     ssize_t posixWrite(int fd, const void* buf, size_t size);
     ssize_t posixRead(int fd, void* buf, size_t size);
@@ -76,6 +77,6 @@ private:
     void refreshAVIFileNameIndex();
     void shiftAVIFileName();
 
-    AviLibrary _avi;
-    int _aviFd;
+    PosixAviLibrary _avi;  // 変更: AviLibrary から PosixAviLibrary に変更
+    // int _aviFd;  // 削除: PosixAviLibraryが内部でファイル記述子を管理するため不要
 };
