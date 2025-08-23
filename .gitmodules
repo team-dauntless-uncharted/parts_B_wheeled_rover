@@ -1,6 +1,3 @@
-[submodule "100kinsat_receiver"]
-	path = 100kinsat_receiver
-	url = git@github.com:team-dauntless-uncharted/100kinsat_receiver.git
 [submodule "libraries/Adafruit_Sensor"]
 	path = libraries/Adafruit_Sensor
 	url = git@github.com:adafruit/Adafruit_Sensor.git
