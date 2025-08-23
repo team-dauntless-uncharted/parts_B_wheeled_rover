@@ -13,6 +13,7 @@ public:
     bool appendSystemLog(const char* message);
 
     bool appendSensorLog(const char* message);
+    bool appendSensorLog(const char* message, size_t length);
 
     // JPEGファイルの保存
     bool saveJPEGImage(void* buff, size_t size);

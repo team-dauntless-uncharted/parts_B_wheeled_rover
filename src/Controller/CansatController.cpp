@@ -136,39 +136,69 @@ void CansatController::configState() {
     }
 }
 
-// ログの作成
-const char* CansatController::createMessage(unsigned long currentTime, const String& currentDate, State state,
-                           double lat, double lng, double alt,
-                           int cds, double ax, double ay, double az,
-                           double gx, double gy, double gz, double mx, double my, double mz,
-                           double roll, double pitch, double heading, int voltage) {
-    // snprintfでフォーマットされた文字列を生成
-    // 注意: AVRベースのArduinoでは、浮動小数点数のサポートに特別な設定が必要な場合があります
-    snprintf(_logBuffer, sizeof(_logBuffer),
-             "%lu,%s,%d,%.6f,%.6f,%.2f,%d,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.2f,%.2f,%.2f,%d",
-             currentTime,
-             currentDate.c_str(),
-             state,
-             lat, lng, alt, cds,
-             ax, ay, az,
-             gx, gy, gz,
-             mx, my, mz,
-             roll, pitch, heading,
-             voltage);
-
-    return _logBuffer;
-}
-
 void CansatController::appendSensorLog() {
-    char *message = createMessage(
-        millis(), _gnss.getCurrentDate(), _state->getState(),
-        _gnss.getLatitude(), _gnss.getLongitude(), _gnss.getAltitude(),
-        _cds.read(), _imu.getAccX(), _imu.getAccY(), _imu.getAccZ(),
-        _imu.getGyroX(), _imu.getGyroY(), _imu.getGyroZ(),
-        _imu.getMagX(), _imu.getMagY(), _imu.getMagZ(),
-        _imu.getRoll(), _imu.getPitch(), _imu.getHeading(), _power.getVoltage()
+    // 1) まず全センサ値をスナップショット
+    unsigned long t_ms = millis();
+
+    char date[32];           // 例: "2025-08-23 12:34:56"
+    date[0] = '\0';
+    // getCurrentDate() が const char* を返すタイプなら strcpy_safety
+    {
+        const char* p = _gnss.getCurrentDate();   // 不安定なポインタ
+        if (p) {
+            // 安全コピー（必ず終端する）
+            strncpy(date, p, sizeof(date) - 1);
+            date[sizeof(date) - 1] = '\0';
+        } else {
+            strcpy(date, ""); // 空にしておく
+        }
+    }
+
+    int state_i = _state ? _state->getState() : -1;
+
+    float lat = _gnss.getLatitude();
+    float lon = _gnss.getLongitude();
+    float alt = _gnss.getAltitude();
+
+    int   cds  = _cds.read();
+
+    float ax = _imu.getAccX(),  ay = _imu.getAccY(),  az = _imu.getAccZ();
+    float gx = _imu.getGyroX(), gy = _imu.getGyroY(), gz = _imu.getGyroZ();
+    float mx = _imu.getMagX(),  my = _imu.getMagY(),  mz = _imu.getMagZ();
+    float roll = _imu.getRoll(), pitch = _imu.getPitch(), heading = _imu.getHeading();
+
+    int voltage_mV = _power.getVoltage(); // フォーマットに合わせて型確認
+
+    // 2) 行を組み立て（行バッファは十分大きく）
+    char line[192];
+    int len = snprintf(
+        line, sizeof(line),
+        "%lu,%s,%d,%.6f,%.6f,%.2f,%d,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.2f,%.2f,%.2f,%d\n",
+        t_ms, date, state_i,
+        lat, lon, alt,
+        cds, ax, ay, az, gx, gy, gz, mx, my, mz, roll, pitch, heading, voltage_mV
     );
 
-    _writer.log(message);
-    _logger.appendSensorLog(message);
+    // 3) フォーマット失敗/切り詰め検出
+    if (len < 0) {
+        _writer.log("appendSensorLog: snprintf failed");
+        return;
+    }
+    if ((size_t)len >= sizeof(line)) {
+        _writer.log("appendSensorLog: line truncated, dropping");
+        return;
+    }
+
+    // head
+    _writer.logf("head: %d", _head);
+    // 4) バッファ境界チェック（> にして溢れを確実に回避）
+    if (_head + (size_t)len > SENSOR_BUFFER_SIZE) {
+        // いま溜まっている分を書き出してから新しい行を入れる
+        _logger.appendSensorLog(_sensorBuffer, _head); // バイナリ長書き出しAPIであること
+        _head = 0;
+    }
+
+    // 5) 追記
+    memcpy(&_sensorBuffer[_head], line, (size_t)len);
+    _head += (size_t)len;
 }

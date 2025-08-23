@@ -41,6 +41,26 @@ bool Logger::appendSensorLog(const char* message) {
     return appendLog(_sensorLogFileName, message);
 }
 
+bool Logger::appendSensorLog(const char* message, size_t length) {
+    if (length < 0) {
+        return false;
+    }
+
+    File logFile = _sd.open(_sensorLogFileName, FILE_WRITE);
+    if (!logFile) {
+        return false;
+    }
+    
+    logFile.write(message, length);
+    size_t written = logFile.write((const uint8_t*)message, length);
+    if (written != length) {
+        logFile.close();
+        return false;
+    }
+    logFile.close();
+    return true;
+}
+
 bool Logger::sdInit() {
     if (!_sd.begin()) {
         return false;
@@ -183,3 +203,4 @@ bool Logger::writeState(const int &state) {
     stateFile.close();
     return true;
 }
+
