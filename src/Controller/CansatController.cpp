@@ -132,6 +132,8 @@ void CansatController::configState() {
         break;
     default:
         writeSystemLog("Unknown state");
+        writeSystemLog("config CalibrationState");
+        changeState(std::make_unique<CalibrationState>(*this));
         break;
     }
 }
@@ -189,8 +191,6 @@ void CansatController::appendSensorLog() {
         return;
     }
 
-    // head
-    _writer.logf("head: %d", _head);
     // 4) バッファ境界チェック（> にして溢れを確実に回避）
     if (_head + (size_t)len > SENSOR_BUFFER_SIZE) {
         // いま溜まっている分を書き出してから新しい行を入れる
