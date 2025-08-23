@@ -45,10 +45,8 @@ State EscapeState::getState() const {
 
 void EscapeState::pulseForward(int pwm, int repeat) {
 	for (int i = 0; i < repeat; ++i) {
-		_ctx.appendSensorLog();
 		_ctx.getMotor().forward(pwm);
 		delay(200);
-		_ctx.appendSensorLog();
 		_ctx.getMotor().stop();
 		delay(200);
 	}
@@ -56,12 +54,10 @@ void EscapeState::pulseForward(int pwm, int repeat) {
 
 void EscapeState::rockingEscape(int pwm, int repeat) {
 	for (int i = 0; i < repeat; ++i) {
-		_ctx.appendSensorLog();
 		_ctx.getMotor().forward(pwm);
 		delay(200);
 		_ctx.getMotor().stop();
 		delay(150);
-		_ctx.appendSensorLog();
 		_ctx.getMotor().backward(pwm);
 		delay(200);
 		_ctx.getMotor().stop();
@@ -71,11 +67,9 @@ void EscapeState::rockingEscape(int pwm, int repeat) {
 
 void EscapeState::phaseEscape(int pwm, int repeat) {
 	for (int i = 0; i < repeat; ++i) {
-		_ctx.appendSensorLog();
 		_ctx.getMotor().leftForward(pwm);
 		delay(150);
 
-		_ctx.appendSensorLog();
 		_ctx.getMotor().rightForward(pwm);
 		delay(150);
 

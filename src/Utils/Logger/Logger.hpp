@@ -1,27 +1,26 @@
 #pragma once
-#include <SDHCI.h>
-#include <File.h>
-
-#include <AviLibrary.h>
+#include <Arduino.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <cstdio>
+#include <cstring>
+#include "Avi.hpp"
 
 class Logger {
 public:
     Logger();
-    // 初期化
-    bool begin(String csvHeader);
+
+    bool begin(const String &csvHeader);
 
     bool appendSystemLog(const char* message);
-
     bool appendSensorLog(const char* message);
+    bool appendSensorLog(const char* message, size_t length);
 
-    // JPEGファイルの保存
     bool saveJPEGImage(void* buff, size_t size);
-
-    // PPMファイルの保存
     bool savePPMImage(void* buff, size_t size);
 
-    // AVI
-    void aviInit(int width, int height);
+    bool aviInit(int width, int height);  // 変更: voidからboolに変更
     void aviStart();
     void aviRecord(void* buff, size_t size);
     void aviEnd();
@@ -30,60 +29,54 @@ public:
     bool writeState(const int &state);
 
 private:
-    SDClass _sd;
+    bool waitForSDMount(int timeout_ms = 5000);
 
-    AviLibrary _avi;
-    File _aviFile;
-
-    bool sdInit();
-
-    bool appendLog(const char* filename, const char* message);
+    // POSIX ファイル操作
+    bool posixOpen(const char* filename, bool write, int &fd, bool truncate = false);
+    void posixClose(int &fd);
+    ssize_t posixWrite(int fd, const void* buf, size_t size);
+    ssize_t posixRead(int fd, void* buf, size_t size);
 
     void refreshFileNameIndex(char* fileNameBuf, size_t bufSize, const char* format, uint16_t& counter);
     void shiftFileName(char* fileNameBuf, size_t bufSize, const char* format, uint16_t& counter);
 
-    /**
-     * SystemLog
-     */
+    // SystemLog
     char _systemLogFileName[24];
     uint16_t _systemLogFileNameCount = 0;
 
     void refreshSystemLogFileNameIndex();
     void shiftSystemLogFileName();
 
-    /**
-     * SensorLog
-     */
+    // SensorLog
     char _sensorLogFileName[24];
     uint16_t _sensorLogFileNameCount = 0;
 
     void refreshSensorLogFileNameIndex();
     void shiftSensorLogFileName();
 
-    /**
-     * .jpg
-     */
+    bool appendLog(const char* filename, const char* message);
+
+    // JPEG
     char _jpegFileName[24];
     uint16_t _jpegFileNameCount = 0;
 
     void refreshJPEGFileNameIndex();
     void shiftJPEGFileName();
 
-    /**
-     * .ppm 
-     */
+    // PPM
     char _ppmFileName[24];
     uint16_t _ppmFileNameCount = 0;
 
     void refreshPPMFileNameIndex();
     void shiftPPMFileName();
 
-    /**
-     * .avi
-     */
+    // AVI
     char _aviFileName[24];
     uint16_t _aviFileNameCount = 0;
 
     void refreshAVIFileNameIndex();
     void shiftAVIFileName();
+
+    PosixAviLibrary _avi;  // 変更: AviLibrary から PosixAviLibrary に変更
+    // int _aviFd;  // 削除: PosixAviLibraryが内部でファイル記述子を管理するため不要
 };

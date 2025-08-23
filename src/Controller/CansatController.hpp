@@ -16,6 +16,8 @@
 
 #include <array>
 
+#define SENSOR_BUFFER_SIZE 4096 
+
 struct UserConfig {
     double goalLat;
     double goalLng;
@@ -73,16 +75,10 @@ private:
 
     void configState();
 
-    // ログ出力
-    const char* createMessage(unsigned long currentTime, const String& currentDate, State state,
-                        double lat, double lng, double alt,
-                        int cds, double ax, double ay, double az,
-                        double gx, double gy, double gz, double mx, double my, double mz,
-                        double roll, double pitch, double heading, int voltage);
-
     // CSVファイル
     const String CSV_HEADER = "time,date,mode,lat,lng,alt,distance,direction,mr_pwm,ml_pwm,mOutputTime,cds,ax,ay,az,gx,gy,gz,mx,my,mz,roll,pitch,heading,voltage";
-    char _logBuffer[300];
+    char _sensorBuffer[SENSOR_BUFFER_SIZE];
+    size_t _head = 0;
 
     std::unique_ptr<ICansatState> _state;
     

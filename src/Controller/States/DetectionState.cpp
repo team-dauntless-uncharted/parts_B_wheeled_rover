@@ -43,10 +43,10 @@ void DetectionState::onUpdate() {
 			return;
 		}
 
-		if (!_ctx.getLogger().savePPMImage(_current_image_buffer, OUTPUT_WIDTH * OUTPUT_HEIGHT * 3)) {
-			_ctx.writeSystemLog("Failed to save resized image");
-			return;
-		}
+		// if (!_ctx.getLogger().savePPMImage(_current_image_buffer, OUTPUT_WIDTH * OUTPUT_HEIGHT * 3)) {
+		// 	_ctx.writeSystemLog("Failed to save resized image");
+		// 	return;
+		// }
 
 		if (!detectObjects()) {
 			_ctx.writeSystemLog("Failed to detect objects");

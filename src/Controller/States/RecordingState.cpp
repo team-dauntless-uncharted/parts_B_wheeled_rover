@@ -91,7 +91,13 @@ bool RecordingState::setRecordingMode() {
 
 void RecordingState::record(int time_ms) {
 	_ctx.writeSystemLog("Recording started");
-	_ctx.getLogger().aviInit(CAM_IMGSIZE_QVGA_H, CAM_IMGSIZE_QVGA_V);
+	
+	// 修正: aviInitの戻り値をチェック
+	if (!_ctx.getLogger().aviInit(CAM_IMGSIZE_QVGA_H, CAM_IMGSIZE_QVGA_V)) {
+		_ctx.writeSystemLog("AVI initialization failed");
+		return;
+	}
+	
 	_ctx.getLogger().aviStart();
 
 	uint32_t start_time = millis();
