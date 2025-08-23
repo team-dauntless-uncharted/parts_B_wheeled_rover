@@ -10,7 +10,13 @@ uint8_t *DetectionState::_current_image_buffer = nullptr;
 void DetectionState::onEnter() {
 	_ctx.writeSystemLog("Entering DetectionState");
 
-	if (!ei_init()) {
+	if (!setDetectionMode()) {
+		_ctx.writeSystemLog("Failed to set detection mode");
+	} else {
+		_ctx.writeSystemLog("Detection mode set");
+	}
+
+	if (!beginEdgeImpulse()) {
 		_ctx.writeSystemLog("Failed to initialize Edge Impulse");
 	}
 }
@@ -18,7 +24,7 @@ void DetectionState::onEnter() {
 void DetectionState::onUpdate() {
 	_ctx.getSerialWriter().log("Updating DetectionState");
 
-	if (_ei_initialized) {
+	if (_isInitEdgeImpulse) {
 		// 画像を撮影する
     	void* imgBuff = nullptr;
     	size_t imgSize = 0;
@@ -78,13 +84,43 @@ void DetectionState::onUpdate() {
 
 void DetectionState::onExit() {
 	_ctx.writeSystemLog("Exiting DetectionState");
+	if (_isInitEdgeImpulse) {
+		endEdgeImpulse();
+	}
+
+	if (_isInitCamera) {
+		endDetectionMode();
+	}
 }
 
 State DetectionState::getState() const {
 	return State::DETECTION;
 }
 
-bool DetectionState::ei_init(void) {
+bool DetectionState::setDetectionMode() {
+	if (!_ctx.getCamera().begin(DETECTION_MODE)) {
+		_ctx.writeSystemLog("Camera DETECTION MODE init failed");
+		return false;
+	} else {
+		_ctx.writeSystemLog("Camera DETECTION MODE init succeeded");
+	}
+
+	if (!_ctx.getCamera().startStreaming(true)) {
+		_ctx.writeSystemLog("Failed to start streaming");
+		return false;
+	} else {
+		_ctx.writeSystemLog("Streaming started");
+	}
+
+	_isInitCamera = true;
+	return true;
+}
+
+void DetectionState::endDetectionMode() {
+	_ctx.getCamera().end();
+}
+
+bool DetectionState::beginEdgeImpulse(void) {
 	_current_image_buffer = (uint8_t*)ei_malloc(EI_CAMERA_RAW_FRAME_BUFFER_COLS * EI_CAMERA_RAW_FRAME_BUFFER_ROWS * 3 + 32);
     _current_image_buffer = (uint8_t *)ALIGN_PTR((uintptr_t)_current_image_buffer, 32);
 
@@ -92,14 +128,14 @@ bool DetectionState::ei_init(void) {
 		return false;
 	}
 
-	_ei_initialized = true;
+	_isInitEdgeImpulse = true;
 	return true;
 }
 
-void DetectionState::ei_deinit(void) {
+void DetectionState::endEdgeImpulse(void) {
 	ei_free(_current_image_buffer);
 	_current_image_buffer = nullptr;
-	_ei_initialized = false;
+	_isInitEdgeImpulse = false;
 }
 
 bool DetectionState::convertYUV422ToRGB888(const uint8_t *yuv_buffer, size_t yuv_size) {

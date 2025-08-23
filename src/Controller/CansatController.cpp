@@ -67,19 +67,6 @@ void CansatController::begin(UserConfig config) {
         writeSystemLog("CansatController: IMU initialized successfully");
     }
     
-    // init camera
-    if (!_camera.begin(DETECTION_MODE)) {
-        writeSystemLog("CansatController: Camera initialization failed!");
-    } else {
-        writeSystemLog("CansatController: Camera initialized successfully");
-    }
-    
-    if (!_camera.startStreaming(true)) {
-        writeSystemLog("CansatController: Failed to start streaming");
-    } else {
-        writeSystemLog("CansatController: Streaming started");
-    }
-    
     _speaker.playStart();
 
     configState();

@@ -12,6 +12,12 @@ void RecordingState::onEnter() {
 		_ctx.getTwelite().begin(Serial2, 115200);
 		_ctx.setInitTwelite(true);
 	}
+
+	if (!setRecordingMode()) {
+		_ctx.writeSystemLog("Failed to set recording mode");
+	} else {
+		_ctx.writeSystemLog("Recording mode set");
+	}
 }
 
 void RecordingState::onUpdate() {
@@ -48,38 +54,40 @@ void RecordingState::onUpdate() {
 }
 
 void RecordingState::onExit() {
-	_instance = nullptr;
 	_ctx.writeSystemLog("Exiting RecordingState");
-	_ctx.getCamera().end();
+	if (_isInitCamera) {
+		endRecordingMode();
+	}
+	_instance = nullptr;
 }
 
 State RecordingState::getState() const {
 	return State::RECORDING;
 }
 
-void RecordingState::setRecordingMode() {
-	_ctx.getCamera().end();
-
-	delay(1000);
-	
+bool RecordingState::setRecordingMode() {
 	if (!_ctx.getCamera().begin(VIDEO_MODE)) {
 		_ctx.writeSystemLog("Camera VIDEO MODE init failed");
+		return false;
 	} else {
 		_ctx.writeSystemLog("Camera VIDEO MODE init succeeded");
 	}
 
-	_ctx.getLogger().aviInit(CAM_IMGSIZE_QVGA_H, CAM_IMGSIZE_QVGA_V);
 	if (!_ctx.getCamera().startStreaming(true, CamCB)) {
 		_ctx.writeSystemLog("Failed to start streaming");
+		return false;
 	} else {
 		_ctx.writeSystemLog("Streaming started");
 	}
-	_ctx.getLogger().aviStart();
+
+	_isInitCamera = true;
+	return true;
 }
 
 void RecordingState::record(int time_ms) {
 	_ctx.writeSystemLog("Recording started");
-	setRecordingMode();
+	_ctx.getLogger().aviInit(CAM_IMGSIZE_QVGA_H, CAM_IMGSIZE_QVGA_V);
+	_ctx.getLogger().aviStart();
 
 	uint32_t start_time = millis();
 
@@ -93,6 +101,10 @@ void RecordingState::record(int time_ms) {
 	_ctx.getLogger().aviEnd();
 	_ctx.getCamera().startStreaming(false);
 	_ctx.writeSystemLog("Recording finished");
+}
+
+void RecordingState::endRecordingMode() {
+	_ctx.getCamera().end();
 }
 
 void RecordingState::CamCB(CamImage img) {

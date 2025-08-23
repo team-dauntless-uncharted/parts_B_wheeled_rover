@@ -5,8 +5,11 @@
 void ExploreState::onEnter() {
 	_ctx.writeSystemLog("Entering ExploreState");
 
-	_ctx.getCamera().begin(EXPLORE_MODE);
-	_ctx.getCamera().startStreaming(true);
+	if (!setExploreMode()) {
+		_ctx.writeSystemLog("Failed to set explore mode");
+	} else {
+		_ctx.writeSystemLog("Explore mode set");
+	}
 }
 
 void ExploreState::onUpdate() {
@@ -59,8 +62,34 @@ void ExploreState::onUpdate() {
 
 void ExploreState::onExit() {
 	_ctx.writeSystemLog("Exiting ExploreState");
+	if (_isInitCamera) {
+		endExploreMode();
+	}
 }
 
 State ExploreState::getState() const {
 	return State::EXPLORE;
+}
+
+bool ExploreState::setExploreMode() {
+	if (!_ctx.getCamera().begin(EXPLORE_MODE)) {
+		_ctx.writeSystemLog("Camera EXPLORE MODE init failed");
+		return false;
+	} else {
+		_ctx.writeSystemLog("Camera EXPLORE MODE init succeeded");
+	}
+
+	if (!_ctx.getCamera().startStreaming(true)) {
+		_ctx.writeSystemLog("Failed to start streaming");
+		return false;
+	} else {
+		_ctx.writeSystemLog("Streaming started");
+	}
+
+	_isInitCamera = true;
+	return true;
+}
+
+void ExploreState::endExploreMode() {
+	_ctx.getCamera().end();
 }

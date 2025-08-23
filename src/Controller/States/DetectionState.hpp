@@ -35,14 +35,18 @@ public:
 
 private:
 	CansatController& _ctx;
-	bool _ei_initialized = false;
+	bool _isInitCamera = false;
+	bool _isInitEdgeImpulse = false;
 	DetectionResult _result;
+
+	bool setDetectionMode();
+	void endDetectionMode();
 
 	static uint8_t *_current_image_buffer;
 	static int get_image_data(size_t offset, size_t length, float *out_ptr);
 
-	bool ei_init(void);
-	void ei_deinit(void);
+	bool beginEdgeImpulse(void);
+	void endEdgeImpulse(void);
 	
 	bool convertYUV422ToRGB888(const uint8_t *yuv_buffer, size_t yuv_size);
 	bool resizeImage(void);
