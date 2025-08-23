@@ -154,3 +154,38 @@ void Logger::aviEnd() {
     _avi.endRecording();
     _avi.end();
 }
+
+bool Logger::readState(int &state) {
+    File stateFile = _sd.open("/state.txt", FILE_READ);
+    if (!stateFile) {
+        return false;
+    }
+    
+    String stateStr = stateFile.readString();
+    stateFile.close();
+    
+    state = stateStr.toInt();
+    return true;
+}
+
+bool Logger::writeState(const int &state) {
+    // ファイルを読み書き両用で開く
+    File stateFile = _sd.open("/state.txt", FILE_WRITE);
+    if (!stateFile) {
+        return false;
+    }
+    
+    // ファイルポジションを先頭に設定
+    stateFile.seek(0);
+    
+    // ファイルにintを書き込み
+    if (stateFile.write((uint8_t*)&state, sizeof(state)) != sizeof(state)) {
+        stateFile.close();
+        return false;
+    }
+    
+    // ファイルサイズを現在のポジションに切り詰め
+    stateFile.flush();
+    stateFile.close();
+    return true;
+}

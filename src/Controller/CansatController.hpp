@@ -69,8 +69,9 @@ public:
 private:
     UserConfig _config;
 
-    // ログ出力
+    void configState();
 
+    // ログ出力
     const char* createMessage(unsigned long currentTime, const String& currentDate, State state,
                         double lat, double lng, double alt,
                         int cds, double ax, double ay, double az,

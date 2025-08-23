@@ -1,6 +1,15 @@
 #include <Arduino.h>
 #include "Controller/CansatController.hpp"
+
 #include "Controller/States/CalibrationState.hpp"
+#include "Controller/States/StandbyState.hpp"
+#include "Controller/States/LaunchState.hpp"
+#include "Controller/States/DropState.hpp"
+#include "Controller/States/EscapeState.hpp"
+#include "Controller/States/DetectionState.hpp"
+#include "Controller/States/RecordingState.hpp"
+#include "Controller/States/ExploreState.hpp"
+#include "Controller/States/HelpingState.hpp"
 
 CansatController::CansatController()
     : _altFlag(false), _timeFlag(false), _cdsFlag(false), _accFlag(false),
@@ -73,7 +82,7 @@ void CansatController::begin(UserConfig config) {
     
     _speaker.playStart();
 
-    changeState(std::make_unique<CalibrationState>(*this));
+    configState();
 }
 
 void CansatController::update() {
@@ -89,6 +98,55 @@ void CansatController::changeState(std::unique_ptr<ICansatState> newState) {
     if (_state) _state->onExit();
     _state = std::move(newState);
     if (_state) _state->onEnter();
+}
+
+void CansatController::configState() {
+    State state;
+    if (!_logger.readState((int&)state)) {
+        // Flash
+    }
+
+    switch (state) {
+    case State::CALIBRATION:
+        writeSystemLog("config CalibrationState");
+        changeState(std::make_unique<CalibrationState>(*this));
+        break;
+    case State::STANDBY:
+        writeSystemLog("config StandbyState");
+        changeState(std::make_unique<StandbyState>(*this));
+        break;
+    case State::LAUNCH:
+        writeSystemLog("config LaunchState");
+        changeState(std::make_unique<LaunchState>(*this));
+        break;
+    case State::DROP:
+        writeSystemLog("config DropState");
+        changeState(std::make_unique<DropState>(*this));
+        break;
+    case State::ESCAPE:
+        writeSystemLog("config EscapeState");
+        changeState(std::make_unique<EscapeState>(*this));
+        break;
+    case State::DETECTION:
+        writeSystemLog("config DetectionState");
+        changeState(std::make_unique<DetectionState>(*this));
+        break;
+    case State::RECORDING:
+        writeSystemLog("config RecordingState");
+        changeState(std::make_unique<RecordingState>(*this));
+        break;
+    case State::EXPLORE:
+        writeSystemLog("config ExploreState");
+        changeState(std::make_unique<ExploreState>(*this));
+        break;
+    case State::HELPING:
+        writeSystemLog("config HelpingState");
+        changeState(std::make_unique<HelpingState>(*this));
+        break;
+    default:
+        writeSystemLog("Unknown state");
+        break;
+    }
 }
 
 // ログの作成
