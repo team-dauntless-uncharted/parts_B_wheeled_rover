@@ -55,11 +55,13 @@ void CansatController::begin(UserConfig config) {
         writeSystemLog("CansatController: GNSS initialized successfully");
     }
 
-    // if (!_gnss.waitReceive()) {
-    //     writeSystemLog("CansatController: GNSS position fix failed!");
-    // } else {
-    //     writeSystemLog("CansatController: GNSS position fix succeeded");
-    // }
+#ifdef WAIT_GNSS_RECEIVE
+    if (!_gnss.waitReceive()) {
+        writeSystemLog("CansatController: GNSS position fix failed!");
+    } else {
+        writeSystemLog("CansatController: GNSS position fix succeeded");
+    }
+#endif
     
     if (!_imu.begin()) {
         writeSystemLog("CansatController: IMU initialization failed!");
