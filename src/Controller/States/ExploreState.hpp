@@ -12,9 +12,13 @@ public:
 
 private:
 	CansatController& _ctx;
+	bool _isInitCamera = false;
 
 	double _prevLatitude = 0.0;
 	double _prevLongitude = 0.0;
 	int _sameCount = 0;
 	const int SAME_LIMIT = 5;
+
+	bool setExploreMode();
+	void endExploreMode();
 };

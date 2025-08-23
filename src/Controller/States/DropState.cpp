@@ -6,7 +6,10 @@ void DropState::onEnter() {
   _ctx.writeSystemLog("Entering DropState");
 
   _ctx.writeSystemLog("CansatController: Twelite initialization started");
-  _ctx.getTwelite().begin(Serial2, 115200);
+  if (!_ctx.isInitTwelite()) {
+    _ctx.getTwelite().begin(Serial2, 115200);
+    _ctx.setInitTwelite(true);
+  }
 
   _startTime = millis();
 }
@@ -35,6 +38,11 @@ void DropState::onUpdate() {
 
 void DropState::onExit() {
   _ctx.writeSystemLog("Exiting DropState");
+
+  if (!_ctx.getLogger().writeState(State::ESCAPE)) {
+		_ctx.writeSystemLog("Failed to write state");
+		// Flash
+	}
 }
 
 State DropState::getState() const {

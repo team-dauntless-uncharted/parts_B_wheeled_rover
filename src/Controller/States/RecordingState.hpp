@@ -15,9 +15,11 @@ public:
 
 private:
 	CansatController& _ctx;
+	bool _isInitCamera = false;
 	static RecordingState *_instance;
 
-	void setRecordingMode();
+	bool setRecordingMode();
 	void record(int time_ms);
+	void endRecordingMode();
 	void handleCameraImage(CamImage img);
 };

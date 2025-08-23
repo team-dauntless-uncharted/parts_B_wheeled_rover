@@ -24,6 +24,11 @@ void LaunchState::onUpdate() {
 
 void LaunchState::onExit() {
 	_ctx.writeSystemLog("Exiting LaunchState");
+
+	if (!_ctx.getLogger().writeState(State::DROP)) {
+		_ctx.writeSystemLog("Failed to write state");
+		// Flash
+	}
 }
 
 State LaunchState::getState() const {

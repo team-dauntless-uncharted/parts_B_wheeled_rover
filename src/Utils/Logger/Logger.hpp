@@ -26,6 +26,9 @@ public:
     void aviRecord(void* buff, size_t size);
     void aviEnd();
 
+    bool readState(int &state);
+    bool writeState(const int &state);
+
 private:
     SDClass _sd;
 

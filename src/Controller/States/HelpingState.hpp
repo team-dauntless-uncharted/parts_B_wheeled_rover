@@ -9,6 +9,7 @@ public:
 	void onUpdate() override;
 	void onExit() override;
 	State getState() const override;
+	void sendTurnSignal();
 
 private:
 	CansatController& _ctx;
