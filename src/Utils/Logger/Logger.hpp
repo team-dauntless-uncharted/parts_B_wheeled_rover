@@ -5,7 +5,7 @@
 #include <sys/stat.h>
 #include <cstdio>
 #include <cstring>
-#include "Avi.hpp"
+#include <PosixAvi.hpp>
 
 class Logger {
 public:
