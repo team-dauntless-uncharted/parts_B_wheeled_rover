@@ -18,6 +18,8 @@ void RecordingState::onEnter() {
 	} else {
 		_ctx.writeSystemLog("Recording mode set");
 	}
+
+	_startTime = millis();
 }
 
 void RecordingState::onUpdate() {
@@ -32,18 +34,18 @@ void RecordingState::onUpdate() {
 	);
 	_ctx.getTwelite().sendPacket(pkt);
 
-	unsigned long timeout_ms = millis();
-
 	while (true) {
 		if (_ctx.getTwelite().receivePacket(pkt)) {
 			if (twelite::TwelitePacket::match(pkt, twelite::A_PARTS, twelite::B_PARTS, twelite::ReadyForCaptureAck)) {
-				_ctx.writeSystemLog("ReadyForCaptureAck received");
+				_ctx.writeSystemLog("RecordingState: ReadyForCaptureAck received. Recording start");
 				break;
 			}
 		}
 
-		if ((millis() - timeout_ms) > 20000) {
-			_ctx.writeSystemLog("A Parts timeout");
+		unsigned long elapsedTime = millis() - _startTime;
+		_ctx.getSerialWriter().logf("Elapsed time: %lu", elapsedTime);
+		if (elapsedTime > _ctx.getUserConfig().recordingTimeoutThreshold) {
+			_ctx.writeSystemLog("RecordingState: Timeout. Recording start");
 			break;
 		}
 	}

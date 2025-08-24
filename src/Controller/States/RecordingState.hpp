@@ -15,6 +15,7 @@ public:
 
 private:
 	CansatController& _ctx;
+	unsigned long _startTime;
 	bool _isInitCamera = false;
 	static RecordingState *_instance;
 

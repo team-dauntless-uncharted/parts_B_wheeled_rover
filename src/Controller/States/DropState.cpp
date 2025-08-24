@@ -18,11 +18,9 @@ void DropState::onUpdate() {
 	_ctx.getSerialWriter().log("Updating DropState");
 
   unsigned long elapsedTime = millis() - _startTime;
-
   _ctx.getSerialWriter().logf("Elapsed time: %lu", elapsedTime);
-  
-  if (elapsedTime > _ctx.getUserConfig().dropStateTimeThreshold) {
-    _ctx.getSerialWriter().log("30sec elapsed");
+  if (elapsedTime > _ctx.getUserConfig().dropStateTimeoutThreshold) {
+    _ctx.writeSystemLog("DropState: Timeout. Change to EscapeState");
     _ctx.changeState(std::make_unique<EscapeState>(_ctx));
     return;
   }
@@ -30,8 +28,9 @@ void DropState::onUpdate() {
   twelite::Packet pkt;
   if (_ctx.getTwelite().receivePacket(pkt)) {
     if (twelite::TwelitePacket::match(pkt, twelite::C_PARTS, twelite::BROADCAST, twelite::DeployComplete)) {
-      _ctx.getSerialWriter().log("DeployComplete received");
+      _ctx.writeSystemLog("DropState: DeployComplete received. Change to EscapeState");
       _ctx.changeState(std::make_unique<EscapeState>(_ctx));
+      return;
     }
   }
 }

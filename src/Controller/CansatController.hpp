@@ -26,10 +26,15 @@ struct UserConfig {
     double goalLat;
     double goalLng;
 
-    double standbyStateAltThreshold;
-    long standbyStateTimeThreshold;
-    int launchStateCdsThreshold;
-    long dropStateTimeThreshold;
+    double standbyStateAltThreshold;            // STANDBYでの高度閾値
+    unsigned long standbyStateTimeoutThreshold; // STANDBYでのタイムアウト待ち時間
+    int launchStateCdsThreshold;                // LAUNCHでのCdS閾値
+    unsigned long launchStateTimeoutThreshold;  // LAUNCHでのタイムアウト待ち時間
+    unsigned long dropStateTimeoutThreshold;    // DROPでのタイムアウト待ち時間
+    double escapeStateDistanceThreshold;        // ESCAPEでの距離閾値(メートル)
+    unsigned long escapeStateTimeoutThreshold;  // ESCAPEでのタイムアウト待ち時間
+    int detectionMaxFailedCount;                // DETECTIONでの失敗上限回数
+    unsigned long recordingTimeoutThreshold;    // RECORDINGでのタイムアウト待ち時間
 };
 
 class CansatController {
@@ -61,18 +66,8 @@ public:
 #endif // USE_FLASH
     SerialWriter &getSerialWriter() { return _writer; }
     
-    void setAltFlag(bool altFlag) { _altFlag = altFlag; }
-    void setTimeFlag(bool timeFlag) { _timeFlag = timeFlag; }
-    void setCdsFlag(bool cdsFlag) { _cdsFlag = cdsFlag; }
-    void setAccFlag(bool accFlag) { _accFlag = accFlag; }
     void setInitTwelite(bool initTwelite) { _initTwelite = initTwelite; }
-
-    bool getAltFlag() { return _altFlag; }
-    bool getTimeFlag() { return _timeFlag; }
-    bool getCdsFlag() { return _cdsFlag; }
-    bool getAccFlag() { return _accFlag; }
     bool isInitTwelite() { return _initTwelite; }
-
     UserConfig getUserConfig() { return _config; }
     
     void appendSensorLog();
@@ -89,12 +84,6 @@ private:
 
     std::unique_ptr<ICansatState> _state;
     
-    // 状態管理用メンバ変数
-    bool _altFlag = false;
-    bool _timeFlag = false;
-    bool _cdsFlag = false;
-    bool _accFlag = false;
-
     bool _initTwelite = false;
     
     // センサ

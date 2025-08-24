@@ -80,6 +80,13 @@ void DetectionState::onUpdate() {
 			_ctx.getMotor().stop();
 		}
 	}
+
+	_failedCount++;
+	if (_failedCount >= _ctx.getUserConfig().detectionMaxFailedCount) {
+		_ctx.writeSystemLog("DetectionState: Failed too many times. Change to RecordingState");
+		_ctx.changeState(std::make_unique<RecordingState>(_ctx));
+		return;
+	}
 }
 
 void DetectionState::onExit() {

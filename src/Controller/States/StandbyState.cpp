@@ -12,21 +12,15 @@ void StandbyState::onUpdate() {
 	_ctx.getSerialWriter().log("Updating StandbyState");
 
 	if (_ctx.getGnss().getAltitude() > _ctx.getUserConfig().standbyStateAltThreshold) {
-		_ctx.setAltFlag(true);
-		_ctx.writeSystemLog("above a certain altitude");
+		_ctx.writeSystemLog("StandbyState: Above an altitude. Change to LaunchState");
+		_ctx.changeState(std::make_unique<LaunchState>(_ctx));
+		return;
 	}
 
     long elapsedTime = millis() - _startTime;
-    if (elapsedTime > _ctx.getUserConfig().standbyStateTimeThreshold) {
-		_ctx.setTimeFlag(true);
-		_ctx.writeSystemLog("above a certain time");
-		_ctx.changeState(std::make_unique<LaunchState>(_ctx));
-		return;
-    }
-
-    // 高度または時間の条件を満たしたらモード変更
-    if (_ctx.getAltFlag() || _ctx.getTimeFlag()) {
-		_ctx.writeSystemLog("Changing to LaunchState");
+	_ctx.getSerialWriter().logf("Elapsed time: %lu", elapsedTime);
+    if (elapsedTime > _ctx.getUserConfig().standbyStateTimeoutThreshold) {
+		_ctx.writeSystemLog("StandbyState: Timeout. Change to LaunchState");
 		_ctx.changeState(std::make_unique<LaunchState>(_ctx));
 		return;
     }

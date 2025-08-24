@@ -35,6 +35,7 @@ public:
 
 private:
 	CansatController& _ctx;
+	int _failedCount = 0;
 	bool _isInitCamera = false;
 	bool _isInitEdgeImpulse = false;
 	DetectionResult _result;

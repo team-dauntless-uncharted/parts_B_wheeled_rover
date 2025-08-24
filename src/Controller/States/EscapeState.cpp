@@ -9,10 +9,20 @@ void EscapeState::onEnter() {
 
 	_startLatitude = _ctx.getGnss().getLatitude();
 	_startLongitude = _ctx.getGnss().getLongitude();
+
+	_startTime = millis();
 }
 
 void EscapeState::onUpdate() {
 	_ctx.getSerialWriter().log("Updating EscapeState");
+
+	unsigned long elapsedTime = millis() - _startTime;
+	_ctx.getSerialWriter().logf("Elapsed time: %lu", elapsedTime);
+	if (elapsedTime > _ctx.getUserConfig().escapeStateTimeoutThreshold) {
+		_ctx.writeSystemLog("EscapeState: Timeout. Change to DetectionState");
+		_ctx.changeState(std::make_unique<DetectionState>(_ctx));
+		return;
+	}
 
 	pulseForward(150, 5);
 	rockingEscape(150, 3);
@@ -23,8 +33,8 @@ void EscapeState::onUpdate() {
 
 	double distance = GeoUtils::haversineDistance(_startLatitude, _startLongitude, latitude, longitude);
 
-	if (distance >= 0.5) {
-		_ctx.writeSystemLog("Change to DetectionState");
+	if (distance >= _ctx.getUserConfig().escapeStateDistanceThreshold) {
+		_ctx.writeSystemLog("EscapeState: Escaped. Change to DetectionState");
 		_ctx.changeState(std::make_unique<DetectionState>(_ctx));
 		return;
 	}
