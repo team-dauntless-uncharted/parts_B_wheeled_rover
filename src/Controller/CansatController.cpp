@@ -48,6 +48,7 @@ void CansatController::begin(UserConfig config) {
     _sdLogger.appendSystemLog("CansatController: begin() started");
 
     _power.begin();
+    writeSystemLog(_power.getBootCause());
 
     if (!_gnss.begin()) {
         writeSystemLog("CansatController: GNSS initialization failed!");

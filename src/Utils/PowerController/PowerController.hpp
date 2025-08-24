@@ -9,4 +9,6 @@ public:
 	void begin();
 
 	int getVoltage();
+
+	const char *getBootCause();
 };
