@@ -5,27 +5,36 @@
 #include "spresense_fomo_inferencing.h"
 #include <edge-impulse-sdk/dsp/image/image.hpp>
 
+uint8_t *DetectionState::_image_buffer_base = nullptr;
 uint8_t *DetectionState::_current_image_buffer = nullptr;
 
 void DetectionState::onEnter() {
 	_ctx.writeSystemLog("Entering DetectionState");
 
-	_ctx.getSpeaker().playState((int)State::DETECTION);
+	// _ctx.getSpeaker().playState((int)State::DETECTION);
 	_ctx.setLed((int)State::DETECTION);
 
 	if (!setDetectionMode()) {
 		_ctx.writeSystemLog("Failed to set detection mode");
 	} else {
 		_ctx.writeSystemLog("Detection mode set");
-	}
-
-	if (!beginEdgeImpulse()) {
-		_ctx.writeSystemLog("Failed to initialize Edge Impulse");
+		if (!beginEdgeImpulse()) {
+			_ctx.writeSystemLog("Failed to initialize Edge Impulse");
+		} else {
+			_ctx.writeSystemLog("Succeed to initialize Edge Impulse");
+		}
 	}
 }
 
 void DetectionState::onUpdate() {
 	_ctx.getSerialWriter().log("Updating DetectionState");
+
+	_failedCount++;
+	if (_failedCount >= _ctx.getUserConfig().detectionMaxFailedCount) {
+		_ctx.writeSystemLog("Failed too many times. Change to RecordingState");
+		_ctx.changeState(std::make_unique<RecordingState>(_ctx));
+		return;
+	}
 
 	if (_isInitEdgeImpulse) {
 		// 画像を撮影する
@@ -83,13 +92,6 @@ void DetectionState::onUpdate() {
 	// 		_ctx.getMotor().stop();
 	// 	}
 	}
-
-	_failedCount++;
-	if (_failedCount >= _ctx.getUserConfig().detectionMaxFailedCount) {
-		_ctx.writeSystemLog("Failed too many times. Change to RecordingState");
-		_ctx.changeState(std::make_unique<RecordingState>(_ctx));
-		return;
-	}
 }
 
 void DetectionState::onExit() {
@@ -132,22 +134,25 @@ bool DetectionState::setDetectionMode() {
 
 void DetectionState::endDetectionMode() {
 	_ctx.getCamera().end();
+	_isInitCamera = false;
 }
 
 bool DetectionState::beginEdgeImpulse(void) {
-	_current_image_buffer = (uint8_t*)ei_malloc(EI_CAMERA_RAW_FRAME_BUFFER_COLS * EI_CAMERA_RAW_FRAME_BUFFER_ROWS * 3 + 32);
-    _current_image_buffer = (uint8_t *)ALIGN_PTR((uintptr_t)_current_image_buffer, 32);
-
-	if (_current_image_buffer == nullptr) {
+	_image_buffer_base = (uint8_t*)ei_malloc(EI_CAMERA_RAW_FRAME_BUFFER_COLS * EI_CAMERA_RAW_FRAME_BUFFER_ROWS * 3 + 32);
+	if (_image_buffer_base == nullptr) {
 		return false;
 	}
+    _current_image_buffer = (uint8_t *)ALIGN_PTR((uintptr_t)_image_buffer_base, 32);
 
 	_isInitEdgeImpulse = true;
 	return true;
 }
 
 void DetectionState::endEdgeImpulse(void) {
-	ei_free(_current_image_buffer);
+	if (_image_buffer_base) {
+		ei_free(_image_buffer_base);
+	}
+	_image_buffer_base = nullptr;
 	_current_image_buffer = nullptr;
 	_isInitEdgeImpulse = false;
 }

@@ -7,13 +7,14 @@
 void EscapeState::onEnter() {
 	_ctx.writeSystemLog("Entering EscapeState");
 
-	_ctx.getSpeaker().playState((int)State::ESCAPE);
+	// _ctx.getSpeaker().playState((int)State::ESCAPE);
 	_ctx.setLed((int)State::ESCAPE);
 
 	_startLatitude = _ctx.getGnss().getLatitude();
 	_startLongitude = _ctx.getGnss().getLongitude();
 
 	_startTime = millis();
+	_count = 0;
 }
 
 void EscapeState::onUpdate() {
@@ -27,9 +28,14 @@ void EscapeState::onUpdate() {
 		return;
 	}
 
-	pulseForward(150, 5);
-	rockingEscape(150, 3);
-	phaseEscape(150, 3);
+	if (_count % 3 == 0) {
+		pulseForward(100, 3);
+	} else if (_count % 3 == 1) {
+		rockingEscape(100, 3);
+	} else {
+		phaseEscape(100, 3);
+	}
+	_count++;
 
 	double latitude = _ctx.getGnss().getLatitude();
 	double longitude = _ctx.getGnss().getLongitude();

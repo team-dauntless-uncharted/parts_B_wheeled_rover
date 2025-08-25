@@ -5,7 +5,7 @@
 void HelpingState::onEnter() {
 	_ctx.writeSystemLog("Entering HelpingState");
 
-	_ctx.getSpeaker().playState((int)State::HELPING);
+	// _ctx.getSpeaker().playState((int)State::HELPING);
 	_ctx.setLed((int)State::HELPING);
 
 	if (!_ctx.isInitTwelite()) {
