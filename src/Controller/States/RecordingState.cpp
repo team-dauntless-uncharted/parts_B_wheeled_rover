@@ -8,7 +8,7 @@ void RecordingState::onEnter() {
 	_instance = this;
 	_ctx.writeSystemLog("Entering RecordingState");
 
-	_ctx.getSpeaker().playState((int)State::RECORDING);
+	// _ctx.getSpeaker().playState((int)State::RECORDING);
 	_ctx.setLed((int)State::RECORDING);
 
 	if (!_ctx.isInitTwelite()) {

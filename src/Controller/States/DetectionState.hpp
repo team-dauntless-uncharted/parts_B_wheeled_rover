@@ -43,6 +43,7 @@ private:
 	bool setDetectionMode();
 	void endDetectionMode();
 
+	static uint8_t *_image_buffer_base;
 	static uint8_t *_current_image_buffer;
 	static int get_image_data(size_t offset, size_t length, float *out_ptr);
 

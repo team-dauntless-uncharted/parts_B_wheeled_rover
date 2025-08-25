@@ -15,8 +15,8 @@ void setup() {
     config.launchStateTimeoutThreshold = 20 * 60 * 1000;
     config.dropStateTimeoutThreshold = 10 * 60 * 1000;
     config.escapeStateDistanceThreshold = 0.5;
-    config.escapeStateTimeoutThreshold = 30 * 1000;
-    config.detectionMaxFailedCount = 50;
+    config.escapeStateTimeoutThreshold = 10 * 1000;
+    config.detectionMaxFailedCount = 25;
     config.recordingTimeoutThreshold = 5 * 60 * 1000;
 
     cansat.begin(config);
