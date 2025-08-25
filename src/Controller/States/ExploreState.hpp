@@ -19,6 +19,6 @@ private:
 	int _sameCount = 0;
 	const int SAME_LIMIT = 5;
 
-	bool setExploreMode();
-	void endExploreMode();
+	bool setPhotoMode();
+	void endPhotoMode();
 };

@@ -5,7 +5,7 @@
 void ExploreState::onEnter() {
 	_ctx.writeSystemLog("Entering ExploreState");
 
-	if (!setExploreMode()) {
+	if (!setPhotoMode()) {
 		_ctx.writeSystemLog("Failed to set explore mode");
 	} else {
 		_ctx.writeSystemLog("Explore mode set");
@@ -63,7 +63,7 @@ void ExploreState::onUpdate() {
 void ExploreState::onExit() {
 	_ctx.writeSystemLog("Exiting ExploreState");
 	if (_isInitCamera) {
-		endExploreMode();
+		endPhotoMode();
 	}
 
 	if (!_ctx.getSDLogger().writeState((int)State::HELPING)) {
@@ -81,8 +81,8 @@ State ExploreState::getState() const {
 	return State::EXPLORE;
 }
 
-bool ExploreState::setExploreMode() {
-	if (!_ctx.getCamera().begin(EXPLORE_MODE)) {
+bool ExploreState::setPhotoMode() {
+	if (!_ctx.getCamera().begin(PHOTO_MODE)) {
 		return false;
 	}
 
@@ -94,6 +94,6 @@ bool ExploreState::setExploreMode() {
 	return true;
 }
 
-void ExploreState::endExploreMode() {
+void ExploreState::endPhotoMode() {
 	_ctx.getCamera().end();
 }
