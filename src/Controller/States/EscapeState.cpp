@@ -7,6 +7,7 @@
 void EscapeState::onEnter() {
 	_ctx.writeSystemLog("Entering EscapeState");
 
+	_ctx.getSpeaker().playState((int)State::ESCAPE);
 	_ctx.setLed((int)State::ESCAPE);
 
 	_startLatitude = _ctx.getGnss().getLatitude();

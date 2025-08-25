@@ -5,6 +5,7 @@
 void CalibrationState::onEnter() {
 	_ctx.writeSystemLog("Entering CalibrationState");
 
+	_ctx.getSpeaker().playState((int)State::CALIBRATION);
 	_ctx.setLed((int)State::CALIBRATION);
 }
 

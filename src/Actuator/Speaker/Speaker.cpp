@@ -6,6 +6,19 @@ const float _start[] = { 261.63, 329.63, 392.00 }; // ド、ミ、ソ
 const float _error[] = { 440.00, 220.00 };       // ラ(高い)、ラ(低い)
 const float _bell[]  = { 880.00 };               // ラ(とても高い)
 
+// ビットごとに対応する周波数を割り当てる
+const float melodies[] = {
+    261.63, // CALIBRATION → ド
+    293.66, // STANDBY     → レ
+    329.63, // LAUNCH      → ミ
+    349.23, // DROP        → ファ
+    392.00, // ESCAPE      → ソ
+    440.00, // DETECTION   → ラ
+    493.88, // RECORDING   → シ
+    523.25, // EXPLORE     → ド（高い）
+    587.33  // HELPING     → レ（高い）
+};
+
 /**
  * @brief Speakerクラスのコンストラクタ
  * @param pin スピーカーが接続されているピン番号
@@ -47,4 +60,13 @@ void Speaker::_play(const float* melody, int notes, int noteDuration) {
         tone(_pin, (unsigned int)melody[i], noteDuration);
         delay(noteDuration + 50); // 音の長さ + 音の間の短い休止
     }
+}
+
+void Speaker::playState(const int state) {
+  for (int i = 0; i < (int)(sizeof(melodies)/sizeof(float)); i++) {
+    if (state & (1 << i)) {       // ビットが立っているものだけ鳴らす
+      tone(_pin, (unsigned int)melodies[i], 200);
+      delay(250); // 音＋休止
+    }
+  }
 }
