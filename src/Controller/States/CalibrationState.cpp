@@ -15,46 +15,47 @@ void CalibrationState::onEnter() {
 void CalibrationState::onUpdate() {
 	_ctx.getSerialWriter().log("Updating CalibrationState");
 
-	while (true) {
-		CalibrationStatus calib = _ctx.getBno055().getCalibrationStatus();
+	// while (true) {
+	// 	CalibrationStatus calib = _ctx.getBno055().getCalibrationStatus();
 
-		if (isFullyCalibrated(calib)) {
-			_ctx.writeSystemLog("Calibration finished. Change to StandbyState");
-			break;
-		}
+	// 	if (isFullyCalibrated(calib)) {
+	// 		_ctx.writeSystemLog("Calibration finished. Change to StandbyState");
+	// 		break;
+	// 	}
 
-		if (calib.mag < 3) {
-			_ctx.getLed(0).off();
-		} else {
-			_ctx.getLed(0).on();
-		}
+	// 	if (calib.mag < 3) {
+	// 		_ctx.getLed(0).off();
+	// 	} else {
+	// 		_ctx.getLed(0).on();
+	// 	}
 
-		if (calib.accel < 3) {
-			_ctx.getLed(1).off();
-		} else {
-			_ctx.getLed(1).on();
-		}
+	// 	if (calib.accel < 3) {
+	// 		_ctx.getLed(1).off();
+	// 	} else {
+	// 		_ctx.getLed(1).on();
+	// 	}
 
-		if (calib.gyro < 3) {
-			_ctx.getLed(2).off();
-		} else {
-			_ctx.getLed(2).on();
-		}
+	// 	if (calib.gyro < 3) {
+	// 		_ctx.getLed(2).off();
+	// 	} else {
+	// 		_ctx.getLed(2).on();
+	// 	}
 
-		if (calib.system < 3) {
-			_ctx.getLed(3).off();
-		} else {
-			_ctx.getLed(3).on();
-		}
+	// 	if (calib.system < 3) {
+	// 		_ctx.getLed(3).off();
+	// 	} else {
+	// 		_ctx.getLed(3).on();
+	// 	}
 
-		long elapsedTime = millis() - _startTime;
-		_ctx.getSerialWriter().logf("Elapsed time: %lu", elapsedTime);
-    	if (elapsedTime > _ctx.getUserConfig().calibrationStateTimeoutThreshold) {
-			_ctx.writeSystemLog("Timeout. Change to StandbyState");
-			break;
-    	}
-	}
+	// 	long elapsedTime = millis() - _startTime;
+	// 	_ctx.getSerialWriter().logf("Elapsed time: %lu", elapsedTime);
+    // 	if (elapsedTime > _ctx.getUserConfig().calibrationStateTimeoutThreshold) {
+	// 		_ctx.writeSystemLog("Timeout. Change to StandbyState");
+	// 		break;
+    // 	}
+	// }
 
+	_ctx.writeSystemLog("Change to StandbyState");
 	_ctx.changeState(std::make_unique<StandbyState>(_ctx));
 }
 

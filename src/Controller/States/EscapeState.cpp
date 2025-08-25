@@ -32,11 +32,11 @@ void EscapeState::onUpdate() {
 	}
 
 	if (_count % 3 == 0) {
-		pulseForward(100, 3);
+		pulseForward(150, 3);
 	} else if (_count % 3 == 1) {
-		rockingEscape(100, 3);
+		rockingEscape(150, 3);
 	} else {
-		phaseEscape(100, 3);
+		phaseEscape(150, 3);
 	}
 	_count++;
 

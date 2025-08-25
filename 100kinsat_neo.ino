@@ -12,7 +12,7 @@ void setup() {
     config.standbyStateAltThreshold = 20;
     config.standbyStateTimeoutThreshold = 5 * 60 * 1000;
     config.launchStateCdsThreshold = 400;
-    config.launchStateTimeoutThreshold = 20 * 60 * 1000;
+    config.launchStateTimeoutThreshold = 10 * 60 * 1000;
     config.dropStateTimeoutThreshold = 10 * 60 * 1000;
     config.escapeStateDistanceThreshold = 0.5;
     config.escapeStateTimeoutThreshold = 10 * 1000;
