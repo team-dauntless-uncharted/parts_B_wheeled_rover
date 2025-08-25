@@ -9,9 +9,9 @@ void DropState::onEnter() {
   _ctx.setLed((int)State::DROP);
 
   _ctx.writeSystemLog("CansatController: Twelite initialization started");
-  if (!_ctx.isInitTwelite()) {
-    _ctx.getTwelite().begin(Serial2, 115200);
-    _ctx.setInitTwelite(true);
+  if (!_ctx.isConnectTwelite()) {
+    _ctx.getTwelite().on();
+    _ctx.setIsConnectTwelite(true);
   }
 
   _startTime = millis();

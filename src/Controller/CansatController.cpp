@@ -21,7 +21,7 @@ CansatController::CansatController()
       _led{Led(LED0), Led(LED1), Led(LED2), Led(LED3)},
       _speaker(9),
       _heater(6),
-      _twelite(),
+      _twelite(11),
       _sdLogger(),
       _camera(),
       _power()
@@ -38,6 +38,10 @@ void CansatController::begin(UserConfig config) {
 
     _writer.begin();
     _writer.log("CansatController: Starting begin()");
+
+    _twelite.begin(Serial2, 115200);
+    _twelite.off();
+    setIsConnectTwelite(false);
     
     if (!_sdLogger.begin(CSV_HEADER)) {
         _writer.log("CansatController: SD Logger initialization failed!");

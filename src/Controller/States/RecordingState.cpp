@@ -11,10 +11,10 @@ void RecordingState::onEnter() {
 	// _ctx.getSpeaker().playState((int)State::RECORDING);
 	_ctx.setLed((int)State::RECORDING);
 
-	if (!_ctx.isInitTwelite()) {
-		_ctx.getTwelite().begin(Serial2, 115200);
-		_ctx.setInitTwelite(true);
-	}
+  	if (!_ctx.isConnectTwelite()) {
+    	_ctx.getTwelite().on();
+    	_ctx.setIsConnectTwelite(true);
+  	}
 
 	if (!setRecordingMode()) {
 		_ctx.writeSystemLog("Failed to set recording mode");
