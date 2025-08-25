@@ -37,7 +37,7 @@ void ExploreState::onUpdate() {
         _ctx.getSerialWriter().log("Save taken picture to SD card...");
         _ctx.getSDLogger().saveJPEGImage(imgBuff, imgSize);
     } else {
-        _ctx.writeSystemLog("Failed to take picture");
+		_ctx.getSerialWriter().log("Failed to take picture");
     }
 
 	double latitude = _ctx.getGnss().getLatitude();
@@ -51,7 +51,7 @@ void ExploreState::onUpdate() {
 
 	if (_sameCount >= SAME_LIMIT) {
 		// HELPING_STATE
-		_ctx.writeSystemLog("Changing to HELPING_STATE");
+		_ctx.writeSystemLog("Can't Move. Changing to HELPING_STATE");
 		_ctx.changeState(std::make_unique<HelpingState>(_ctx));
 		return;
 	}
@@ -67,12 +67,12 @@ void ExploreState::onExit() {
 	}
 
 	if (!_ctx.getSDLogger().writeState((int)State::HELPING)) {
-		_ctx.writeSystemLog("Failed to write state");
+		_ctx.getSerialWriter().log("Failed to write state in SD");
 	}
 
 #ifdef USE_FLASH
 	if (!_ctx.getFlashIO().writeState((int)State::HELPING)) {
-		_ctx.writeSystemLog("Failed to write state");
+		_ctx.getSerialWriter().log("Failed to write state in Flash");
 	}
 #endif // USE_FLASH
 }
@@ -83,17 +83,11 @@ State ExploreState::getState() const {
 
 bool ExploreState::setExploreMode() {
 	if (!_ctx.getCamera().begin(EXPLORE_MODE)) {
-		_ctx.writeSystemLog("Camera EXPLORE MODE init failed");
 		return false;
-	} else {
-		_ctx.writeSystemLog("Camera EXPLORE MODE init succeeded");
 	}
 
 	if (!_ctx.getCamera().startStreaming(true)) {
-		_ctx.writeSystemLog("Failed to start streaming");
 		return false;
-	} else {
-		_ctx.writeSystemLog("Streaming started");
 	}
 
 	_isInitCamera = true;

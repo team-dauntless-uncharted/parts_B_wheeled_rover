@@ -19,7 +19,7 @@ void EscapeState::onUpdate() {
 	unsigned long elapsedTime = millis() - _startTime;
 	_ctx.getSerialWriter().logf("Elapsed time: %lu", elapsedTime);
 	if (elapsedTime > _ctx.getUserConfig().escapeStateTimeoutThreshold) {
-		_ctx.writeSystemLog("EscapeState: Timeout. Change to DetectionState");
+		_ctx.writeSystemLog("Timeout. Change to DetectionState");
 		_ctx.changeState(std::make_unique<DetectionState>(_ctx));
 		return;
 	}
@@ -34,7 +34,7 @@ void EscapeState::onUpdate() {
 	double distance = GeoUtils::haversineDistance(_startLatitude, _startLongitude, latitude, longitude);
 
 	if (distance >= _ctx.getUserConfig().escapeStateDistanceThreshold) {
-		_ctx.writeSystemLog("EscapeState: Escaped. Change to DetectionState");
+		_ctx.writeSystemLog("Escaped. Change to DetectionState");
 		_ctx.changeState(std::make_unique<DetectionState>(_ctx));
 		return;
 	}
@@ -44,12 +44,12 @@ void EscapeState::onExit() {
 	_ctx.writeSystemLog("Exiting EscapeState");
 
 	if (!_ctx.getSDLogger().writeState((int)State::DETECTION)) {
-		_ctx.writeSystemLog("Failed to write state");
+		_ctx.getSerialWriter().log("Failed to write state in SD");
 	}
 
 #ifdef USE_FLASH
 	if (!_ctx.getFlashIO().writeState((int)State::DETECTION)) {
-		_ctx.writeSystemLog("Failed to write state");
+		_ctx.getSerialWriter().log("Failed to write state in Flash");
 	}
 #endif // USE_FLASH
 }

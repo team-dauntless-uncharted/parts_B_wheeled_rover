@@ -20,7 +20,7 @@ void DropState::onUpdate() {
   unsigned long elapsedTime = millis() - _startTime;
   _ctx.getSerialWriter().logf("Elapsed time: %lu", elapsedTime);
   if (elapsedTime > _ctx.getUserConfig().dropStateTimeoutThreshold) {
-    _ctx.writeSystemLog("DropState: Timeout. Change to EscapeState");
+    _ctx.writeSystemLog("Timeout. Change to EscapeState");
     _ctx.changeState(std::make_unique<EscapeState>(_ctx));
     return;
   }
@@ -28,7 +28,7 @@ void DropState::onUpdate() {
   twelite::Packet pkt;
   if (_ctx.getTwelite().receivePacket(pkt)) {
     if (twelite::TwelitePacket::match(pkt, twelite::C_PARTS, twelite::BROADCAST, twelite::DeployComplete)) {
-      _ctx.writeSystemLog("DropState: DeployComplete received. Change to EscapeState");
+      _ctx.writeSystemLog("DeployComplete received. Change to EscapeState");
       _ctx.changeState(std::make_unique<EscapeState>(_ctx));
       return;
     }
@@ -39,12 +39,12 @@ void DropState::onExit() {
   _ctx.writeSystemLog("Exiting DropState");
 
   if (!_ctx.getSDLogger().writeState((int)State::ESCAPE)) {
-		_ctx.writeSystemLog("Failed to write state");
+		_ctx.getSerialWriter().log("Failed to write state in SD");
 	}
 
 #ifdef USE_FLASH
   if (!_ctx.getFlashIO().writeState((int)State::ESCAPE)) {
-    _ctx.writeSystemLog("Failed to write state");
+		_ctx.getSerialWriter().log("Failed to write state in Flash");
   }
 #endif // USE_FLASH
 }
