@@ -15,7 +15,7 @@ CansatController::CansatController()
     : _motorR_pins{8, 4, 5},
       _motorL_pins{7, 2, 3},
       _gnss(1000),
-      _imu(),
+      _bno055(),
       _cds(A0),
       _motor(_motorR_pins, _motorL_pins),
       _led{Led(LED0), Led(LED1), Led(LED2), Led(LED3)},
@@ -63,10 +63,10 @@ void CansatController::begin(UserConfig config) {
     }
 #endif
     
-    if (!_imu.begin()) {
-        writeSystemLog("CansatController: IMU initialization failed!");
+    if (!_bno055.begin()) {
+        writeSystemLog("CansatController: BNO055 initialization failed!");
     } else {
-        writeSystemLog("CansatController: IMU initialized successfully");
+        writeSystemLog("CansatController: BNO055 initialized successfully");
     }
 
     configState();
@@ -74,7 +74,10 @@ void CansatController::begin(UserConfig config) {
 
 void CansatController::update() {
     _gnss.update();
-    _imu.update();
+    _acceleration = _bno055.getAcceleration();
+    _gyro = _bno055.getGyroscope();
+    _magnetic = _bno055.getMagnetometer();
+    _euler = _bno055.getEulerAngles();
 
     appendSensorLog();
 
@@ -167,10 +170,10 @@ void CansatController::appendSensorLog() {
 
     int   cds  = _cds.read();
 
-    float ax = _imu.getAccX(),  ay = _imu.getAccY(),  az = _imu.getAccZ();
-    float gx = _imu.getGyroX(), gy = _imu.getGyroY(), gz = _imu.getGyroZ();
-    float mx = _imu.getMagX(),  my = _imu.getMagY(),  mz = _imu.getMagZ();
-    float roll = _imu.getRoll(), pitch = _imu.getPitch(), heading = _imu.getHeading();
+    float ax = _acceleration.x, ay = _acceleration.y, az = _acceleration.z;
+    float gx = _gyro.x, gy = _gyro.y, gz = _gyro.z;
+    float mx = _magnetic.x, my = _magnetic.y, mz = _magnetic.z;
+    float roll = _euler.roll, pitch = _euler.pitch, heading = _euler.heading;
 
     int voltage_mV = _power.getVoltage(); // フォーマットに合わせて型確認
 
