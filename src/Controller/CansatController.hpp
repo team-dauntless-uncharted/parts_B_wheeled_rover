@@ -76,6 +76,8 @@ public:
     
     void appendSensorLog();
 
+    void setLed(const int state);
+
 private:
     UserConfig _config;
 

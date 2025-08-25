@@ -18,7 +18,7 @@ CansatController::CansatController()
       _imu(),
       _cds(A0),
       _motor(_motorR_pins, _motorL_pins),
-      _led{Led(0), Led(1), Led(2), Led(3)},
+      _led{Led(LED0), Led(LED1), Led(LED2), Led(LED3)},
       _speaker(9),
       _heater(6),
       _twelite(),
@@ -206,4 +206,14 @@ void CansatController::appendSensorLog() {
     // 5) 追記
     memcpy(&_sensorBuffer[_head], line, (size_t)len);
     _head += (size_t)len;
+}
+
+void CansatController::setLed(const int state) {
+    for (int i = 0; i < 4; i++) {
+        if (state & (1 << i)) {
+            _led[i].on();
+        } else {
+            _led[i].off();
+        }
+    }
 }

@@ -5,6 +5,8 @@
 void ExploreState::onEnter() {
 	_ctx.writeSystemLog("Entering ExploreState");
 
+	_ctx.setLed((int)State::EXPLORE);
+
 	if (!setPhotoMode()) {
 		_ctx.writeSystemLog("Failed to set explore mode");
 	} else {

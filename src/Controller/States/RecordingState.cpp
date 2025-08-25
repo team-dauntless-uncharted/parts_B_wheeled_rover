@@ -8,6 +8,8 @@ void RecordingState::onEnter() {
 	_instance = this;
 	_ctx.writeSystemLog("Entering RecordingState");
 
+	_ctx.setLed((int)State::RECORDING);
+
 	if (!_ctx.isInitTwelite()) {
 		_ctx.getTwelite().begin(Serial2, 115200);
 		_ctx.setInitTwelite(true);
