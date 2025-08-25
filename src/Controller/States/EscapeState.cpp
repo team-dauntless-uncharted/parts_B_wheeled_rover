@@ -1,5 +1,6 @@
 #include "Controller/States/EscapeState.hpp"
-#include "Controller/States/DetectionState.hpp"
+#include "Controller/States/ExploreState.hpp"
+// #include "Controller/States/DetectionState.hpp"
 #include "Controller/CansatController.hpp"
 
 #include "Utils/GeoUtils/GeoUtils.hpp"
@@ -23,8 +24,10 @@ void EscapeState::onUpdate() {
 	unsigned long elapsedTime = millis() - _startTime;
 	_ctx.getSerialWriter().logf("Elapsed time: %lu", elapsedTime);
 	if (elapsedTime > _ctx.getUserConfig().escapeStateTimeoutThreshold) {
-		_ctx.writeSystemLog("Timeout. Change to DetectionState");
-		_ctx.changeState(std::make_unique<DetectionState>(_ctx));
+		// _ctx.writeSystemLog("Timeout. Change to DetectionState");
+		// _ctx.changeState(std::make_unique<DetectionState>(_ctx));
+		_ctx.writeSystemLog("Timeout. Change to ExploreState");
+		_ctx.changeState(std::make_unique<ExploreState>(_ctx));
 		return;
 	}
 
@@ -43,8 +46,10 @@ void EscapeState::onUpdate() {
 	double distance = GeoUtils::haversineDistance(_startLatitude, _startLongitude, latitude, longitude);
 
 	if (distance >= _ctx.getUserConfig().escapeStateDistanceThreshold) {
-		_ctx.writeSystemLog("Escaped. Change to DetectionState");
-		_ctx.changeState(std::make_unique<DetectionState>(_ctx));
+		// _ctx.writeSystemLog("Escaped. Change to DetectionState");
+		// _ctx.changeState(std::make_unique<DetectionState>(_ctx));
+		_ctx.writeSystemLog("Timeout. Change to ExploreState");
+		_ctx.changeState(std::make_unique<ExploreState>(_ctx));
 		return;
 	}
 }
