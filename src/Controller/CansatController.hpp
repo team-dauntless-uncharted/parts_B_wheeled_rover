@@ -51,6 +51,7 @@ public:
     ImuSensor &getImu() { return _imu; }
     CdSSensor &getCds() { return _cds; }
     CameraController &getCamera() { return _camera; }
+    PowerController &getPower() { return _power; }
 
     // アクチュエータアクセス
     Motor &getMotor() { return _motor; }
