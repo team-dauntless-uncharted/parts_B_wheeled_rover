@@ -9,9 +9,14 @@ void setup() {
     config.goalLat = 35.7487860;
     config.goalLng = 139.8070711;
     config.standbyStateAltThreshold = 20;
-    config.standbyStateTimeThreshold = 30000;
+    config.standbyStateTimeoutThreshold = 5 * 60 * 1000;
     config.launchStateCdsThreshold = 400;
-    config.dropStateTimeThreshold = 30000;
+    config.launchStateTimeoutThreshold = 20 * 60 * 1000;
+    config.dropStateTimeoutThreshold = 10 * 60 * 1000;
+    config.escapeStateDistanceThreshold = 0.5;
+    config.escapeStateTimeoutThreshold = 60 * 1000;
+    config.detectionMaxFailedCount = 50;
+    config.recordingTimeoutThreshold = 5 * 60 * 1000;
 
     cansat.begin(config);
     delay(2000);

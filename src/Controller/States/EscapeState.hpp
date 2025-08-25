@@ -12,6 +12,7 @@ public:
 
 private:
 	CansatController& _ctx;
+	unsigned long _startTime;
 
 	double _startLatitude;
 	double _startLongitude;

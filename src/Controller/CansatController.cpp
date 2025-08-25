@@ -12,8 +12,7 @@
 #include "Controller/States/HelpingState.hpp"
 
 CansatController::CansatController()
-    : _altFlag(false), _timeFlag(false), _cdsFlag(false), _accFlag(false),
-      _motorR_pins{8, 4, 5},
+    : _motorR_pins{8, 4, 5},
       _motorL_pins{7, 2, 3},
       _gnss(1000),
       _imu(),

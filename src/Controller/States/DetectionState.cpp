@@ -29,17 +29,17 @@ void DetectionState::onUpdate() {
     	void* imgBuff = nullptr;
     	size_t imgSize = 0;
     	if (!_ctx.getCamera().takePicture(&imgBuff, &imgSize)) {
-     	   _ctx.writeSystemLog("Failed to take picture");
+			_ctx.getSerialWriter().log("Failed to take picture");
 		   return;
 		}
 
 		if (!convertYUV422ToRGB888(imgBuff, imgSize)) {
-			_ctx.writeSystemLog("Failed to convert YUV422 to RGB888");
+			_ctx.getSerialWriter().log("Failed to convert YUV422 to RGB888");
 			return;
 		}
 
 		if (!resizeImage()) {
-			_ctx.writeSystemLog("Failed to resize image");
+			_ctx.getSerialWriter().log("Failed to resize image");
 			return;
 		}
 
@@ -49,16 +49,16 @@ void DetectionState::onUpdate() {
 		// }
 
 		if (!detectObjects()) {
-			_ctx.writeSystemLog("Failed to detect objects");
+			_ctx.getSerialWriter().log("Failed to detect objects");
 			return;
 		}
 
 		if (_result.has_detection) {
 			int x = _result.detected_objects[0].x;
-			_ctx.getSerialWriter().logf("100kinsat detected %f x=%d y=%d", _result.detected_objects[0].value, _result.detected_objects[0].x, _result.detected_objects[0].y);
+			_ctx.getSerialWriter().logf("A-parts detected %f x=%d y=%d", _result.detected_objects[0].value, _result.detected_objects[0].x, _result.detected_objects[0].y);
 
 		    if (x >= 43 && x <= 52) {
-				_ctx.writeSystemLog("Changing to RecordingState");
+				_ctx.writeSystemLog("A-parts detected. Changing to RecordingState");
 				_ctx.changeState(std::make_unique<RecordingState>(_ctx));
 				return;
 		    } else if (x >= 0 && x <= 42) {
@@ -80,6 +80,13 @@ void DetectionState::onUpdate() {
 			_ctx.getMotor().stop();
 		}
 	}
+
+	_failedCount++;
+	if (_failedCount >= _ctx.getUserConfig().detectionMaxFailedCount) {
+		_ctx.writeSystemLog("Failed too many times. Change to RecordingState");
+		_ctx.changeState(std::make_unique<RecordingState>(_ctx));
+		return;
+	}
 }
 
 void DetectionState::onExit() {
@@ -93,12 +100,12 @@ void DetectionState::onExit() {
 	}
 
 	if (!_ctx.getSDLogger().writeState((int)State::RECORDING)) {
-		_ctx.writeSystemLog("Failed to write state");
+		_ctx.getSerialWriter().log("Failed to write state in SD");
 	}
 
 #ifdef USE_FLASH
 	if (!_ctx.getFlashIO().writeState((int)State::RECORDING)) {
-		_ctx.writeSystemLog("Failed to write state");
+		_ctx.getSerialWriter().log("Failed to write state in Flash");
 	}
 #endif // USE_FLASH
 }
@@ -109,17 +116,11 @@ State DetectionState::getState() const {
 
 bool DetectionState::setDetectionMode() {
 	if (!_ctx.getCamera().begin(DETECTION_MODE)) {
-		_ctx.writeSystemLog("Camera DETECTION MODE init failed");
 		return false;
-	} else {
-		_ctx.writeSystemLog("Camera DETECTION MODE init succeeded");
 	}
 
 	if (!_ctx.getCamera().startStreaming(true)) {
-		_ctx.writeSystemLog("Failed to start streaming");
 		return false;
-	} else {
-		_ctx.writeSystemLog("Streaming started");
 	}
 
 	_isInitCamera = true;
@@ -187,7 +188,6 @@ bool DetectionState::detectObjects(void) {
 
 	EI_IMPULSE_ERROR err = run_classifier(&signal, &ei_result, false);
 	if (err != EI_IMPULSE_OK) {
-		_ctx.writeSystemLog("run_classifier failed");
 		return false;
 	}
 

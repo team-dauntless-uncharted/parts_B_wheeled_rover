@@ -18,6 +18,8 @@ void RecordingState::onEnter() {
 	} else {
 		_ctx.writeSystemLog("Recording mode set");
 	}
+
+	_startTime = millis();
 }
 
 void RecordingState::onUpdate() {
@@ -32,24 +34,24 @@ void RecordingState::onUpdate() {
 	);
 	_ctx.getTwelite().sendPacket(pkt);
 
-	unsigned long timeout_ms = millis();
-
 	while (true) {
 		if (_ctx.getTwelite().receivePacket(pkt)) {
 			if (twelite::TwelitePacket::match(pkt, twelite::A_PARTS, twelite::B_PARTS, twelite::ReadyForCaptureAck)) {
-				_ctx.writeSystemLog("ReadyForCaptureAck received");
+				_ctx.writeSystemLog("ReadyForCaptureAck received. Recording start");
 				break;
 			}
 		}
 
-		if ((millis() - timeout_ms) > 20000) {
-			_ctx.writeSystemLog("A Parts timeout");
+		unsigned long elapsedTime = millis() - _startTime;
+		_ctx.getSerialWriter().logf("Elapsed time: %lu", elapsedTime);
+		if (elapsedTime > _ctx.getUserConfig().recordingTimeoutThreshold) {
+			_ctx.writeSystemLog("Timeout. Recording start");
 			break;
 		}
 	}
 
 	record(10000);
-	_ctx.writeSystemLog("Changing to ExploreState");
+	_ctx.writeSystemLog("Finished recording. Changing to ExploreState");
 	_ctx.changeState(std::make_unique<ExploreState>(_ctx));
 }
 
@@ -60,12 +62,12 @@ void RecordingState::onExit() {
 	}
 
 	if (!_ctx.getSDLogger().writeState((int)State::EXPLORE)) {
-		_ctx.writeSystemLog("Failed to write state");
+		_ctx.getSerialWriter().log("Failed to write state in SD");
 	}
 
 #ifdef USE_FLASH
 	if (!_ctx.getFlashIO().writeState((int)State::EXPLORE)) {
-		_ctx.writeSystemLog("Failed to write state");
+		_ctx.getSerialWriter().log("Failed to write state in Flash");
 	}
 #endif // USE_FLASH
 
@@ -78,17 +80,11 @@ State RecordingState::getState() const {
 
 bool RecordingState::setRecordingMode() {
 	if (!_ctx.getCamera().begin(VIDEO_MODE)) {
-		_ctx.writeSystemLog("Camera VIDEO MODE init failed");
 		return false;
-	} else {
-		_ctx.writeSystemLog("Camera VIDEO MODE init succeeded");
 	}
 
 	if (!_ctx.getCamera().startStreaming(true, CamCB)) {
-		_ctx.writeSystemLog("Failed to start streaming");
 		return false;
-	} else {
-		_ctx.writeSystemLog("Streaming started");
 	}
 
 	_isInitCamera = true;
@@ -136,7 +132,5 @@ void RecordingState::handleCameraImage(CamImage img) {
 		size_t imgSize = img.getImgSize();
 
 		_ctx.getSDLogger().aviRecord(imgBuff, imgSize);
-	} else {
-		_ctx.writeSystemLog("Camera image is not available");
 	}
 }
