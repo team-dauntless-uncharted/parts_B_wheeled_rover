@@ -1,8 +1,8 @@
 #pragma once
 #include "Sensor/Gnss/GnssSensor.hpp"
-#include "Sensor/Imu/ImuSensor.hpp"
 #include "Sensor/CdS/CdSSensor.hpp"
 #include "Sensor/Camera/CameraController.hpp"
+#include <BNO055Library.h>
 
 #include "Actuator/Motor/Motor.hpp"
 #include "Actuator/Led/Led.hpp"
@@ -48,7 +48,7 @@ public:
 
     // センサアクセス
     GnssSensor &getGnss() { return _gnss; }
-    ImuSensor &getImu() { return _imu; }
+    BNO055 &getBno055() { return _bno055; }
     CdSSensor &getCds() { return _cds; }
     CameraController &getCamera() { return _camera; }
     PowerController &getPower() { return _power; }
@@ -96,7 +96,11 @@ private:
     
     // センサ
     GnssSensor _gnss;
-    ImuSensor _imu;
+    BNO055 _bno055;
+    Vector<float> _acceleration;
+    Vector<float> _gyro;
+    Vector<float> _magnetic;
+    EulerAngles _euler;
     CdSSensor _cds;
     CameraController _camera;
 

@@ -7,52 +7,38 @@ bool ImuSensor::begin() {
 }
 
 bool ImuSensor::update() {
-	sensors_event_t event;
+	sensors_event_t acc_event;
+	sensors_event_t gyro_event;
+	sensors_event_t mag_event;
+	sensors_event_t euler_event;
+
+	_bno.getEvent(&acc_event, Adafruit_BNO055::VECTOR_ACCELEROMETER);
+	_bno.getEvent(&gyro_event, Adafruit_BNO055::VECTOR_GYROSCOPE);
+	_bno.getEvent(&mag_event, Adafruit_BNO055::VECTOR_MAGNETOMETER);
+	_bno.getEvent(&euler_event, Adafruit_BNO055::VECTOR_EULER);
 
 	// 加速度
-	_bno.getEvent(&event, Adafruit_BNO055::VECTOR_ACCELEROMETER);
-	_accX = event.acceleration.x;
-	_accY = event.acceleration.y;
-	_accZ = event.acceleration.z;
-
-	// 加速度がすべて0ならメンバを0にしてfalseを返す
-    if (_accX == 0.0f && _accY == 0.0f && _accZ == 0.0f) {
-        resetAllValues();
-        return false;
-    }
+	_accX = acc_event.acceleration.x;
+	_accY = acc_event.acceleration.y;
+	_accZ = acc_event.acceleration.z;
 
 	// ジャイロ
-	_bno.getEvent(&event, Adafruit_BNO055::VECTOR_GYROSCOPE);
-	_gyroX = event.gyro.x;
-	_gyroY = event.gyro.y;
-	_gyroZ = event.gyro.z;
-
-	if (_gyroX == 0.0f && _gyroY == 0.0f && _gyroZ == 0.0f) {
-		resetAllValues();
-		return false;
-	}
+	_gyroX = gyro_event.gyro.x;
+	_gyroY = gyro_event.gyro.y;
+	_gyroZ = gyro_event.gyro.z;
 
 	// 磁力
-	_bno.getEvent(&event, Adafruit_BNO055::VECTOR_MAGNETOMETER);
-	_magX = event.magnetic.x;
-	_magY = event.magnetic.y;
-	_magZ = event.magnetic.z;
-
-	if (_magX == 0.0f && _magY == 0.0f && _magZ == 0.0f) {
-		resetAllValues();
-		return false;
-	}
+	_magX = mag_event.magnetic.x;
+	_magY = mag_event.magnetic.y;
+	_magZ = mag_event.magnetic.z;
 
 	// オイラー角
-	_bno.getEvent(&event, Adafruit_BNO055::VECTOR_EULER);
-	_heading = event.orientation.x;
-	_pitch   = event.orientation.y;
-	_roll    = event.orientation.z;
+	_heading = euler_event.orientation.x;
+	_pitch   = euler_event.orientation.y;
+	_roll    = euler_event.orientation.z;
 
-	if (_heading == 0.0f && _pitch == 0.0f && _roll == 0.0f) {
-		resetAllValues();
-		return false;
-	}
+	Serial.printf("%f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f\n",
+			_accX, _accY, _accZ, _gyroX, _gyroY, _gyroZ, _magX, _magY, _magZ, _heading, _roll, _pitch);
 
 	return true;
 }
@@ -103,19 +89,4 @@ float ImuSensor::getRoll() const {
 
 float ImuSensor::getPitch() const {
 	return _pitch;
-}
-
-void ImuSensor::resetAllValues() {
-	_accX = 0.0f;
-	_accY = 0.0f;
-	_accZ = 0.0f;
-	_gyroX = 0.0f;
-	_gyroY = 0.0f;
-	_gyroZ = 0.0f;
-	_magX = 0.0f;
-	_magY = 0.0f;
-	_magZ = 0.0f;
-	_heading = 0.0f;
-	_roll = 0.0f;
-	_pitch = 0.0f;
 }

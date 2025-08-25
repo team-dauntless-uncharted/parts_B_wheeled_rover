@@ -34,6 +34,4 @@ private:
 	float _heading;
 	float _roll;
 	float _pitch;
-
-	void resetAllValues();
 };

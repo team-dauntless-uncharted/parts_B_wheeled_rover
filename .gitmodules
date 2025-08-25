@@ -16,3 +16,6 @@
 [submodule "libraries/PosixAvi"]
 	path = libraries/PosixAvi
 	url = git@github.com:team-dauntless-uncharted/PosixAvi.git
+[submodule "libraries/BNO055Library"]
+	path = libraries/BNO055Library
+	url = git@github.com:team-dauntless-uncharted/BNO055Library.git
