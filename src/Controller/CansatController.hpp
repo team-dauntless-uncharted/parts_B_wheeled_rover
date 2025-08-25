@@ -26,6 +26,7 @@ struct UserConfig {
     double goalLat;
     double goalLng;
 
+    double calibrationStateTimeoutThreshold;    // CALIBRATIONでのタイムアウト待ち時間
     double standbyStateAltThreshold;            // STANDBYでの高度閾値
     unsigned long standbyStateTimeoutThreshold; // STANDBYでのタイムアウト待ち時間
     int launchStateCdsThreshold;                // LAUNCHでのCdS閾値

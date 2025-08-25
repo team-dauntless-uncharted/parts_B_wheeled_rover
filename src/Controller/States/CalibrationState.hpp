@@ -1,6 +1,8 @@
 #pragma once
 #include "Controller/ICansatState.hpp"
 
+#include <BNO055Library.h>
+
 class CalibrationState : public ICansatState {
 public:
 	CalibrationState(CansatController& ctx) : _ctx(ctx) {}
@@ -12,4 +14,7 @@ public:
 
 private:
 	CansatController& _ctx;
+	unsigned long _startTime;
+
+	bool isFullyCalibrated(CalibrationStatus calib);
 };
