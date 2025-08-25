@@ -10,6 +10,7 @@ uint8_t *DetectionState::_current_image_buffer = nullptr;
 void DetectionState::onEnter() {
 	_ctx.writeSystemLog("Entering DetectionState");
 
+	_ctx.getSpeaker().playState((int)State::DETECTION);
 	_ctx.setLed((int)State::DETECTION);
 
 	if (!setDetectionMode()) {

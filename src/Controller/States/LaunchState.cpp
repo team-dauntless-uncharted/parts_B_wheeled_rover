@@ -5,6 +5,7 @@
 void LaunchState::onEnter() {
 	_ctx.writeSystemLog("Entering LaunchState");
 
+	_ctx.getSpeaker().playState((int)State::LAUNCH);
 	_ctx.setLed((int)State::LAUNCH);
 
 	_startTime = millis();

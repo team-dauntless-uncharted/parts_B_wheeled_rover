@@ -7,6 +7,7 @@ public:
     void playStart();
     void playError();
     void playBeep();
+    void playState(const int state);
 
 private:
     void _play(const float* melody, int notes, int noteDuration);

@@ -5,6 +5,7 @@
 void DropState::onEnter() {
   _ctx.writeSystemLog("Entering DropState");
 
+	_ctx.getSpeaker().playState((int)State::DROP);
   _ctx.setLed((int)State::DROP);
 
   _ctx.writeSystemLog("CansatController: Twelite initialization started");

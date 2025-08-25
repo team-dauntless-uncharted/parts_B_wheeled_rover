@@ -5,6 +5,7 @@
 void ExploreState::onEnter() {
 	_ctx.writeSystemLog("Entering ExploreState");
 
+	_ctx.getSpeaker().playState((int)State::EXPLORE);
 	_ctx.setLed((int)State::EXPLORE);
 
 	if (!setPhotoMode()) {

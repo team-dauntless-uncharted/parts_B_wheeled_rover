@@ -68,8 +68,6 @@ void CansatController::begin(UserConfig config) {
     } else {
         writeSystemLog("CansatController: IMU initialized successfully");
     }
-    
-    _speaker.playStart();
 
     configState();
 }

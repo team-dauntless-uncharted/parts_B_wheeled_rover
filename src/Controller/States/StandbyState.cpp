@@ -5,6 +5,7 @@
 void StandbyState::onEnter() {
 	_ctx.writeSystemLog("Entering StandbyState");
 
+	_ctx.getSpeaker().playState((int)State::STANDBY);
 	_ctx.setLed((int)State::STANDBY);
 
 	_startTime = millis();
