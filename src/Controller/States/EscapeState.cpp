@@ -7,6 +7,8 @@
 void EscapeState::onEnter() {
 	_ctx.writeSystemLog("Entering EscapeState");
 
+	_ctx.setLed((int)State::ESCAPE);
+
 	_startLatitude = _ctx.getGnss().getLatitude();
 	_startLongitude = _ctx.getGnss().getLongitude();
 

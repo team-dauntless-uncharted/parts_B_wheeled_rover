@@ -5,11 +5,12 @@
 void HelpingState::onEnter() {
 	_ctx.writeSystemLog("Entering HelpingState");
 
+	_ctx.setLed((int)State::HELPING);
+
 	if (!_ctx.isInitTwelite()) {
     	_ctx.getTwelite().begin(Serial2, 115200);
     	_ctx.setInitTwelite(true);
   	}
-
 	sendTurnSignal();
 
 	_ctx.writeSystemLog("TurnSignal sent");

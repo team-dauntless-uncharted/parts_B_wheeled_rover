@@ -10,6 +10,8 @@ uint8_t *DetectionState::_current_image_buffer = nullptr;
 void DetectionState::onEnter() {
 	_ctx.writeSystemLog("Entering DetectionState");
 
+	_ctx.setLed((int)State::DETECTION);
+
 	if (!setDetectionMode()) {
 		_ctx.writeSystemLog("Failed to set detection mode");
 	} else {

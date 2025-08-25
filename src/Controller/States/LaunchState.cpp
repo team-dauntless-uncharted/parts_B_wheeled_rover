@@ -5,6 +5,8 @@
 void LaunchState::onEnter() {
 	_ctx.writeSystemLog("Entering LaunchState");
 
+	_ctx.setLed((int)State::LAUNCH);
+
 	_startTime = millis();
 }
 

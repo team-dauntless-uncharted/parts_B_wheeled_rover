@@ -5,6 +5,8 @@
 void StandbyState::onEnter() {
 	_ctx.writeSystemLog("Entering StandbyState");
 
+	_ctx.setLed((int)State::STANDBY);
+
 	_startTime = millis();
 }
 
