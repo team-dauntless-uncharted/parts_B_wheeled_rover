@@ -68,10 +68,10 @@ public:
 #endif // USE_FLASH
     SerialWriter &getSerialWriter() { return _writer; }
     
-    void setInitTwelite(bool initTwelite) { _initTwelite = initTwelite; }
+    void setIsConnectTwelite(bool isConnectTwelite) { _isConnectTwelite = isConnectTwelite; }
     void setInitCamera(bool initCamera) { _initCamera = initCamera; }
 
-    bool isInitTwelite() { return _initTwelite; }
+    bool isConnectTwelite() { return _isConnectTwelite; }
     bool isInitCamera() { return _initCamera; }
 
     UserConfig getUserConfig() { return _config; }
@@ -92,7 +92,7 @@ private:
 
     std::unique_ptr<ICansatState> _state;
     
-    bool _initTwelite = false;
+    bool _isConnectTwelite = false;
     bool _initCamera = false;
     
     // センサ
