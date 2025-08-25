@@ -9,7 +9,7 @@
 enum CameraMode {
     DETECTION_MODE = 0,
     VIDEO_MODE = 1,
-    EXPLORE_MODE = 2,
+    PHOTO_MODE = 2,
 };
 
 /**

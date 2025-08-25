@@ -67,7 +67,11 @@ public:
     SerialWriter &getSerialWriter() { return _writer; }
     
     void setInitTwelite(bool initTwelite) { _initTwelite = initTwelite; }
+    void setInitCamera(bool initCamera) { _initCamera = initCamera; }
+
     bool isInitTwelite() { return _initTwelite; }
+    bool isInitCamera() { return _initCamera; }
+
     UserConfig getUserConfig() { return _config; }
     
     void appendSensorLog();
@@ -85,6 +89,7 @@ private:
     std::unique_ptr<ICansatState> _state;
     
     bool _initTwelite = false;
+    bool _initCamera = false;
     
     // センサ
     GnssSensor _gnss;
