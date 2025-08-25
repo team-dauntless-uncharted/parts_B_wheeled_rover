@@ -34,14 +34,14 @@ private:
     void shiftFileName(char* fileNameBuf, size_t bufSize, const char* format, uint16_t& counter);
 
     // SystemLog
-    char _systemLogFileName[24];
+    char _systemLogFileName[32];
     uint16_t _systemLogFileNameCount = 0;
 
     void refreshSystemLogFileNameIndex();
     void shiftSystemLogFileName();
 
     // SensorLog
-    char _sensorLogFileName[24];
+    char _sensorLogFileName[32];
     uint16_t _sensorLogFileNameCount = 0;
 
     void refreshSensorLogFileNameIndex();
@@ -50,21 +50,21 @@ private:
     bool appendLog(const char* filename, const char* message);
 
     // JPEG
-    char _jpegFileName[24];
+    char _jpegFileName[32];
     uint16_t _jpegFileNameCount = 0;
 
     void refreshJPEGFileNameIndex();
     void shiftJPEGFileName();
 
     // PPM
-    char _ppmFileName[24];
+    char _ppmFileName[32];
     uint16_t _ppmFileNameCount = 0;
 
     void refreshPPMFileNameIndex();
     void shiftPPMFileName();
 
     // AVI
-    char _aviFileName[24];
+    char _aviFileName[32];
     uint16_t _aviFileNameCount = 0;
 
     void refreshAVIFileNameIndex();

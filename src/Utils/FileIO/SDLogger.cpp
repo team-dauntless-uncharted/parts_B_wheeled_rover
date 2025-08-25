@@ -140,11 +140,11 @@ void SDLogger::shiftFileName(char* fileNameBuf, size_t bufSize, const char* form
     snprintf(fileNameBuf, bufSize, format, counter++);
 }
 
-void SDLogger::refreshSystemLogFileNameIndex() { refreshFileNameIndex(_systemLogFileName, sizeof(_systemLogFileName), "/mnt/sd0/system_%02d.log", _systemLogFileNameCount); }
+void SDLogger::refreshSystemLogFileNameIndex() { refreshFileNameIndex(_systemLogFileName, sizeof(_systemLogFileName), "/mnt/sd0/system_%04d.log", _systemLogFileNameCount); }
 void SDLogger::shiftSystemLogFileName() { shiftFileName(_systemLogFileName, sizeof(_systemLogFileName), "/mnt/sd0/system_%03d.log", _systemLogFileNameCount); }
 
-void SDLogger::refreshSensorLogFileNameIndex() { refreshFileNameIndex(_sensorLogFileName, sizeof(_sensorLogFileName), "/mnt/sd0/sensor_%02d.csv", _sensorLogFileNameCount); }
-void SDLogger::shiftSensorLogFileName() { shiftFileName(_sensorLogFileName, sizeof(_sensorLogFileName), "/mnt/sd0/sensor_%03d.csv", _sensorLogFileNameCount); }
+void SDLogger::refreshSensorLogFileNameIndex() { refreshFileNameIndex(_sensorLogFileName, sizeof(_sensorLogFileName), "/mnt/sd0/sensor_%04d.csv", _sensorLogFileNameCount); }
+void SDLogger::shiftSensorLogFileName() { shiftFileName(_sensorLogFileName, sizeof(_sensorLogFileName), "/mnt/sd0/sensor_%04d.csv", _sensorLogFileNameCount); }
 
 void SDLogger::refreshJPEGFileNameIndex() { refreshFileNameIndex(_jpegFileName, sizeof(_jpegFileName), "/mnt/sd0/photo_%04d.jpg", _jpegFileNameCount); }
 void SDLogger::shiftJPEGFileName() { shiftFileName(_jpegFileName, sizeof(_jpegFileName), "/mnt/sd0/photo_%04d.jpg", _jpegFileNameCount); }
@@ -152,5 +152,5 @@ void SDLogger::shiftJPEGFileName() { shiftFileName(_jpegFileName, sizeof(_jpegFi
 void SDLogger::refreshPPMFileNameIndex() { refreshFileNameIndex(_ppmFileName, sizeof(_ppmFileName), "/mnt/sd0/detect_%04d.ppm", _ppmFileNameCount); }
 void SDLogger::shiftPPMFileName() { shiftFileName(_ppmFileName, sizeof(_ppmFileName), "/mnt/sd0/detect_%04d.ppm", _ppmFileNameCount); }
 
-void SDLogger::refreshAVIFileNameIndex() { refreshFileNameIndex(_aviFileName, sizeof(_aviFileName), "/mnt/sd0/video_%02d.avi", _aviFileNameCount); }
-void SDLogger::shiftAVIFileName() { shiftFileName(_aviFileName, sizeof(_aviFileName), "/mnt/sd0/video_%02d.avi", _aviFileNameCount); }
+void SDLogger::refreshAVIFileNameIndex() { refreshFileNameIndex(_aviFileName, sizeof(_aviFileName), "/mnt/sd0/video_%04d.avi", _aviFileNameCount); }
+void SDLogger::shiftAVIFileName() { shiftFileName(_aviFileName, sizeof(_aviFileName), "/mnt/sd0/video_%04d.avi", _aviFileNameCount); }
