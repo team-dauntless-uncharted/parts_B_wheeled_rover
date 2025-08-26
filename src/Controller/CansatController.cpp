@@ -1,4 +1,7 @@
+#define ARDUINOJSON_ENABLE_PROGMEM 0
+
 #include <Arduino.h>
+#include <ArduinoJson.h>
 #include "Controller/CansatController.hpp"
 
 #include "Controller/States/CalibrationState.hpp"
@@ -51,6 +54,9 @@ void CansatController::begin() {
     _power.begin();
     writeSystemLog(_power.getBootCause());
 
+    readConfigFile();   
+    dumpConfig();
+
     if (!_gnss.begin()) {
         writeSystemLog("CansatController: GNSS initialization failed!");
     } else {
@@ -90,6 +96,119 @@ void CansatController::changeState(std::unique_ptr<ICansatState> newState) {
     if (_state) _state->onExit();
     _state = std::move(newState);
     if (_state) _state->onEnter();
+}
+
+void CansatController::readConfigFile() {
+    char buffer[512];
+    size_t bytesRead = _sdLogger.readJSONFile("/mnt/sd0/config.json", buffer, sizeof(buffer));
+    
+    // ファイルが存在しない、または読み込み失敗の場合は何もしない
+    if (bytesRead == 0) {
+        return;
+    }
+    
+    DynamicJsonDocument doc(512);  // バッファサイズを大きめに設定
+    DeserializationError error = deserializeJson(doc, buffer);
+    
+    // JSONパースに失敗した場合は何もしない
+    if (error) {
+        return;
+    }
+    
+    // 各キーの存在をチェックしてから値を代入
+    
+    // Calibration設定
+    if (doc.containsKey("Calibration") && doc["Calibration"].containsKey("Timeout")) {
+        _config.calibrationStateTimeoutThreshold = doc["Calibration"]["Timeout"];
+    }
+    
+    // Standby設定
+    if (doc.containsKey("Standby")) {
+        if (doc["Standby"].containsKey("Alt")) {
+            _config.standbyStateAltThreshold = doc["Standby"]["Alt"];
+        }
+        if (doc["Standby"].containsKey("Timeout")) {
+            _config.standbyStateTimeoutThreshold = doc["Standby"]["Timeout"];
+        }
+    }
+    
+    // Launch設定
+    if (doc.containsKey("Launch")) {
+        if (doc["Launch"].containsKey("CdS")) {
+            _config.launchStateCdsThreshold = doc["Launch"]["CdS"];
+        }
+        if (doc["Launch"].containsKey("Timeout")) {
+            _config.launchStateTimeoutThreshold = doc["Launch"]["Timeout"];
+        }
+    }
+    
+    // Drop設定
+    if (doc.containsKey("Drop") && doc["Drop"].containsKey("Timeout")) {
+        _config.dropStateTimeoutThreshold = doc["Drop"]["Timeout"];
+    }
+    
+    // Escape設定
+    if (doc.containsKey("Escape")) {
+        if (doc["Escape"].containsKey("Distance")) {
+            _config.escapeStateDistanceThreshold = doc["Escape"]["Distance"];
+        }
+        if (doc["Escape"].containsKey("Timeout")) {
+            _config.escapeStateTimeoutThreshold = doc["Escape"]["Timeout"];
+        }
+    }
+    
+    // Detection設定
+    if (doc.containsKey("Detection") && doc["Detection"].containsKey("MaxFailedCount")) {
+        _config.detectionMaxFailedCount = doc["Detection"]["MaxFailedCount"];
+    }
+    
+    // Recording設定
+    if (doc.containsKey("Recording")) {
+        if (doc["Recording"].containsKey("Timeout")) {
+            _config.recordingTimeoutThreshold = doc["Recording"]["Timeout"];
+        }
+        if (doc["Recording"].containsKey("Time")) {
+            _config.recordingTime = doc["Recording"]["Time"];
+        }
+    }
+}
+
+void CansatController::dumpConfig() {
+    char logBuf[128];  // ログメッセージ用バッファ
+    // Calibration設定
+    snprintf(logBuf, sizeof(logBuf), "[Calibration] Timeout: %d", 
+             _config.calibrationStateTimeoutThreshold);
+    writeSystemLog(logBuf);    
+
+    // Standby設定
+    snprintf(logBuf, sizeof(logBuf), "[Standby] Alt: %.2f, Timeout: %d", 
+             _config.standbyStateAltThreshold, _config.standbyStateTimeoutThreshold);
+    writeSystemLog(logBuf);
+    
+    // Launch設定
+    snprintf(logBuf, sizeof(logBuf), "[Launch] CdS: %d, Timeout: %d", 
+             _config.launchStateCdsThreshold, _config.launchStateTimeoutThreshold);
+    writeSystemLog(logBuf);
+    
+    // Drop設定
+    snprintf(logBuf, sizeof(logBuf), "[Drop] Timeout: %d", 
+             _config.dropStateTimeoutThreshold);
+    writeSystemLog(logBuf);
+    
+    // Escape設定
+    snprintf(logBuf, sizeof(logBuf), "[Escape] Distance: %.2f, Timeout: %d", 
+             _config.escapeStateDistanceThreshold, _config.escapeStateTimeoutThreshold);
+    writeSystemLog(logBuf);
+    
+    // Detection設定
+    snprintf(logBuf, sizeof(logBuf), "[Detection] MaxFailedCount: %d", 
+             _config.detectionMaxFailedCount);
+    writeSystemLog(logBuf);
+    
+    // Recording設定
+    snprintf(logBuf, sizeof(logBuf), "[Recording] Timeout: %d, Time: %d", 
+             _config.recordingTimeoutThreshold, _config.recordingTime);
+    writeSystemLog(logBuf);
 }
 
 void CansatController::configState() {

@@ -23,10 +23,7 @@
 #define SENSOR_BUFFER_SIZE 4096 
 
 struct UserConfig {
-    double goalLat = 35.7487860;
-    double goalLng = 139.8070711;
-
-    double calibrationStateTimeoutThreshold = 5 * 60 * 1000;    // CALIBRATIONでのタイムアウト待ち時間
+    unsigned long calibrationStateTimeoutThreshold = 5 * 60 * 1000;    // CALIBRATIONでのタイムアウト待ち時間
     double standbyStateAltThreshold = 20;                       // STANDBYでの高度閾値
     unsigned long standbyStateTimeoutThreshold = 5 * 60 * 1000; // STANDBYでのタイムアウト待ち時間
     int launchStateCdsThreshold = 400;                          // LAUNCHでのCdS閾値
@@ -84,6 +81,8 @@ public:
 private:
     UserConfig _config;
 
+    void dumpConfig();
+    void readConfigFile();
     void configState();
 
     // CSVファイル
