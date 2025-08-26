@@ -53,7 +53,7 @@ void RecordingState::onUpdate() {
 		}
 	}
 
-	record(10000);
+	record(_ctx.getUserConfig().recordingTime);
 	_ctx.writeSystemLog("Finished recording. Changing to ExploreState");
 	_ctx.changeState(std::make_unique<ExploreState>(_ctx));
 }

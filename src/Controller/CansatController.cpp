@@ -33,9 +33,7 @@ void CansatController::writeSystemLog(const char* message) {
     _writer.log(message);
 }
 
-void CansatController::begin(UserConfig config) {
-    _config = config;
-
+void CansatController::begin() {
     _writer.begin();
     _writer.log("CansatController: Starting begin()");
 
