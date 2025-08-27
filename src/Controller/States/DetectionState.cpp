@@ -88,7 +88,7 @@ void DetectionState::onUpdate() {
 			// }
 		} else {
 			_ctx.getMotor().turnLeft(150);
-			delay(300);
+			delay(250);
 			_ctx.getMotor().stop();
 		}
 	}
