@@ -24,6 +24,8 @@ public:
     bool readState(int &state);
     bool writeState(const int &state);
 
+    size_t readJSONFile(const char* filename, char* buffer, size_t bufferSize);
+
 protected:
     const char *getBasePath() const override;
 

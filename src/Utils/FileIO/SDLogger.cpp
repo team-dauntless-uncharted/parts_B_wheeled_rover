@@ -31,6 +31,35 @@ bool SDLogger::waitForSDMount(int timeout_ms = 5000) {
     return true;
 }
 
+size_t SDLogger::readJSONFile(const char* filename, char* buffer, size_t bufferSize) {
+    if (buffer == nullptr || bufferSize == 0) return 0;
+    
+    int fd;
+    if (!posixOpen(filename, false, fd)) return 0;
+    
+    struct stat st;
+    if (fstat(fd, &st) != 0) {
+        posixClose(fd);
+        return 0;
+    }
+    
+    size_t fileSize = st.st_size;
+    if (fileSize >= bufferSize) {  // バッファサイズ不足
+        posixClose(fd);
+        return 0;
+    }
+    
+    ssize_t bytesRead = posixRead(fd, buffer, fileSize);
+    posixClose(fd);
+    
+    if (bytesRead > 0) {
+        buffer[bytesRead] = '\0';  // null終端
+        return bytesRead;
+    }
+    
+    return 0;
+}
+
 // ------------------ ログ書き込み ------------------
 
 bool SDLogger::appendLog(const char* filename, const char* message) {

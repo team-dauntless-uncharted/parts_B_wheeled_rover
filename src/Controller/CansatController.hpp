@@ -23,25 +23,23 @@
 #define SENSOR_BUFFER_SIZE 4096 
 
 struct UserConfig {
-    double goalLat;
-    double goalLng;
-
-    double calibrationStateTimeoutThreshold;    // CALIBRATIONでのタイムアウト待ち時間
-    double standbyStateAltThreshold;            // STANDBYでの高度閾値
-    unsigned long standbyStateTimeoutThreshold; // STANDBYでのタイムアウト待ち時間
-    int launchStateCdsThreshold;                // LAUNCHでのCdS閾値
-    unsigned long launchStateTimeoutThreshold;  // LAUNCHでのタイムアウト待ち時間
-    unsigned long dropStateTimeoutThreshold;    // DROPでのタイムアウト待ち時間
-    double escapeStateDistanceThreshold;        // ESCAPEでの距離閾値(メートル)
-    unsigned long escapeStateTimeoutThreshold;  // ESCAPEでのタイムアウト待ち時間
-    int detectionMaxFailedCount;                // DETECTIONでの失敗上限回数
-    unsigned long recordingTimeoutThreshold;    // RECORDINGでのタイムアウト待ち時間
+    unsigned long calibrationStateTimeoutThreshold = 5 * 60 * 1000;    // CALIBRATIONでのタイムアウト待ち時間
+    double standbyStateAltThreshold = 20;                       // STANDBYでの高度閾値
+    unsigned long standbyStateTimeoutThreshold = 5 * 60 * 1000; // STANDBYでのタイムアウト待ち時間
+    int launchStateCdsThreshold = 400;                          // LAUNCHでのCdS閾値
+    unsigned long launchStateTimeoutThreshold = 20 * 60 * 1000; // LAUNCHでのタイムアウト待ち時間
+    unsigned long dropStateTimeoutThreshold = 10 * 60 * 1000;   // DROPでのタイムアウト待ち時間
+    double escapeStateDistanceThreshold = 0.5;                  // ESCAPEでの距離閾値(メートル)
+    unsigned long escapeStateTimeoutThreshold = 10 * 1000;      // ESCAPEでのタイムアウト待ち時間
+    int detectionMaxFailedCount = 25;                           // DETECTIONでの失敗上限回数
+    unsigned long recordingTimeoutThreshold = 5 * 60 * 1000;    // RECORDINGでのタイムアウト待ち時間
+    int recordingTime = 30 * 1000;
 };
 
 class CansatController {
 public:
     CansatController();
-    void begin(UserConfig config);
+    void begin();
     void update();
     void changeState(std::unique_ptr<ICansatState> newState);
 
@@ -83,6 +81,8 @@ public:
 private:
     UserConfig _config;
 
+    void dumpConfig();
+    void readConfigFile();
     void configState();
 
     // CSVファイル

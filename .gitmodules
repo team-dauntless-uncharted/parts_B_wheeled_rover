@@ -19,3 +19,6 @@
 [submodule "libraries/BNO055Library"]
 	path = libraries/BNO055Library
 	url = git@github.com:team-dauntless-uncharted/BNO055Library.git
+[submodule "libraries/ArduinoJson"]
+	path = libraries/ArduinoJson
+	url = git@github.com:bblanchon/ArduinoJson.git
