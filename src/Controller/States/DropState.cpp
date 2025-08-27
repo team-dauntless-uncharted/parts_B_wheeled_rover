@@ -3,12 +3,12 @@
 #include "Controller/CansatController.hpp"
 
 void DropState::onEnter() {
-  _ctx.writeSystemLog("Entering DropState");
+  _ctx.writeSystemLog("%lu: Entering DropState", millis());
 
 	_ctx.getSpeaker().playState((int)State::DROP);
   _ctx.setLed((int)State::DROP);
 
-  _ctx.writeSystemLog("CansatController: Twelite initialization started");
+  _ctx.writeSystemLog("%lu: CansatController: Twelite initialization started", millis());
   if (!_ctx.isConnectTwelite()) {
     _ctx.getTwelite().on();
     _ctx.setIsConnectTwelite(true);
@@ -23,7 +23,7 @@ void DropState::onUpdate() {
   unsigned long elapsedTime = millis() - _startTime;
   _ctx.getSerialWriter().logf("Elapsed time: %lu", elapsedTime);
   if (elapsedTime > _ctx.getUserConfig().dropStateTimeoutThreshold) {
-    _ctx.writeSystemLog("Timeout. Change to EscapeState");
+    _ctx.writeSystemLog("%lu: Timeout. Change to EscapeState", millis());
     _ctx.changeState(std::make_unique<EscapeState>(_ctx));
     return;
   }
@@ -31,7 +31,7 @@ void DropState::onUpdate() {
   twelite::Packet pkt;
   if (_ctx.getTwelite().receivePacket(pkt)) {
     if (twelite::TwelitePacket::match(pkt, twelite::C_PARTS, twelite::BROADCAST, twelite::DeployComplete)) {
-      _ctx.writeSystemLog("DeployComplete received. Change to EscapeState");
+      _ctx.writeSystemLog("%lu: DeployComplete received. Change to EscapeState", millis());
       _ctx.changeState(std::make_unique<EscapeState>(_ctx));
       return;
     }
@@ -39,7 +39,7 @@ void DropState::onUpdate() {
 }
 
 void DropState::onExit() {
-  _ctx.writeSystemLog("Exiting DropState");
+  _ctx.writeSystemLog("%lu: Exiting DropState", millis());
 
   if (!_ctx.getSDLogger().writeState((int)State::ESCAPE)) {
 		_ctx.getSerialWriter().log("Failed to write state in SD");

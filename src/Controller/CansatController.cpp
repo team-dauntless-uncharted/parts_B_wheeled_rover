@@ -36,6 +36,17 @@ void CansatController::writeSystemLog(const char* message) {
     _writer.log(message);
 }
 
+void CansatController::writeSystemLog(const char* format, ...) {
+    char buf[256]; // 必要に応じてサイズ調整
+    va_list args;
+    va_start(args, fmt);
+    vsnprintf(buf, sizeof(buf), fmt, args);
+    va_end(args);
+
+    _sdLogger.appendSystemLog(buf);
+    _writer.log(buf);
+}
+
 void CansatController::begin() {
     _writer.begin();
     _writer.log("CansatController: Starting begin()");
@@ -77,6 +88,7 @@ void CansatController::begin() {
         writeSystemLog("CansatController: BNO055 initialized successfully");
     }
 
+    writeSystemLog("CansatController: begin() finished\ntimestamp: log");
     configState();
 }
 
@@ -222,44 +234,43 @@ void CansatController::configState() {
 
     switch (state) {
     case State::CALIBRATION:
-        writeSystemLog("config CalibrationState");
+        writeSystemLog("%lu: config CalibrationState", millis());
         changeState(std::make_unique<CalibrationState>(*this));
         break;
     case State::STANDBY:
-        writeSystemLog("config StandbyState");
+        writeSystemLog("%lu: config StandbyState", millis());
         changeState(std::make_unique<StandbyState>(*this));
         break;
     case State::LAUNCH:
-        writeSystemLog("config LaunchState");
+        writeSystemLog("%lu: config LaunchState", millis());
         changeState(std::make_unique<LaunchState>(*this));
         break;
     case State::DROP:
-        writeSystemLog("config DropState");
+        writeSystemLog("%lu: config DropState", millis());
         changeState(std::make_unique<DropState>(*this));
         break;
     case State::ESCAPE:
-        writeSystemLog("config EscapeState");
+        writeSystemLog("%lu: config EscapeState", millis());
         changeState(std::make_unique<EscapeState>(*this));
         break;
     case State::DETECTION:
-        writeSystemLog("config DetectionState");
+        writeSystemLog("%lu: config DetectionState", millis());
         changeState(std::make_unique<DetectionState>(*this));
         break;
     case State::RECORDING:
-        writeSystemLog("config RecordingState");
+        writeSystemLog("%lu: config RecordingState", millis());
         changeState(std::make_unique<RecordingState>(*this));
         break;
     case State::EXPLORE:
-        writeSystemLog("config ExploreState");
+        writeSystemLog("%lu: config ExploreState", millis());
         changeState(std::make_unique<ExploreState>(*this));
         break;
     case State::HELPING:
-        writeSystemLog("config HelpingState");
+        writeSystemLog("%lu: config HelpingState", millis());
         changeState(std::make_unique<HelpingState>(*this));
         break;
     default:
-        writeSystemLog("Unknown state");
-        writeSystemLog("config CalibrationState");
+        writeSystemLog("%lu: config CalibrationState", millis());
         changeState(std::make_unique<CalibrationState>(*this));
         break;
     }

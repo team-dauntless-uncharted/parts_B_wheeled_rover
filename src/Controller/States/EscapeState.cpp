@@ -5,7 +5,7 @@
 #include "Utils/GeoUtils/GeoUtils.hpp"
 
 void EscapeState::onEnter() {
-	_ctx.writeSystemLog("Entering EscapeState");
+	_ctx.writeSystemLog("%lu: Entering EscapeState", millis());
 
 	// _ctx.getSpeaker().playState((int)State::ESCAPE);
 	_ctx.setLed((int)State::ESCAPE);
@@ -23,7 +23,7 @@ void EscapeState::onUpdate() {
 	unsigned long elapsedTime = millis() - _startTime;
 	_ctx.getSerialWriter().logf("Elapsed time: %lu", elapsedTime);
 	if (elapsedTime > _ctx.getUserConfig().escapeStateTimeoutThreshold) {
-		_ctx.writeSystemLog("Timeout. Change to DetectionState");
+		_ctx.writeSystemLog("%lu: Timeout. Change to DetectionState", millis());
 		_ctx.changeState(std::make_unique<DetectionState>(_ctx));
 		return;
 	}
@@ -43,14 +43,14 @@ void EscapeState::onUpdate() {
 	double distance = GeoUtils::haversineDistance(_startLatitude, _startLongitude, latitude, longitude);
 
 	if (distance >= _ctx.getUserConfig().escapeStateDistanceThreshold) {
-		_ctx.writeSystemLog("Escaped. Change to DetectionState");
+		_ctx.writeSystemLog("%lu: Escaped. Change to DetectionState", millis());
 		_ctx.changeState(std::make_unique<DetectionState>(_ctx));
 		return;
 	}
 }
 
 void EscapeState::onExit() {
-	_ctx.writeSystemLog("Exiting EscapeState");
+	_ctx.writeSystemLog("%lu: Exiting EscapeState", millis());
 
 	if (!_ctx.getSDLogger().writeState((int)State::DETECTION)) {
 		_ctx.getSerialWriter().log("Failed to write state in SD");

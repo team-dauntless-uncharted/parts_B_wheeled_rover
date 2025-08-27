@@ -6,7 +6,7 @@ RecordingState* RecordingState::_instance = nullptr;
 
 void RecordingState::onEnter() {
 	_instance = this;
-	_ctx.writeSystemLog("Entering RecordingState");
+	_ctx.writeSystemLog("%lu: Entering RecordingState", millis());
 
 	// _ctx.getSpeaker().playState((int)State::RECORDING);
 	_ctx.setLed((int)State::RECORDING);
@@ -17,9 +17,9 @@ void RecordingState::onEnter() {
   	}
 
 	if (!setRecordingMode()) {
-		_ctx.writeSystemLog("Failed to set recording mode");
+		_ctx.writeSystemLog("%lu: Failed to set recording mode", millis());
 	} else {
-		_ctx.writeSystemLog("Recording mode set");
+		_ctx.writeSystemLog("%lu: Recording mode set", millis());
 	}
 
 	_startTime = millis();
@@ -40,7 +40,7 @@ void RecordingState::onUpdate() {
 	while (true) {
 		if (_ctx.getTwelite().receivePacket(pkt)) {
 			if (twelite::TwelitePacket::match(pkt, twelite::A_PARTS, twelite::B_PARTS, twelite::ReadyForCaptureAck)) {
-				_ctx.writeSystemLog("ReadyForCaptureAck received. Recording start");
+				_ctx.writeSystemLog("%lu: ReadyForCaptureAck received. Recording start", millis());
 				break;
 			}
 		}
@@ -48,18 +48,18 @@ void RecordingState::onUpdate() {
 		unsigned long elapsedTime = millis() - _startTime;
 		_ctx.getSerialWriter().logf("Elapsed time: %lu", elapsedTime);
 		if (elapsedTime > _ctx.getUserConfig().recordingTimeoutThreshold) {
-			_ctx.writeSystemLog("Timeout. Recording start");
+			_ctx.writeSystemLog("%lu: Timeout. Recording start", millis());
 			break;
 		}
 	}
 
 	record(_ctx.getUserConfig().recordingTime);
-	_ctx.writeSystemLog("Finished recording. Changing to ExploreState");
+	_ctx.writeSystemLog("%lu: Finished recording. Changing to ExploreState", millis());
 	_ctx.changeState(std::make_unique<ExploreState>(_ctx));
 }
 
 void RecordingState::onExit() {
-	_ctx.writeSystemLog("Exiting RecordingState");
+	_ctx.writeSystemLog("%lu: Exiting RecordingState", millis());
 	if (_isInitCamera) {
 		endRecordingMode();
 	}
@@ -95,11 +95,11 @@ bool RecordingState::setRecordingMode() {
 }
 
 void RecordingState::record(int time_ms) {
-	_ctx.writeSystemLog("Recording started");
+	_ctx.writeSystemLog("%lu: Recording started", millis());
 	
 	// 修正: aviInitの戻り値をチェック
 	if (!_ctx.getSDLogger().aviInit(CAM_IMGSIZE_QVGA_H, CAM_IMGSIZE_QVGA_V)) {
-		_ctx.writeSystemLog("AVI initialization failed");
+		_ctx.writeSystemLog("%lu: AVI initialization failed", millis());
 		return;
 	}
 	
@@ -116,7 +116,7 @@ void RecordingState::record(int time_ms) {
 
 	_ctx.getSDLogger().aviEnd();
 	_ctx.getCamera().startStreaming(false);
-	_ctx.writeSystemLog("Recording finished");
+	_ctx.writeSystemLog("%lu: Recording finished", millis());
 }
 
 void RecordingState::endRecordingMode() {

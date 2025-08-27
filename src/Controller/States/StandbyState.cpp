@@ -3,7 +3,7 @@
 #include "Controller/CansatController.hpp"
 
 void StandbyState::onEnter() {
-	_ctx.writeSystemLog("Entering StandbyState");
+	_ctx.writeSystemLog("%lu: Entering StandbyState", millis());
 
 	_ctx.getSpeaker().playState((int)State::STANDBY);
 	_ctx.setLed((int)State::STANDBY);
@@ -15,7 +15,7 @@ void StandbyState::onUpdate() {
 	_ctx.getSerialWriter().log("Updating StandbyState");
 
 	if (_ctx.getGnss().getAltitude() > _ctx.getUserConfig().standbyStateAltThreshold) {
-		_ctx.writeSystemLog("Above an altitude. Change to LaunchState");
+		_ctx.writeSystemLog("%lu: Above an altitude. Change to LaunchState", millis());
 		_ctx.changeState(std::make_unique<LaunchState>(_ctx));
 		return;
 	}
@@ -23,14 +23,14 @@ void StandbyState::onUpdate() {
     long elapsedTime = millis() - _startTime;
 	_ctx.getSerialWriter().logf("Elapsed time: %lu", elapsedTime);
     if (elapsedTime > _ctx.getUserConfig().standbyStateTimeoutThreshold) {
-		_ctx.writeSystemLog("Timeout. Change to LaunchState");
+		_ctx.writeSystemLog("%lu: Timeout. Change to LaunchState", millis());
 		_ctx.changeState(std::make_unique<LaunchState>(_ctx));
 		return;
     }
 }
 
 void StandbyState::onExit() {
-	_ctx.writeSystemLog("Exiting StandbyState");
+	_ctx.writeSystemLog("%lu: Exiting StandbyState", millis());
 
 	if (!_ctx.getSDLogger().writeState((int)State::LAUNCH)) {
 		_ctx.getSerialWriter().log("Failed to write state in SD");
