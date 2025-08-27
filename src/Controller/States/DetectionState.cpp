@@ -9,19 +9,19 @@ uint8_t *DetectionState::_image_buffer_base = nullptr;
 uint8_t *DetectionState::_current_image_buffer = nullptr;
 
 void DetectionState::onEnter() {
-	_ctx.writeSystemLog("Entering DetectionState");
+	_ctx.writeSystemLog("%lu: Entering DetectionState", millis());
 
 	// _ctx.getSpeaker().playState((int)State::DETECTION);
 	_ctx.setLed((int)State::DETECTION);
 
 	if (!setDetectionMode()) {
-		_ctx.writeSystemLog("Failed to set detection mode");
+		_ctx.writeSystemLog("%lu: Failed to set detection mode", millis());
 	} else {
-		_ctx.writeSystemLog("Detection mode set");
+		_ctx.writeSystemLog("%lu: Detection mode set", millis());
 		if (!beginEdgeImpulse()) {
-			_ctx.writeSystemLog("Failed to initialize Edge Impulse");
+			_ctx.writeSystemLog("%lu: Failed to initialize Edge Impulse", millis());
 		} else {
-			_ctx.writeSystemLog("Succeed to initialize Edge Impulse");
+			_ctx.writeSystemLog("%lu: Succeed to initialize Edge Impulse", millis());
 		}
 	}
 }
@@ -31,7 +31,7 @@ void DetectionState::onUpdate() {
 
 	_failedCount++;
 	if (_failedCount >= _ctx.getUserConfig().detectionMaxFailedCount) {
-		_ctx.writeSystemLog("Failed too many times. Change to RecordingState");
+		_ctx.writeSystemLog("%lu: Failed too many times. Change to RecordingState", millis());
 		_ctx.changeState(std::make_unique<RecordingState>(_ctx));
 		return;
 	}
@@ -70,7 +70,7 @@ void DetectionState::onUpdate() {
 	// 		_ctx.getSerialWriter().logf("A-parts detected %f x=%d y=%d", _result.detected_objects[0].value, _result.detected_objects[0].x, _result.detected_objects[0].y);
 
 	// 	    if (x >= 43 && x <= 52) {
-	// 			_ctx.writeSystemLog("A-parts detected. Changing to RecordingState");
+	// 			_ctx.writeSystemLog("%lu: A-parts detected. Changing to RecordingState, millis()");
 	// 			_ctx.changeState(std::make_unique<RecordingState>(_ctx));
 	// 			return;
 	// 	    } else if (x >= 0 && x <= 42) {
@@ -95,7 +95,7 @@ void DetectionState::onUpdate() {
 }
 
 void DetectionState::onExit() {
-	_ctx.writeSystemLog("Exiting DetectionState");
+	_ctx.writeSystemLog("%lu: Exiting DetectionState", millis());
 	if (_isInitEdgeImpulse) {
 		endEdgeImpulse();
 	}

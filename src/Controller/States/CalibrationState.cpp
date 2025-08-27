@@ -3,7 +3,7 @@
 #include "Controller/CansatController.hpp"
 
 void CalibrationState::onEnter() {
-	_ctx.writeSystemLog("Entering CalibrationState");
+	_ctx.writeSystemLog("%lu: Entering CalibrationState", millis());
 
 	_ctx.getSpeaker().playState((int)State::CALIBRATION);
 	_ctx.setLed((int)State::CALIBRATION);
@@ -19,7 +19,7 @@ void CalibrationState::onUpdate() {
 		CalibrationStatus calib = _ctx.getBno055().getCalibrationStatus();
 
 		if (isFullyCalibrated(calib)) {
-			_ctx.writeSystemLog("Calibration finished. Change to StandbyState");
+			_ctx.writeSystemLog("%lu: Calibration finished. Change to StandbyState", millis());
 			break;
 		}
 
@@ -50,7 +50,7 @@ void CalibrationState::onUpdate() {
 		long elapsedTime = millis() - _startTime;
 		_ctx.getSerialWriter().logf("Elapsed time: %lu", elapsedTime);
     	if (elapsedTime > _ctx.getUserConfig().calibrationStateTimeoutThreshold) {
-			_ctx.writeSystemLog("Timeout. Change to StandbyState");
+			_ctx.writeSystemLog("%lu: Timeout. Change to StandbyState", millis());
 			break;
     	}
 	}
@@ -59,7 +59,7 @@ void CalibrationState::onUpdate() {
 }
 
 void CalibrationState::onExit() {
-	_ctx.writeSystemLog("Exiting CalibrationState");
+	_ctx.writeSystemLog("%lu: Exiting CalibrationState", millis());
 
 	if (!_ctx.getSDLogger().writeState((int)State::STANDBY)) {
 		_ctx.getSerialWriter().log("Failed to write state in SD");

@@ -3,7 +3,7 @@
 #include "Controller/CansatController.hpp"
 
 void HelpingState::onEnter() {
-	_ctx.writeSystemLog("Entering HelpingState");
+	_ctx.writeSystemLog("%lu: Entering HelpingState", millis());
 
 	// _ctx.getSpeaker().playState((int)State::HELPING);
 	_ctx.setLed((int)State::HELPING);
@@ -14,7 +14,7 @@ void HelpingState::onEnter() {
   	}
 	sendTurnSignal();
 
-	_ctx.writeSystemLog("TurnSignal sent");
+	_ctx.writeSystemLog("%lu: TurnSignal sent", millis());
 }
 
 void HelpingState::onUpdate() {
@@ -24,7 +24,7 @@ void HelpingState::onUpdate() {
 }
 
 void HelpingState::onExit() {
-	_ctx.writeSystemLog("Exiting HelpingState");
+	_ctx.writeSystemLog("%lu: Exiting HelpingState", millis());
 
 	// 救助されたらどうする?
 }

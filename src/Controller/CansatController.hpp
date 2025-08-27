@@ -19,6 +19,8 @@
 
 #include "Controller/ICansatState.hpp"
 #include <array>
+#include <cstdarg>
+#include <cstdio>
 
 #define SENSOR_BUFFER_SIZE 4096 
 
@@ -43,7 +45,7 @@ public:
     void update();
     void changeState(std::unique_ptr<ICansatState> newState);
 
-    void writeSystemLog(const char* message);
+    void writeSystemLog(const char* format, ...);
 
     // センサアクセス
     GnssSensor &getGnss() { return _gnss; }

@@ -3,15 +3,15 @@
 #include "Controller/CansatController.hpp"
 
 void ExploreState::onEnter() {
-	_ctx.writeSystemLog("Entering ExploreState");
+	_ctx.writeSystemLog("%lu: Entering ExploreState", millis());
 
 	// _ctx.getSpeaker().playState((int)State::EXPLORE);
 	_ctx.setLed((int)State::EXPLORE);
 
 	if (!setPhotoMode()) {
-		_ctx.writeSystemLog("Failed to set explore mode");
+		_ctx.writeSystemLog("%lu: Failed to set explore mode", millis());
 	} else {
-		_ctx.writeSystemLog("Explore mode set");
+		_ctx.writeSystemLog("%lu: Explore mode set", millis());
 	}
 }
 
@@ -54,7 +54,7 @@ void ExploreState::onUpdate() {
 
 	if (_sameCount >= SAME_LIMIT) {
 		// HELPING_STATE
-		_ctx.writeSystemLog("Can't Move. Changing to HELPING_STATE");
+		_ctx.writeSystemLog("%lu: Can't Move. Changing to HELPING_STATE", millis());
 		_ctx.changeState(std::make_unique<HelpingState>(_ctx));
 		return;
 	}
@@ -64,7 +64,7 @@ void ExploreState::onUpdate() {
 }
 
 void ExploreState::onExit() {
-	_ctx.writeSystemLog("Exiting ExploreState");
+	_ctx.writeSystemLog("%lu: Exiting ExploreState", millis());
 	if (_isInitCamera) {
 		endPhotoMode();
 	}

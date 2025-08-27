@@ -3,7 +3,7 @@
 #include "Controller/CansatController.hpp"
 
 void LaunchState::onEnter() {
-	_ctx.writeSystemLog("Entering LaunchState");
+	_ctx.writeSystemLog("%lu: Entering LaunchState", millis());
 
 	_ctx.getSpeaker().playState((int)State::LAUNCH);
 	_ctx.setLed((int)State::LAUNCH);
@@ -16,7 +16,7 @@ void LaunchState::onUpdate() {
 
 	// 放出を検知したら DROP モードに遷移する
     if (_ctx.getCds().read() < _ctx.getUserConfig().launchStateCdsThreshold) {
-		_ctx.writeSystemLog("Detect separation. Change to DropState");
+		_ctx.writeSystemLog("%lu: Detect separation. Change to DropState", millis());
 		_ctx.changeState(std::make_unique<DropState>(_ctx));
 		return;
     }
@@ -24,14 +24,14 @@ void LaunchState::onUpdate() {
 	unsigned long elapsedTime = millis() - _startTime;
 	_ctx.getSerialWriter().logf("Elapsed time: %lu", elapsedTime);
 	if (elapsedTime > _ctx.getUserConfig().launchStateTimeoutThreshold) {
-		_ctx.writeSystemLog("Timeout. Change to DropState");
+		_ctx.writeSystemLog("%lu: Timeout. Change to DropState", millis());
 		_ctx.changeState(std::make_unique<DropState>(_ctx));
 		return;
 	}
 }
 
 void LaunchState::onExit() {
-	_ctx.writeSystemLog("Exiting LaunchState");
+	_ctx.writeSystemLog("%lu: Exiting LaunchState", millis());
 
 	if (!_ctx.getSDLogger().writeState((int)State::DROP)) {
 		_ctx.getSerialWriter().log("Failed to write state in SD");
