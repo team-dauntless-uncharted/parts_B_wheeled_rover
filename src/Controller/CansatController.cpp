@@ -31,16 +31,11 @@ CansatController::CansatController()
 {
 }
 
-void CansatController::writeSystemLog(const char* message) {
-    _sdLogger.appendSystemLog(message);
-    _writer.log(message);
-}
-
 void CansatController::writeSystemLog(const char* format, ...) {
     char buf[256]; // 必要に応じてサイズ調整
     va_list args;
-    va_start(args, fmt);
-    vsnprintf(buf, sizeof(buf), fmt, args);
+    va_start(args, format);
+    vsnprintf(buf, sizeof(buf), format, args);
     va_end(args);
 
     _sdLogger.appendSystemLog(buf);

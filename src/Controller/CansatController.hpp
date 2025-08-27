@@ -45,7 +45,6 @@ public:
     void update();
     void changeState(std::unique_ptr<ICansatState> newState);
 
-    void writeSystemLog(const char* message);
     void writeSystemLog(const char* format, ...);
 
     // センサアクセス
