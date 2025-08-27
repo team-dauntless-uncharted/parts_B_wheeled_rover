@@ -181,6 +181,8 @@ void CansatController::readConfigFile() {
 }
 
 void CansatController::dumpConfig() {
+    writeSystemLog("\n=== Configuration Dump ===");
+
     char logBuf[128];  // ログメッセージ用バッファ
     // Calibration設定
     snprintf(logBuf, sizeof(logBuf), "[Calibration] Timeout: %d", 
@@ -216,6 +218,8 @@ void CansatController::dumpConfig() {
     snprintf(logBuf, sizeof(logBuf), "[Recording] Timeout: %d, Time: %d", 
              _config.recordingTimeoutThreshold, _config.recordingTime);
     writeSystemLog(logBuf);
+
+    writeSystemLog("=== End of Configuration Dump ===\n");
 }
 
 void CansatController::configState() {
