@@ -217,3 +217,49 @@ $ make compile FEATURE_FLAG="-D WAIT_GNSS_RECEIVE"
 ```
 
 ## ユーザ指定の値
+
+SDカードにconfig.jsonファイルを配置することで、任意の値を設定することができる
+
+Calibration.Timeout: CalibrationStateでのタイムアウト時間
+Standby.Alt: StandbyStateでのLaunchState移行ための高度の閾値
+Standby.Timemout: StandbyStateでのタイムアウト時間
+Launch.CdS: LaucnhStateでのDropState移行ためのCdSの値の閾値
+Launch.Timeout: LaunchStateでのタイムアウト時間
+Drop.Timeout: DropStateでのタイムアウト時間
+Escape.Distance: EscapeStateでの移行のための落下地点と現在地点の距離
+Escape.Timeout: EscapeStateでのタイムアウト時間
+Detection.MaxFailedCount: DetectionStateでの次の状態に移行するまでの物体認識の失敗回数
+Recording.Timeout: RecordingStateでのタイムアウト時間
+Recording.Time: RecordingStateでの録画時間
+
+```json
+{
+  "Calibration": {
+    "Timeout": 300000
+  },
+  "Standby": {
+    "Alt": 20.0,
+    "Timeout": 600000
+  },
+  "Launch": {
+    "CdS": 400,
+    "Timeout": 600000
+  },
+  "Drop": {
+    "Timeout": 600000
+  },
+  "Escape": {
+    "Distance": 0.5,
+    "Timeout": 20000
+  },
+  "Detection": {
+    "MaxFailedCount": 25
+  },
+  "Recording": {
+    "Timeout": 300000,
+    "Time": 30000
+  }
+}
+```
+
+ファイルがない場合、ファイルに上記のキーと値が存在しない場合は、CansatController.hppのUserConfig構造体内で指定しているデフォルト値が使用される
