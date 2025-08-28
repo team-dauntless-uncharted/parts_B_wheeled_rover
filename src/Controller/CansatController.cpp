@@ -9,10 +9,7 @@
 #include "Controller/States/LaunchState.hpp"
 #include "Controller/States/DropState.hpp"
 #include "Controller/States/EscapeState.hpp"
-#include "Controller/States/DetectionState.hpp"
-#include "Controller/States/RecordingState.hpp"
-#include "Controller/States/ExploreState.hpp"
-#include "Controller/States/HelpingState.hpp"
+#include "Controller/States/NavigationState.hpp"
 
 CansatController::CansatController()
     : _motorR_pins{8, 4, 5},
@@ -163,21 +160,6 @@ void CansatController::readConfigFile() {
             _config.escapeStateTimeoutThreshold = doc["Escape"]["Timeout"];
         }
     }
-    
-    // Detection設定
-    if (doc.containsKey("Detection") && doc["Detection"].containsKey("MaxFailedCount")) {
-        _config.detectionMaxFailedCount = doc["Detection"]["MaxFailedCount"];
-    }
-    
-    // Recording設定
-    if (doc.containsKey("Recording")) {
-        if (doc["Recording"].containsKey("Timeout")) {
-            _config.recordingTimeoutThreshold = doc["Recording"]["Timeout"];
-        }
-        if (doc["Recording"].containsKey("Time")) {
-            _config.recordingTime = doc["Recording"]["Time"];
-        }
-    }
 }
 
 void CansatController::dumpConfig() {
@@ -209,16 +191,6 @@ void CansatController::dumpConfig() {
              _config.escapeStateDistanceThreshold, _config.escapeStateTimeoutThreshold);
     writeSystemLog(logBuf);
     
-    // Detection設定
-    snprintf(logBuf, sizeof(logBuf), "[Detection] MaxFailedCount: %d", 
-             _config.detectionMaxFailedCount);
-    writeSystemLog(logBuf);
-    
-    // Recording設定
-    snprintf(logBuf, sizeof(logBuf), "[Recording] Timeout: %d, Time: %d", 
-             _config.recordingTimeoutThreshold, _config.recordingTime);
-    writeSystemLog(logBuf);
-
     writeSystemLog("=== End of Configuration Dump ===\n");
 }
 
@@ -252,21 +224,9 @@ void CansatController::configState() {
         writeSystemLog("%lu: config EscapeState", millis());
         changeState(std::make_unique<EscapeState>(*this));
         break;
-    case State::DETECTION:
-        writeSystemLog("%lu: config DetectionState", millis());
-        changeState(std::make_unique<DetectionState>(*this));
-        break;
-    case State::RECORDING:
-        writeSystemLog("%lu: config RecordingState", millis());
-        changeState(std::make_unique<RecordingState>(*this));
-        break;
-    case State::EXPLORE:
-        writeSystemLog("%lu: config ExploreState", millis());
-        changeState(std::make_unique<ExploreState>(*this));
-        break;
-    case State::HELPING:
-        writeSystemLog("%lu: config HelpingState", millis());
-        changeState(std::make_unique<HelpingState>(*this));
+    case State::NAVIGATION:
+        writeSystemLog("%lu: config NavigationState", millis());
+        changeState(std::make_unique<NavigationState>(*this));
         break;
     default:
         writeSystemLog("%lu: config CalibrationState", millis());

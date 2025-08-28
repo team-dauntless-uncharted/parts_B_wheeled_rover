@@ -1,5 +1,5 @@
 #include "Controller/States/EscapeState.hpp"
-#include "Controller/States/DetectionState.hpp"
+#include "Controller/States/NavigationState.hpp"
 #include "Controller/CansatController.hpp"
 
 #include "Utils/GeoUtils/GeoUtils.hpp"
@@ -23,8 +23,7 @@ void EscapeState::onUpdate() {
 	unsigned long elapsedTime = millis() - _startTime;
 	_ctx.getSerialWriter().logf("Elapsed time: %lu", elapsedTime);
 	if (elapsedTime > _ctx.getUserConfig().escapeStateTimeoutThreshold) {
-		_ctx.writeSystemLog("%lu: Timeout. Change to DetectionState", millis());
-		_ctx.changeState(std::make_unique<DetectionState>(_ctx));
+		_ctx.changeState(std::make_unique<NavigationState>(_ctx));
 		return;
 	}
 
@@ -43,24 +42,13 @@ void EscapeState::onUpdate() {
 	double distance = GeoUtils::haversineDistance(_startLatitude, _startLongitude, latitude, longitude);
 
 	if (distance >= _ctx.getUserConfig().escapeStateDistanceThreshold) {
-		_ctx.writeSystemLog("%lu: Escaped. Change to DetectionState", millis());
-		_ctx.changeState(std::make_unique<DetectionState>(_ctx));
+		_ctx.changeState(std::make_unique<NavigationState>(_ctx));
 		return;
 	}
 }
 
 void EscapeState::onExit() {
 	_ctx.writeSystemLog("%lu: Exiting EscapeState", millis());
-
-	if (!_ctx.getSDLogger().writeState((int)State::DETECTION)) {
-		_ctx.getSerialWriter().log("Failed to write state in SD");
-	}
-
-#ifdef USE_FLASH
-	if (!_ctx.getFlashIO().writeState((int)State::DETECTION)) {
-		_ctx.getSerialWriter().log("Failed to write state in Flash");
-	}
-#endif // USE_FLASH
 
 	if (!_ctx.isInitCamera()) {
 		if (!_ctx.getCamera().begin(PHOTO_MODE)) {
