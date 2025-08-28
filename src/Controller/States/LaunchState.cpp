@@ -15,11 +15,11 @@ void LaunchState::onUpdate() {
 	_ctx.getSerialWriter().log("Updating LaunchState");
 
 	// 放出を検知したら DROP モードに遷移する
-    if (_ctx.getCds().read() < _ctx.getUserConfig().launchStateCdsThreshold) {
-		_ctx.writeSystemLog("%lu: Detect separation. Change to DropState", millis());
-		_ctx.changeState(std::make_unique<DropState>(_ctx));
-		return;
-    }
+    // if (_ctx.getCds().read() < _ctx.getUserConfig().launchStateCdsThreshold) {
+	// 	_ctx.writeSystemLog("%lu: Detect separation. Change to DropState", millis());
+	// 	_ctx.changeState(std::make_unique<DropState>(_ctx));
+	// 	return;
+    // }
 
 	unsigned long elapsedTime = millis() - _startTime;
 	_ctx.getSerialWriter().logf("Elapsed time: %lu", elapsedTime);

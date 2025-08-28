@@ -14,11 +14,11 @@ void StandbyState::onEnter() {
 void StandbyState::onUpdate() {
 	_ctx.getSerialWriter().log("Updating StandbyState");
 
-	if (_ctx.getGnss().getAltitude() > _ctx.getUserConfig().standbyStateAltThreshold) {
-		_ctx.writeSystemLog("%lu: Above an altitude. Change to LaunchState", millis());
-		_ctx.changeState(std::make_unique<LaunchState>(_ctx));
-		return;
-	}
+	// if (_ctx.getGnss().getAltitude() > _ctx.getUserConfig().standbyStateAltThreshold) {
+	// 	_ctx.writeSystemLog("%lu: Above an altitude. Change to LaunchState", millis());
+	// 	_ctx.changeState(std::make_unique<LaunchState>(_ctx));
+	// 	return;
+	// }
 
     long elapsedTime = millis() - _startTime;
 	_ctx.getSerialWriter().logf("Elapsed time: %lu", elapsedTime);
