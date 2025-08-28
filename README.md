@@ -216,21 +216,37 @@ Spresenseの内蔵GNSSは起動してからすぐに値を取得できないた�
 $ make compile FEATURE_FLAG="-D WAIT_GNSS_RECEIVE"
 ```
 
+## 状態の指定
+
+state.txtに対応する数値を記述することで、その状態から始めることができる。また、各状態のonExit()で最新の状態に書き換える
+
+```
+- 0: CalibrationState
+- 1: StandbyState
+- 2: LaunchState
+- 3: DropState
+- 4: EscapeState
+- 5: DetectionState
+- 6: RecordingState
+- 7: ExploreState
+- 8: HelpingState
+```
+
 ## ユーザ指定の値
 
 SDカードにconfig.jsonファイルを配置することで、任意の値を設定することができる
 
-Calibration.Timeout: CalibrationStateでのタイムアウト時間
-Standby.Alt: StandbyStateでのLaunchState移行ための高度の閾値
-Standby.Timemout: StandbyStateでのタイムアウト時間
-Launch.CdS: LaucnhStateでのDropState移行ためのCdSの値の閾値
-Launch.Timeout: LaunchStateでのタイムアウト時間
-Drop.Timeout: DropStateでのタイムアウト時間
-Escape.Distance: EscapeStateでの移行のための落下地点と現在地点の距離
-Escape.Timeout: EscapeStateでのタイムアウト時間
-Detection.MaxFailedCount: DetectionStateでの次の状態に移行するまでの物体認識の失敗回数
-Recording.Timeout: RecordingStateでのタイムアウト時間
-Recording.Time: RecordingStateでの録画時間
+- Calibration.Timeout: CalibrationStateでのタイムアウト時間
+- Standby.Alt: StandbyStateでのLaunchState移行ための高度の閾値
+- Standby.Timemout: StandbyStateでのタイムアウト時間
+- Launch.CdS: LaucnhStateでのDropState移行ためのCdSの値の閾値
+- Launch.Timeout: LaunchStateでのタイムアウト時間
+- Drop.Timeout: DropStateでのタイムアウト時間
+- Escape.Distance: EscapeStateでの移行のための落下地点と現在地点の距離
+- Escape.Timeout: EscapeStateでのタイムアウト時間
+- Detection.MaxFailedCount: DetectionStateでの次の状態に移行するまでの物体認識の失敗回数
+- Recording.Timeout: RecordingStateでのタイムアウト時間
+- Recording.Time: RecordingStateでの録画時間
 
 ```json
 {
