@@ -18,6 +18,7 @@ private:
 	unsigned long _startTime;
 	bool _isInitCamera = false;
 	static RecordingState *_instance;
+	bool _isRecordingOK = false;
 
 	bool setRecordingMode();
 	void record(int time_ms);
