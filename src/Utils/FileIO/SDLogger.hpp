@@ -1,6 +1,5 @@
 #pragma once
 #include <Arduino.h>
-#include <PosixAvi.hpp>
 #include "Utils/FileIO/BaseFileIO.hpp"
 
 class SDLogger : public BaseFileIO {
@@ -15,11 +14,6 @@ public:
 
     bool saveJPEGImage(void* buff, size_t size);
     bool savePPMImage(void* buff, size_t size);
-
-    bool aviInit(int width, int height);  // 変更: voidからboolに変更
-    void aviStart();
-    void aviRecord(void* buff, size_t size);
-    void aviEnd();
 
     bool readState(int &state);
     bool writeState(const int &state);
@@ -64,13 +58,4 @@ private:
 
     void refreshPPMFileNameIndex();
     void shiftPPMFileName();
-
-    // AVI
-    char _aviFileName[32];
-    uint16_t _aviFileNameCount = 0;
-
-    void refreshAVIFileNameIndex();
-    void shiftAVIFileName();
-
-    PosixAviLibrary _avi;  // 変更: AviLibrary から PosixAviLibrary に変更
 };

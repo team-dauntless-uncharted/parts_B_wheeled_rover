@@ -118,33 +118,6 @@ bool SDLogger::savePPMImage(void* buff, size_t size) {
     return true;
 }
 
-// ------------------ AVI ------------------
-
-bool SDLogger::aviInit(int width, int height) {  // 戻り値をboolに変更
-    refreshAVIFileNameIndex();
-    
-    // POSIX API対応版は内部でファイルを管理するため、posixOpenは不要
-    return _avi.begin(_aviFileName, width, height);  // 戻り値をチェック
-}
-
-void SDLogger::aviStart() {
-    _avi.startRecording();
-}
-
-void SDLogger::aviRecord(void* buff, size_t size) {
-    // 型変換を追加（PosixAviLibraryはconst char*を要求）
-    _avi.addFrame(static_cast<const char*>(buff), size);
-}
-
-void SDLogger::aviEnd() {
-    _avi.endRecording();
-    _avi.end();
-    // posixClose(_aviFd); を削除（PosixAviLibraryが内部で管理）
-    
-    // 次のファイル名に更新
-    shiftAVIFileName();
-}
-
 // ------------------ State ------------------
 
 bool SDLogger::readState(int &state) {
@@ -180,6 +153,3 @@ void SDLogger::shiftJPEGFileName() { shiftFileName(_jpegFileName, sizeof(_jpegFi
 
 void SDLogger::refreshPPMFileNameIndex() { refreshFileNameIndex(_ppmFileName, sizeof(_ppmFileName), "/mnt/sd0/detect_%04d.ppm", _ppmFileNameCount); }
 void SDLogger::shiftPPMFileName() { shiftFileName(_ppmFileName, sizeof(_ppmFileName), "/mnt/sd0/detect_%04d.ppm", _ppmFileNameCount); }
-
-void SDLogger::refreshAVIFileNameIndex() { refreshFileNameIndex(_aviFileName, sizeof(_aviFileName), "/mnt/sd0/video_%04d.avi", _aviFileNameCount); }
-void SDLogger::shiftAVIFileName() { shiftFileName(_aviFileName, sizeof(_aviFileName), "/mnt/sd0/video_%04d.avi", _aviFileNameCount); }
