@@ -1,12 +1,3 @@
-[submodule "libraries/Adafruit_Sensor"]
-	path = libraries/Adafruit_Sensor
-	url = git@github.com:adafruit/Adafruit_Sensor.git
-[submodule "libraries/Adafruit_BusIO"]
-	path = libraries/Adafruit_BusIO
-	url = git@github.com:adafruit/Adafruit_BusIO.git
-[submodule "libraries/Adafruit_BNO055"]
-	path = libraries/Adafruit_BNO055
-	url = git@github.com:adafruit/Adafruit_BNO055.git
 [submodule "libraries/TwelitePacket"]
 	path = libraries/TwelitePacket
 	url = git@github.com:team-dauntless-uncharted/twelite_packet.git
