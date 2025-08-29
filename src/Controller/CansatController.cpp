@@ -9,7 +9,6 @@
 #include "Controller/States/LaunchState.hpp"
 #include "Controller/States/DropState.hpp"
 #include "Controller/States/EscapeState.hpp"
-#include "Controller/States/NavigationState.hpp"
 
 CansatController::CansatController()
     : _motorR_pins{8, 4, 5},
@@ -223,10 +222,6 @@ void CansatController::configState() {
     case State::ESCAPE:
         writeSystemLog("%lu: config EscapeState", millis());
         changeState(std::make_unique<EscapeState>(*this));
-        break;
-    case State::NAVIGATION:
-        writeSystemLog("%lu: config NavigationState", millis());
-        changeState(std::make_unique<NavigationState>(*this));
         break;
     default:
         writeSystemLog("%lu: config CalibrationState", millis());
