@@ -159,6 +159,16 @@ void CansatController::readConfigFile() {
             _config.escapeStateTimeoutThreshold = doc["Escape"]["Timeout"];
         }
     }
+
+    // Navigation
+    if (doc.containsKey("Navigation")) {
+        if (doc["Navigation"].containsKey("Latitude")) {
+            _config.navigationGoalLatitude = doc["Navigation"]["Latitude"];
+        }
+        if (doc["Navigation"].containsKey("Longitude")) {
+            _config.navigationGoalLongitude = doc["Navigation"]["Longitude"];
+        }
+    }
 }
 
 void CansatController::dumpConfig() {

@@ -33,6 +33,8 @@ struct UserConfig {
     unsigned long dropStateTimeoutThreshold = 10 * 60 * 1000;       // DROPでのタイムアウト待ち時間
     double escapeStateDistanceThreshold = 0.5;                      // ESCAPEでの距離閾値(メートル)
     unsigned long escapeStateTimeoutThreshold = 10 * 1000;          // ESCAPEでのタイムアウト待ち時間
+    double navigationGoalLatitude = 35.7487860;
+    double navigationGoalLongitude = 139.8070711;
 };
 
 class CansatController {

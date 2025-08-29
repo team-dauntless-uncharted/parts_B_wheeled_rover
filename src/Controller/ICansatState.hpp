@@ -8,6 +8,7 @@ enum State {
     LAUNCH,
     DROP,
   	ESCAPE,
+	NAVIGATION,
 };
 
 class ICansatState {
