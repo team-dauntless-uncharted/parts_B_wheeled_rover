@@ -52,7 +52,7 @@ void ExploreState::onUpdate() {
 		_sameCount = 0;
 	}
 
-	if (_sameCount >= SAME_LIMIT) {
+	if (_sameCount >= _ctx.getUserConfig().explorePositionSameLimit) {
 		// HELPING_STATE
 		_ctx.writeSystemLog("%lu: Can't Move. Changing to HELPING_STATE", millis());
 		_ctx.changeState(std::make_unique<HelpingState>(_ctx));
