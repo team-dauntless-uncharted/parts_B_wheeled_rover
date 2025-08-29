@@ -8,10 +8,6 @@ enum State {
     LAUNCH,
     DROP,
 	ESCAPE,
-	DETECTION,
-	RECORDING,
-	EXPLORE,
-	HELPING,
 };
 
 class ICansatState {

@@ -9,6 +9,8 @@ void setup() {
 }
 
 void loop() {
+    unsigned long start_ms = millis();
     cansat.update();
-    delay(50);
+
+    while (millis() - start_ms < 50);
 }
