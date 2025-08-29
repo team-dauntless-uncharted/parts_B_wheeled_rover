@@ -32,10 +32,11 @@ struct UserConfig {
     unsigned long launchStateTimeoutThreshold = 20 * 60 * 1000;     // LAUNCHでのタイムアウト待ち時間
     unsigned long dropStateTimeoutThreshold = 10 * 60 * 1000;       // DROPでのタイムアウト待ち時間
     double escapeStateDistanceThreshold = 0.5;                      // ESCAPEでの距離閾値(メートル)
-    unsigned long escapeStateTimeoutThreshold = 10 * 1000;          // ESCAPEでのタイムアウト待ち時間
+    unsigned long escapeStateTimeoutThreshold = 15 * 1000;          // ESCAPEでのタイムアウト待ち時間
     int detectionMaxFailedCount = 25;                               // DETECTIONでの失敗上限回数
     unsigned long recordingTimeoutThreshold = 5 * 60 * 1000;        // RECORDINGでのタイムアウト待ち時間
-    int recordingTime = 30 * 1000;
+    int recordingTime = 30 * 1000;                                  // RECORDINGでの時間(ミリ秒)
+    int explorePositionSameLimit = 10;                              // EXPLOREでのHELPING移行までの判定
 };
 
 class CansatController {
