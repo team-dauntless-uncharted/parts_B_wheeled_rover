@@ -51,6 +51,10 @@ void CansatController::begin() {
     setIsConnectTwelite(false);
     
     if (!_sdLogger.begin(CSV_HEADER)) {
+        for (int i = 0; i < 5; i++) {
+            _speaker.playBeep();
+            delay(100);
+        }
         _writer.log("CansatController: SD Logger initialization failed!");
     } else {
         _writer.log("CansatController: SD Logger initialized successfully");

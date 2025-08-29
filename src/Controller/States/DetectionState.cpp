@@ -29,69 +29,73 @@ void DetectionState::onEnter() {
 void DetectionState::onUpdate() {
 	_ctx.getSerialWriter().log("Updating DetectionState");
 
-	_failedCount++;
-	if (_failedCount >= _ctx.getUserConfig().detectionMaxFailedCount) {
-		_ctx.writeSystemLog("%lu: Failed too many times. Change to RecordingState", millis());
-		_ctx.changeState(std::make_unique<RecordingState>(_ctx));
-		return;
-	}
+	
+	_ctx.writeSystemLog("%lu: Failed too many times. Change to RecordingState", millis());
+	_ctx.changeState(std::make_unique<RecordingState>(_ctx));
+	return;
+	// _failedCount++;
+	// if (_failedCount >= _ctx.getUserConfig().detectionMaxFailedCount) {
+	// 	_ctx.writeSystemLog("%lu: Failed too many times. Change to RecordingState", millis());
+	// 	_ctx.changeState(std::make_unique<RecordingState>(_ctx));
+	// 	return;
+	// }
 
-	if (_isInitEdgeImpulse) {
-		// 画像を撮影する
-    	void* imgBuff = nullptr;
-    	size_t imgSize = 0;
-    	if (!_ctx.getCamera().takePicture(&imgBuff, &imgSize)) {
-			_ctx.getSerialWriter().log("Failed to take picture");
-		   return;
-		}
+	// if (_isInitEdgeImpulse) {
+	// 	// 画像を撮影する
+    // 	void* imgBuff = nullptr;
+    // 	size_t imgSize = 0;
+    // 	if (!_ctx.getCamera().takePicture(&imgBuff, &imgSize)) {
+	// 		_ctx.getSerialWriter().log("Failed to take picture");
+	// 	   return;
+	// 	}
 
-		if (!convertYUV422ToRGB888(imgBuff, imgSize)) {
-			_ctx.getSerialWriter().log("Failed to convert YUV422 to RGB888");
-			return;
-		}
+	// 	if (!convertYUV422ToRGB888(imgBuff, imgSize)) {
+	// 		_ctx.getSerialWriter().log("Failed to convert YUV422 to RGB888");
+	// 		return;
+	// 	}
 
-		if (!resizeImage()) {
-			_ctx.getSerialWriter().log("Failed to resize image");
-			return;
-		}
+	// 	if (!resizeImage()) {
+	// 		_ctx.getSerialWriter().log("Failed to resize image");
+	// 		return;
+	// 	}
 
-		if (!_ctx.getSDLogger().savePPMImage(_current_image_buffer, OUTPUT_WIDTH * OUTPUT_HEIGHT * 3)) {
-			_ctx.getSerialWriter().log("Failed to save resized image");
-			return;
-		}
+	// 	if (!_ctx.getSDLogger().savePPMImage(_current_image_buffer, OUTPUT_WIDTH * OUTPUT_HEIGHT * 3)) {
+	// 		_ctx.getSerialWriter().log("Failed to save resized image");
+	// 		return;
+	// 	}
 
-		if (!detectObjects()) {
-			_ctx.getSerialWriter().log("Failed to detect objects");
-			return;
-		}
+	// 	if (!detectObjects()) {
+	// 		_ctx.getSerialWriter().log("Failed to detect objects");
+	// 		return;
+	// 	}
 
-		if (_result.has_detection) {
-			int x = _result.detected_objects[0].x;
-			// _ctx.getSerialWriter().logf("A-parts detected %f x=%d y=%d", _result.detected_objects[0].value, _result.detected_objects[0].x, _result.detected_objects[0].y);
+	// 	if (_result.has_detection) {
+	// 		int x = _result.detected_objects[0].x;
+	// 		_ctx.getSerialWriter().logf("A-parts detected %f x=%d y=%d", _result.detected_objects[0].value, _result.detected_objects[0].x, _result.detected_objects[0].y);
 
-		    // if (x >= 43 && x <= 52) {
-			// 	_ctx.writeSystemLog("%lu: A-parts detected. Changing to RecordingState, millis()");
-			// 	_ctx.changeState(std::make_unique<RecordingState>(_ctx));
-			// 	return;
-		    // } else if (x >= 0 && x <= 42) {
-			// 	// 右に回転
-			// 	_ctx.getMotor().turnRight(150);
-			// 	delay(100);
-			// 	_ctx.getMotor().stop();
-    		// } else if (x >= 53 && x <= 95) {
-			// 	// 左に回転
-			// 	_ctx.getMotor().turnLeft(150);
-			// 	delay(100);
-			// 	_ctx.getMotor().stop();
-			// } else {
-			// 	// 適当に回転
-			// }
-		} else {
-			_ctx.getMotor().turnLeft(150);
-			delay(200);
-			_ctx.getMotor().stop();
-		}
-	}
+	// 	    if (x >= 43 && x <= 52) {
+	// 			_ctx.writeSystemLog("%lu: A-parts detected. Changing to RecordingState, millis()");
+	// 			_ctx.changeState(std::make_unique<RecordingState>(_ctx));
+	// 			return;
+	// 	    } else if (x >= 0 && x <= 42) {
+	// 			// 右に回転
+	// 			_ctx.getMotor().turnRight(150);
+	// 			delay(100);
+	// 			_ctx.getMotor().stop();
+    // 		} else if (x >= 53 && x <= 95) {
+	// 			// 左に回転
+	// 			_ctx.getMotor().turnLeft(150);
+	// 			delay(100);
+	// 			_ctx.getMotor().stop();
+	// 		} else {
+	// 			// 適当に回転
+	// 		}
+	// 	} else {
+	// 		_ctx.getMotor().turnLeft(150);
+	// 		delay(200);
+	// 		_ctx.getMotor().stop();
+	// 	}
+	// }
 }
 
 void DetectionState::onExit() {
