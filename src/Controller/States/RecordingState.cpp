@@ -37,25 +37,26 @@ void RecordingState::onUpdate() {
 	);
 	_ctx.getTwelite().sendPacket(pkt);
 
-	while (true) {
-		if (_ctx.getTwelite().receivePacket(pkt)) {
-			if (twelite::TwelitePacket::match(pkt, twelite::A_PARTS, twelite::B_PARTS, twelite::ReadyForCaptureAck)) {
-				_ctx.writeSystemLog("%lu: ReadyForCaptureAck received. Recording start", millis());
-				break;
-			}
-		}
-
-		unsigned long elapsedTime = millis() - _startTime;
-		_ctx.getSerialWriter().logf("Elapsed time: %lu", elapsedTime);
-		if (elapsedTime > _ctx.getUserConfig().recordingTimeoutThreshold) {
-			_ctx.writeSystemLog("%lu: Timeout. Recording start", millis());
-			break;
+	if (_ctx.getTwelite().receivePacket(pkt)) {
+		if (twelite::TwelitePacket::match(pkt, twelite::A_PARTS, twelite::B_PARTS, twelite::ReadyForCaptureAck)) {
+			_ctx.writeSystemLog("%lu: ReadyForCaptureAck received. Recording start", millis());
+			_isRecordingOK = true;
 		}
 	}
 
-	record(_ctx.getUserConfig().recordingTime);
-	_ctx.writeSystemLog("%lu: Finished recording. Changing to ExploreState", millis());
-	_ctx.changeState(std::make_unique<ExploreState>(_ctx));
+	unsigned long elapsedTime = millis() - _startTime;
+	_ctx.getSerialWriter().logf("Elapsed time: %lu", elapsedTime);
+	if (elapsedTime > _ctx.getUserConfig().recordingTimeoutThreshold) {
+		_ctx.writeSystemLog("%lu: Timeout. Recording start", millis());
+		_isRecordingOK = true;
+	}
+
+	if (_isRecordingOK) {
+		record(_ctx.getUserConfig().recordingTime);
+		_ctx.writeSystemLog("%lu: Finished recording. Changing to ExploreState", millis());
+		_ctx.changeState(std::make_unique<ExploreState>(_ctx));
+		return;
+	}
 }
 
 void RecordingState::onExit() {

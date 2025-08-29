@@ -12,15 +12,14 @@ void HelpingState::onEnter() {
     	_ctx.getTwelite().on();
     	_ctx.setIsConnectTwelite(true);
   	}
-	sendTurnSignal();
-
-	_ctx.writeSystemLog("%lu: TurnSignal sent", millis());
 }
 
 void HelpingState::onUpdate() {
 	_ctx.getSerialWriter().log("Updating HelpingState");
 
 	// 救助されたらどうする?
+	sendTurnSignal();
+	_ctx.writeSystemLog("%lu: TurnSignal sent", millis());
 }
 
 void HelpingState::onExit() {
