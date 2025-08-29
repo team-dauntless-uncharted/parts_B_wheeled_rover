@@ -13,4 +13,9 @@ public:
 private:
 	CansatController& _ctx;
 	unsigned long _startTime;
+
+	bool _landed = false;
+	bool _impactDetected = false;
+	unsigned long _impactTime = 0;
+	unsigned long _stableStart = 0;
 };
