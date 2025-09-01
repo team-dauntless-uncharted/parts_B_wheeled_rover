@@ -86,6 +86,7 @@ void CansatController::begin() {
     } else {
         writeSystemLog("CansatController: BNO055 initialized successfully");
     }
+    _bno055.setAccelerometerTo16G();
 
     writeSystemLog("CansatController: begin() finished\ntimestamp: log");
     configState();
