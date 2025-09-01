@@ -51,6 +51,10 @@ void CansatController::begin() {
     setIsConnectTwelite(false);
     
     if (!_sdLogger.begin(CSV_HEADER)) {
+        for (int i = 0; i < 5; i++) {
+            _speaker.playBeep();
+            delay(100);
+        }
         _writer.log("CansatController: SD Logger initialization failed!");
     } else {
         _writer.log("CansatController: SD Logger initialized successfully");
@@ -77,11 +81,12 @@ void CansatController::begin() {
     }
 #endif
     
-    if (!_bno055.begin()) {
+    if (!_bno055.begin(true)) {
         writeSystemLog("CansatController: BNO055 initialization failed!");
     } else {
         writeSystemLog("CansatController: BNO055 initialized successfully");
     }
+    // _bno055.setAccelerometerTo16G();
 
     writeSystemLog("CansatController: begin() finished\ntimestamp: log");
     configState();
