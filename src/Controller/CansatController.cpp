@@ -81,12 +81,12 @@ void CansatController::begin() {
     }
 #endif
     
-    if (!_bno055.begin(false)) {
+    if (!_bno055.begin(true)) {
         writeSystemLog("CansatController: BNO055 initialization failed!");
     } else {
         writeSystemLog("CansatController: BNO055 initialized successfully");
     }
-    _bno055.setAccelerometerTo16G();
+    // _bno055.setAccelerometerTo16G();
 
     writeSystemLog("CansatController: begin() finished\ntimestamp: log");
     configState();
