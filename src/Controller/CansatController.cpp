@@ -81,7 +81,7 @@ void CansatController::begin() {
     }
 #endif
     
-    if (!_bno055.begin()) {
+    if (!_bno055.begin(false)) {
         writeSystemLog("CansatController: BNO055 initialization failed!");
     } else {
         writeSystemLog("CansatController: BNO055 initialized successfully");
