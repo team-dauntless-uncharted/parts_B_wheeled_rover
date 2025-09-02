@@ -36,7 +36,6 @@ struct UserConfig {
     int detectionTurn180delay = 700;                                // DETECIIONで180度回転するのにかかる秒数
     unsigned long recordingTimeoutThreshold = 5 * 60 * 1000;        // RECORDINGでのタイムアウト待ち時間
     int recordingTime = 30 * 1000;                                  // RECORDINGでの時間(ミリ秒)
-    int explorePositionSameLimit = 10;                              // EXPLOREでのHELPING移行までの判定
 };
 
 class CansatController {

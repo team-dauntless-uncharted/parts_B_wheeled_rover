@@ -23,7 +23,6 @@ void EscapeState::onUpdate() {
     _ctx.getSerialWriter().logf("Elapsed time: %lu", elapsedTime);
     
     if (elapsedTime > _ctx.getUserConfig().escapeStateTimeoutThreshold) {
-		while (true);
         _ctx.writeSystemLog("%lu: Timeout. Change to DetectionState", millis());
         _ctx.changeState(std::make_unique<DetectionState>(_ctx));
         return;
@@ -48,7 +47,6 @@ void EscapeState::onUpdate() {
     _count++;
     
 	if (_count >= 4) {
-		while (true);
         _ctx.writeSystemLog("%lu: Timeout. Change to DetectionState", millis());
         _ctx.changeState(std::make_unique<DetectionState>(_ctx));
         return;	

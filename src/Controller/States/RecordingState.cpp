@@ -16,6 +16,8 @@ void RecordingState::onEnter() {
     	_ctx.setIsConnectTwelite(true);
   	}
 
+	delay(200);
+
 	if (!setRecordingMode()) {
 		_ctx.writeSystemLog("%lu: Failed to set recording mode", millis());
 	} else {

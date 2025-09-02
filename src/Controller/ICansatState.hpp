@@ -11,7 +11,6 @@ enum State {
 	DETECTION,
 	RECORDING,
 	EXPLORE,
-	HELPING,
 };
 
 class ICansatState {

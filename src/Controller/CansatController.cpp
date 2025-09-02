@@ -12,7 +12,6 @@
 #include "Controller/States/DetectionState.hpp"
 #include "Controller/States/RecordingState.hpp"
 #include "Controller/States/ExploreState.hpp"
-#include "Controller/States/HelpingState.hpp"
 
 CansatController::CansatController()
     : _motorR_pins{8, 4, 5},
@@ -270,10 +269,6 @@ void CansatController::configState() {
     case State::EXPLORE:
         writeSystemLog("%lu: config ExploreState", millis());
         changeState(std::make_unique<ExploreState>(*this));
-        break;
-    case State::HELPING:
-        writeSystemLog("%lu: config HelpingState", millis());
-        changeState(std::make_unique<HelpingState>(*this));
         break;
     default:
         writeSystemLog("%lu: config CalibrationState", millis());
