@@ -1,9 +1,6 @@
 [submodule "libraries/TwelitePacket"]
 	path = libraries/TwelitePacket
 	url = git@github.com:team-dauntless-uncharted/twelite_packet.git
-[submodule "libraries/spresense_fomo_inferencing"]
-	path = libraries/spresense_fomo_inferencing
-	url = git@github.com:team-dauntless-uncharted/spresense_fomo_inferencing.git
 [submodule "libraries/PosixAvi"]
 	path = libraries/PosixAvi
 	url = git@github.com:team-dauntless-uncharted/PosixAvi.git
@@ -13,3 +10,6 @@
 [submodule "libraries/ArduinoJson"]
 	path = libraries/ArduinoJson
 	url = git@github.com:bblanchon/ArduinoJson.git
+[submodule "libraries/a_parts_detection_inferencing"]
+	path = libraries/a_parts_detection_inferencing
+	url = git@github.com:team-dauntless-uncharted/a_parts_detection.git
