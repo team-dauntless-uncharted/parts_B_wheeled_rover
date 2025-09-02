@@ -31,7 +31,6 @@ struct UserConfig {
     int launchStateCdsThreshold = 400;                              // LAUNCHでのCdS閾値
     unsigned long launchStateTimeoutThreshold = 20 * 60 * 1000;     // LAUNCHでのタイムアウト待ち時間
     unsigned long dropStateTimeoutThreshold = 10 * 60 * 1000;       // DROPでのタイムアウト待ち時間
-    double escapeStateDistanceThreshold = 0.5;                      // ESCAPEでの距離閾値(メートル)
     unsigned long escapeStateTimeoutThreshold = 15 * 1000;          // ESCAPEでのタイムアウト待ち時間
     int detectionMaxFailedCount = 25;                               // DETECTIONでの失敗上限回数
     int detectionTurn180delay = 700;                                // DETECIIONで180度回転するのにかかる秒数
