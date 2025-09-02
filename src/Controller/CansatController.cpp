@@ -161,9 +161,6 @@ void CansatController::readConfigFile() {
     
     // Escape設定
     if (doc.containsKey("Escape")) {
-        if (doc["Escape"].containsKey("Distance")) {
-            _config.escapeStateDistanceThreshold = doc["Escape"]["Distance"];
-        }
         if (doc["Escape"].containsKey("Timeout")) {
             _config.escapeStateTimeoutThreshold = doc["Escape"]["Timeout"];
         }
@@ -215,8 +212,8 @@ void CansatController::dumpConfig() {
     writeSystemLog(logBuf);
     
     // Escape設定
-    snprintf(logBuf, sizeof(logBuf), "[Escape] Distance: %.2f, Timeout: %d", 
-             _config.escapeStateDistanceThreshold, _config.escapeStateTimeoutThreshold);
+    snprintf(logBuf, sizeof(logBuf), "[Escape] Timeout: %d", 
+             _config.escapeStateTimeoutThreshold);
     writeSystemLog(logBuf);
     
     // Detection設定

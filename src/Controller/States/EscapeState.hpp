@@ -22,4 +22,5 @@ private:
 	void pulseForward(int pwm, int repeat);
 	void rockingEscape(int pwm, int repeat);
 	void phaseEscape(int pwm, int repeat);
+	void spiralEscape(int pwm, int repeat);
 };
