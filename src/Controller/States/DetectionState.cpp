@@ -66,7 +66,6 @@ void DetectionState::onUpdate() {
 		}
 
 		if (_result.has_detection) {
-			_ctx.getSpeaker().playBeep();
 			int x = _result.detected_objects[0].x;
 			_ctx.writeSystemLog("A-parts detected %f x=%d y=%d", _result.detected_objects[0].value, _result.detected_objects[0].x, _result.detected_objects[0].y);
 			
@@ -74,28 +73,25 @@ void DetectionState::onUpdate() {
 				_ctx.getSerialWriter().log("Failed to save resized image");
 			 	return;
 			}
-			
-		//     if (x >= 43 && x <= 52) {
-		// 		_ctx.writeSystemLog("%lu: A-parts detected. Changing to RecordingState, millis()");
-		// 		_ctx.changeState(std::make_unique<RecordingState>(_ctx));
-		// 		return;
-		//     } else if (x >= 0 && x <= 42) {
-		// 		// 右に回転
-		// 		_ctx.getMotor().turnRight(150);
-		// 		delay(100);
-		// 		_ctx.getMotor().stop();
-    	// 	} else if (x >= 53 && x <= 95) {
-		// 		// 左に回転
-		// 		_ctx.getMotor().turnLeft(150);
-		// 		delay(100);
-		// 		_ctx.getMotor().stop();
-		// 	} else {
-		// 		// 適当に回転
-		// 	}
-		// } else {
-		// 	_ctx.getMotor().turnLeft(150);
-		// 	delay(200);
-		// 	_ctx.getMotor().stop();
+
+			switch (_succeedCount) {
+			case 0:
+				_ctx.getMotor().turnLeft(150);
+				delay(_ctx.getUserConfig().detectionTurn180delay);
+				_ctx.getMotor().stop();
+				delay(100);
+				_ctx.getMotor().forward(150);
+				delay(1000);
+				_ctx.getMotor().stop();
+				break;
+			case 1:
+				_ctx.writeSystemLog("%lu: A-parts detected. Changing to RecordingState, millis()");
+		 		_ctx.changeState(std::make_unique<RecordingState>(_ctx));
+				break;
+			default:
+				_succeedCount = 0;
+				break;
+			}
 		}
 	}
 

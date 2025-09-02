@@ -39,6 +39,7 @@ private:
 	bool _isInitCamera = false;
 	bool _isInitEdgeImpulse = false;
 	DetectionResult _result;
+	int _succeedCount = 0;
 
 	bool setDetectionMode();
 	void endDetectionMode();

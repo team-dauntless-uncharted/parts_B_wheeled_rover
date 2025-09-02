@@ -171,7 +171,12 @@ void CansatController::readConfigFile() {
     
     // Detection設定
     if (doc.containsKey("Detection") && doc["Detection"].containsKey("MaxFailedCount")) {
-        _config.detectionMaxFailedCount = doc["Detection"]["MaxFailedCount"];
+        if (doc["Detection"].containsKey("MaxFailedCount")) {
+            _config.detectionMaxFailedCount = doc["Detection"]["MaxFailedCount"];
+        }
+        if (doc["Detection"].containsKey("Turn180Delay")) {
+            _config.detectionTurn180delay = doc["Detection"]["Turn180Delay"];
+        }
     }
     
     // Recording設定
