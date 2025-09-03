@@ -29,12 +29,12 @@ void DetectionState::onEnter() {
 void DetectionState::onUpdate() {
 	_ctx.getSerialWriter().log("Updating DetectionState");
 
-	// _failedCount++;
-	// if (_failedCount >= _ctx.getUserConfig().detectionMaxFailedCount) {
-	// 	_ctx.writeSystemLog("%lu: Failed too many times. Change to RecordingState", millis());
-	// 	_ctx.changeState(std::make_unique<RecordingState>(_ctx));
-	// 	return;
-	// }
+	_failedCount++;
+	if (_failedCount >= _ctx.getUserConfig().detectionMaxFailedCount) {
+		_ctx.writeSystemLog("%lu: Failed too many times. Change to RecordingState", millis());
+		_ctx.changeState(std::make_unique<RecordingState>(_ctx));
+		return;
+	}
 
 	if (_isInitEdgeImpulse) {
 		// 画像を撮影する
@@ -87,11 +87,12 @@ void DetectionState::onUpdate() {
 			case 1:
 				_ctx.writeSystemLog("%lu: A-parts detected. Changing to RecordingState, millis()");
 		 		_ctx.changeState(std::make_unique<RecordingState>(_ctx));
-				break;
+				return;
 			default:
 				_succeedCount = 0;
 				break;
 			}
+			_succeedCount++;
 		}
 	}
 
@@ -139,6 +140,7 @@ bool DetectionState::setDetectionMode() {
 }
 
 void DetectionState::endDetectionMode() {
+	_ctx.getCamera().startStreaming(false);
 	_ctx.getCamera().end();
 	_isInitCamera = false;
 }

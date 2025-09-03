@@ -1,5 +1,4 @@
 #include "Controller/States/ExploreState.hpp"
-#include "Controller/States/HelpingState.hpp"
 #include "Controller/CansatController.hpp"
 
 void ExploreState::onEnter() {
@@ -42,25 +41,6 @@ void ExploreState::onUpdate() {
     } else {
 		_ctx.getSerialWriter().log("Failed to take picture");
     }
-
-	double latitude = _ctx.getGnss().getLatitude();
-	double longitude = _ctx.getGnss().getLongitude();
-
-	if (fabs(latitude - _prevLatitude) < 0.000001 && fabs(longitude - _prevLongitude) < 0.000001) {
-		_sameCount++;
-	} else {
-		_sameCount = 0;
-	}
-
-	if (_sameCount >= _ctx.getUserConfig().explorePositionSameLimit) {
-		// HELPING_STATE
-		_ctx.writeSystemLog("%lu: Can't Move. Changing to HELPING_STATE", millis());
-		_ctx.changeState(std::make_unique<HelpingState>(_ctx));
-		return;
-	}
-
-	_prevLatitude = latitude;
-	_prevLongitude = longitude;
 }
 
 void ExploreState::onExit() {
@@ -68,16 +48,6 @@ void ExploreState::onExit() {
 	if (_isInitCamera) {
 		endPhotoMode();
 	}
-
-	if (!_ctx.getSDLogger().writeState((int)State::HELPING)) {
-		_ctx.getSerialWriter().log("Failed to write state in SD");
-	}
-
-#ifdef USE_FLASH
-	if (!_ctx.getFlashIO().writeState((int)State::HELPING)) {
-		_ctx.getSerialWriter().log("Failed to write state in Flash");
-	}
-#endif // USE_FLASH
 }
 
 State ExploreState::getState() const {
