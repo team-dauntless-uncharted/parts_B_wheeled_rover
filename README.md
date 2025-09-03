@@ -8,14 +8,13 @@ ARLISS 2025 TDU Team-Dauntless-Uncharted Bパーツ開発リポジトリ
 
 ```
 100kinsat_neo
-├── 100kinsat_neo.ino               # メインのArduinoスケッチ
-├── libraries                       # 外部ライブラリ(git submodule)
-│   ├── Adafruit_BNO055             # BNO055のセンサライブラリ
-│   ├── Adafruit_BusIO
-│   ├── Adafruit_Sensor
-│   ├── PosixAvi                    # AVIでの録画
-│   ├── spresense_fomo_inferencing  # 物体検知
-│   └── TwelitePacket               # AパーツやケースとのTwelite通信
+├── 100kinsat_neo.ino                 # メインのArduinoスケッチ
+├── libraries                         # 外部ライブラリ(git submodule)
+│   ├── ArduinoJson
+│   ├── BNO055Library                 # BNO055のセンサライブラリ
+│   ├── PosixAvi                      # AVIでの録画
+│   ├── a_parts_detection_inferencing # 物体検知
+│   └── TwelitePacket                 # AパーツやケースとのTwelite通信
 ├── src
 │   ├── Actuator                    # アクチュエータ
 │   ├── Controller                  # Cansat制御・各State処理
@@ -96,15 +95,6 @@ ARLISS 2025 TDU Team-Dauntless-Uncharted Bパーツ開発リポジトリ
 ### 8. EXPLORE
 
 - 動作：適当に移動（散策）し、周辺環境の画像を撮影する
-- 次のモード：HELPING
-- 移行条件：一定時間、移動できなくなったら（緯度経度の値がほとんど変わらなかったら）
-
-### 9. HELPING
-
-- 動作：Tweliteで自身の位置情報を格納した救援信号をAパーツに送る
-- 次のモード：？
-- 移行条件：救助されたら
-
 
 ## セットアップと実行
 
@@ -176,6 +166,19 @@ $ make upload PORT="/dev/ttyUSB0" # 任意のポートを指定可能
 $ ./build.bat upload
 ```
 
+**build.batがうまく行かない場合**
+
+下記のコマンドを直接実行する
+
+```bash
+# ビルド
+$ arduino-cli compile --fqbn SPRESENSE:spresense:spresense:Core=Main,Memory=1536 --libraries libraries --build-property build.extra_flags="-Isrc" --build-property compiler.cpp.extra_flags="-std=gnu++14" 100kinsat_neo.ino
+# 書き込み
+$ arduino-cli upload --fqbn SPRESENSE:spresense:spresense:Core=Main,Memory=1536 -p [Spresenseを認識しているポート] 100kinsat_neo.ino
+# シリアルモニタ
+$ arduino-cli monitor -p [Spresenseを認識しているポート] -c baudrate=115200
+```
+
 ### 4. シリアルモニタ
 
 デバイスはUSBで接続して、認識していればそのデバイスのシリアルモニタを開く
@@ -229,7 +232,6 @@ state.txtに対応する数値を記述することで、その状態から始�
 - 5: DetectionState
 - 6: RecordingState
 - 7: ExploreState
-- 8: HelpingState
 ```
 
 ## ユーザ指定の値
