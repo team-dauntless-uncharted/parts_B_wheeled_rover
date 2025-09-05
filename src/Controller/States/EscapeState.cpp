@@ -2,16 +2,11 @@
 #include "Controller/States/DetectionState.hpp"
 #include "Controller/CansatController.hpp"
 
-#include "Utils/GeoUtils/GeoUtils.hpp"
-
 void EscapeState::onEnter() {
 	_ctx.writeSystemLog("%lu: Entering EscapeState", millis());
 
 	// _ctx.getSpeaker().playState((int)State::ESCAPE);
 	_ctx.setLed((int)State::ESCAPE);
-
-	_startLatitude = _ctx.getGnss().getLatitude();
-	_startLongitude = _ctx.getGnss().getLongitude();
 
 	_startTime = millis();
 	_count = 0;
