@@ -15,9 +15,6 @@ private:
 	unsigned long _startTime;
 	int _count;
 
-	double _startLatitude;
-	double _startLongitude;
-
 	// 脱出アルゴリズム
 	void pulseForward(int pwm, int repeat);
 	void rockingEscape(int pwm, int repeat);

@@ -2,16 +2,11 @@
 #include "Controller/States/DetectionState.hpp"
 #include "Controller/CansatController.hpp"
 
-#include "Utils/GeoUtils/GeoUtils.hpp"
-
 void EscapeState::onEnter() {
 	_ctx.writeSystemLog("%lu: Entering EscapeState", millis());
 
 	// _ctx.getSpeaker().playState((int)State::ESCAPE);
 	_ctx.setLed((int)State::ESCAPE);
-
-	_startLatitude = _ctx.getGnss().getLatitude();
-	_startLongitude = _ctx.getGnss().getLongitude();
 
 	_startTime = millis();
 	_count = 0;
@@ -47,6 +42,14 @@ void EscapeState::onUpdate() {
     _count++;
     
 	if (_count >= 4) {
+        delay(1000);
+
+        if (_ctx.getBno055().getAcceleration().z < 0) {
+            _ctx.getMotor().forward(150);
+            delay(1500);
+        }
+        _ctx.getMotor().stop();
+
         _ctx.writeSystemLog("%lu: Timeout. Change to DetectionState", millis());
         _ctx.changeState(std::make_unique<DetectionState>(_ctx));
         return;	
