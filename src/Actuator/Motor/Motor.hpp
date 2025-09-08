@@ -16,6 +16,8 @@ public:
 	void rightStop();
 	void leftStop();
 
+    void snakeForwardSmooth(int pwm, int duration, int frequency);
+
 private:
 	int _motorR[3];
 	int _motorL[3];

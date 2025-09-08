@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <math.h>
 #include "Actuator/Motor/Motor.hpp"
 
 Motor::Motor(int pinR[3], int pinL[3]) {
@@ -81,4 +82,19 @@ void Motor::rightStop() {
 
 void Motor::leftStop() {
     analogWrite(_motorL[2], 0);
+}
+
+void Motor::snakeForwardSmooth(int pwm, int duration, int frequency) {
+    unsigned long start = millis();
+    while (millis() - start < (unsigned long)duration) {
+        float t = (millis() - start) / 1000.0; // 秒に変換
+        float offset = sin(2 * M_PI * frequency * t); // -1～1
+
+        int pwmR = pwm * (1.0 - 0.3 * offset); // 右モータ
+        int pwmL = pwm * (1.0 + 0.3 * offset); // 左モータ
+
+        analogWrite(_motorR[2], constrain(pwmR, 0, 255));
+        analogWrite(_motorL[2], constrain(pwmL, 0, 255));
+    }
+    stop();
 }
