@@ -16,10 +16,16 @@ public:
     bool saveJPEGImage(void* buff, size_t size);
     bool savePPMImage(void* buff, size_t size);
 
-    bool aviInit(int width, int height);  // 変更: voidからboolに変更
-    void aviStart();
-    void aviRecord(void* buff, size_t size);
-    void aviEnd();
+    // AVI関連のエラーハンドリング対応
+    bool aviInit(int width, int height);
+    bool aviStart();
+    bool aviRecord(void* buff, size_t size);
+    bool aviEnd();
+    
+    // AVI エラーハンドリング用メソッド
+    bool aviHasFailed() const { return _avi.hasFailed(); }
+    const char* aviGetErrorMessage() const { return _avi.getErrorMessage(); }
+    void aviEmergencyStop(); // 緊急停止用
 
     bool readState(int &state);
     bool writeState(const int &state);
@@ -68,9 +74,10 @@ private:
     // AVI
     char _aviFileName[32];
     uint16_t _aviFileNameCount = 0;
+    bool _aviRecordingActive = false; // 録画状態の追跡
 
     void refreshAVIFileNameIndex();
     void shiftAVIFileName();
 
-    PosixAviLibrary _avi;  // 変更: AviLibrary から PosixAviLibrary に変更
+    PosixAviLibrary _avi;
 };

@@ -19,9 +19,14 @@ private:
 	bool _isInitCamera = false;
 	static RecordingState *_instance;
 	bool _isRecordingOK = false;
+	
+	// エラーハンドリング用メンバ変数
+	bool _recordingError = false;
+	bool _aviRecordingActive = false;
+	uint32_t _frameCount = 0;
 
 	bool setRecordingMode();
-	void record(int time_ms);
+	bool record(int time_ms);  // 戻り値をboolに変更
 	void endRecordingMode();
 	void handleCameraImage(CamImage img);
 };
