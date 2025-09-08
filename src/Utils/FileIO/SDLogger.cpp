@@ -1,6 +1,6 @@
 #include "SDLogger.hpp"
 
-SDLogger::SDLogger() : BaseFileIO() {}
+SDLogger::SDLogger() : BaseFileIO(), _aviRecordingActive(false) {}
 
 const char *SDLogger::getBasePath() const {
     return "/mnt/sd0";
@@ -118,31 +118,105 @@ bool SDLogger::savePPMImage(void* buff, size_t size) {
     return true;
 }
 
-// ------------------ AVI ------------------
+// ------------------ AVI エラーハンドリング対応 ------------------
 
-bool SDLogger::aviInit(int width, int height) {  // 戻り値をboolに変更
+bool SDLogger::aviInit(int width, int height) {
     refreshAVIFileNameIndex();
     
-    // POSIX API対応版は内部でファイルを管理するため、posixOpenは不要
-    return _avi.begin(_aviFileName, width, height);  // 戻り値をチェック
+    if (!_avi.begin(_aviFileName, width, height)) {
+        // システムログにエラーを記録
+        char errorMsg[256];
+        snprintf(errorMsg, sizeof(errorMsg), "AVI init failed: %s", _avi.getErrorMessage());
+        appendSystemLog(errorMsg);
+        return false;
+    }
+    
+    return true;
 }
 
-void SDLogger::aviStart() {
-    _avi.startRecording();
+bool SDLogger::aviStart() {
+    if (!_avi.startRecording()) {
+        // システムログにエラーを記録
+        char errorMsg[256];
+        snprintf(errorMsg, sizeof(errorMsg), "AVI start failed: %s", _avi.getErrorMessage());
+        appendSystemLog(errorMsg);
+        return false;
+    }
+    
+    _aviRecordingActive = true;
+    appendSystemLog("AVI recording started successfully");
+    return true;
 }
 
-void SDLogger::aviRecord(void* buff, size_t size) {
-    // 型変換を追加（PosixAviLibraryはconst char*を要求）
-    _avi.addFrame(static_cast<const char*>(buff), size);
+bool SDLogger::aviRecord(void* buff, size_t size) {
+    if (!_aviRecordingActive) {
+        appendSystemLog("AVI record called but recording not active");
+        return false;
+    }
+    
+    // フレーム追加を試行
+    if (!_avi.addFrame(static_cast<const char*>(buff), size)) {
+        // エラー発生時は部分的な動画を保存して緊急停止
+        char errorMsg[256];
+        snprintf(errorMsg, sizeof(errorMsg), "AVI frame add failed: %s", _avi.getErrorMessage());
+        appendSystemLog(errorMsg);
+        
+        // 緊急停止処理
+        aviEmergencyStop();
+        return false;
+    }
+    
+    return true;
 }
 
-void SDLogger::aviEnd() {
-    _avi.endRecording();
+bool SDLogger::aviEnd() {
+    if (!_aviRecordingActive) {
+        appendSystemLog("AVI end called but recording not active");
+        return false;
+    }
+    
+    bool success = true;
+    
+    // 録画終了処理
+    if (!_avi.endRecording()) {
+        char errorMsg[256];
+        snprintf(errorMsg, sizeof(errorMsg), "AVI end recording failed: %s", _avi.getErrorMessage());
+        appendSystemLog(errorMsg);
+        success = false;
+    }
+    
+    // リソース解放
     _avi.end();
-    // posixClose(_aviFd); を削除（PosixAviLibraryが内部で管理）
+    _aviRecordingActive = false;
     
     // 次のファイル名に更新
     shiftAVIFileName();
+    
+    if (success) {
+        appendSystemLog("AVI recording ended successfully");
+    } else {
+        appendSystemLog("AVI recording ended with errors but file may be partially playable");
+    }
+    
+    return success;
+}
+
+void SDLogger::aviEmergencyStop() {
+    if (!_aviRecordingActive) return;
+    
+    appendSystemLog("AVI emergency stop initiated");
+    
+    // 可能な限り有効なファイルとして保存
+    _avi.endRecording();  // エラーがあっても呼び出す
+    _avi.end();
+    _aviRecordingActive = false;
+    
+    // 次のファイル名に更新
+    shiftAVIFileName();
+    
+    char statusMsg[256];
+    snprintf(statusMsg, sizeof(statusMsg), "AVI emergency stop completed. Frames saved: %u", _avi.getTotalFrame());
+    appendSystemLog(statusMsg);
 }
 
 // ------------------ State ------------------
