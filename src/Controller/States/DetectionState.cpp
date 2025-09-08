@@ -2,7 +2,7 @@
 #include "Controller/States/RecordingState.hpp"
 #include "Controller/CansatController.hpp"
 
-#include "a_parts_detection_inferencing.h"
+#include "a_parts_blackrock_inferencing.h"
 #include <edge-impulse-sdk/dsp/image/image.hpp>
 
 uint8_t *DetectionState::_image_buffer_base = nullptr;
