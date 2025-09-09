@@ -80,9 +80,8 @@ void DetectionState::onUpdate() {
 				delay(_ctx.getUserConfig().detectionTurn180delay);
 				_ctx.getMotor().stop();
 				delay(100);
-				_ctx.getMotor().forward(150);
-				delay(1000);
-				_ctx.getMotor().stop();
+				_ctx.getMotor().snakeForwardSmooth(150, 4000, 1000);
+				delay(100);
 				break;
 			case 1:
 				_ctx.writeSystemLog("%lu: A-parts detected. Changing to RecordingState, millis()");
