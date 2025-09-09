@@ -15,7 +15,6 @@
 #endif // USE_FLASH
 #include "Utils/PowerController/PowerController.hpp"
 #include "Utils/Serial/SerialWriter.hpp"
-#include <TwelitePacket.h>
 
 #include "Controller/ICansatState.hpp"
 #include <array>
@@ -26,7 +25,6 @@
 
 struct UserConfig {
     unsigned long calibrationStateTimeoutThreshold = 5 * 60 * 1000; // CALIBRATIONでのタイムアウト待ち時間
-    double standbyStateAltThreshold = 20;                           // STANDBYでの高度閾値
     unsigned long standbyStateTimeoutThreshold = 10 * 60 * 1000;    // STANDBYでのタイムアウト待ち時間
     int launchStateCdsThreshold = 400;                              // LAUNCHでのCdS閾値
     unsigned long launchStateTimeoutThreshold = 20 * 60 * 1000;     // LAUNCHでのタイムアウト待ち時間
@@ -61,17 +59,14 @@ public:
     Speaker &getSpeaker() { return _speaker; }
 
     // データのやり取り
-    twelite::TwelitePacket &getTwelite() { return _twelite; }
     SDLogger &getSDLogger() { return _sdLogger; }
 #ifdef USE_FLASH
     FlashIO &getFlashIO() { return _flash; }
 #endif // USE_FLASH
     SerialWriter &getSerialWriter() { return _writer; }
     
-    void setIsConnectTwelite(bool isConnectTwelite) { _isConnectTwelite = isConnectTwelite; }
     void setInitCamera(bool initCamera) { _initCamera = initCamera; }
 
-    bool isConnectTwelite() { return _isConnectTwelite; }
     bool isInitCamera() { return _initCamera; }
 
     UserConfig getUserConfig() { return _config; }
@@ -94,7 +89,6 @@ private:
 
     std::unique_ptr<ICansatState> _state;
     
-    bool _isConnectTwelite = false;
     bool _initCamera = false;
     
     // センサ
@@ -118,7 +112,6 @@ private:
     PowerController _power;
 
     // データのやり取り
-    twelite::TwelitePacket _twelite;
     SDLogger _sdLogger;
 #ifdef USE_FLASH
     FlashIO _flash;
