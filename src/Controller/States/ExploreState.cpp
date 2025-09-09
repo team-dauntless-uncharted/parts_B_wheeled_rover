@@ -18,21 +18,20 @@ void ExploreState::onUpdate() {
 	_ctx.getSerialWriter().log("Updating ExploreState");
 
 	// // 適当に移動
+	_ctx.getMotor().snakeForwardSmooth(150, 2000, 1);
 	// _ctx.getMotor().forward(150);
 	// delay(random(500, 1500));
 	// _ctx.getMotor().stop();
-	// delay(100);	
+	delay(100);	
 
-	// if (random(2) == 0) {
-	// 	_ctx.getMotor().turnLeft(150);
-	// } else {
-	// 	_ctx.getMotor().turnRight(150);
-	// }
-	// delay(random(200, 500));
-	// _ctx.getMotor().stop();
-	// delay(100);
-
-	_ctx.getMotor().snakeForwardSmooth(150, 5000, 1);
+	if (random(2) == 0) {
+		_ctx.getMotor().turnLeft(150);
+	} else {
+		_ctx.getMotor().turnRight(150);
+	}
+	delay(random(200, 500));
+	_ctx.getMotor().stop();
+	delay(100);
 
 	// 画像を撮影する
     void* imgBuff = nullptr;
