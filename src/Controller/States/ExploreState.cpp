@@ -32,7 +32,7 @@ void ExploreState::onUpdate() {
 	// _ctx.getMotor().stop();
 	// delay(100);
 
-	_ctx.getMotor().snakeForwardSmooth(200, 2000, 1);
+	_ctx.getMotor().snakeForwardSmooth(150, 5000, 1);
 
 	// 画像を撮影する
     void* imgBuff = nullptr;
