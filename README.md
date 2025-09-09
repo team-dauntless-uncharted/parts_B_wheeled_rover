@@ -14,7 +14,6 @@ ARLISS 2025 TDU Team-Dauntless-Uncharted Bパーツ開発リポジトリ
 │   ├── BNO055Library                 # BNO055のセンサライブラリ
 │   ├── PosixAvi                      # AVIでの録画
 │   ├── a_parts_detection_inferencing # 物体検知
-│   └── TwelitePacket                 # AパーツやケースとのTwelite通信
 ├── src
 │   ├── Actuator                    # アクチュエータ
 │   ├── Controller                  # Cansat制御・各State処理
@@ -44,7 +43,6 @@ ARLISS 2025 TDU Team-Dauntless-Uncharted Bパーツ開発リポジトリ
   - スピーカー: ゴール時の音楽再生など
 - **その他**:
   - SDカードスロット: ログ保存用
-  - 無線通信モジュール: 地上局へのデータ送信
 
 ### ソフトウェア (状態遷移)
 
@@ -58,9 +56,9 @@ ARLISS 2025 TDU Team-Dauntless-Uncharted Bパーツ開発リポジトリ
 
 ### 2. STANDBY
 
-- 動作：高度、経過時間の監視
+- 動作：経過時間の監視
 - 次のモード：LAUNCH
-- 移行条件：高度が一定の高さを超える、もしくは一定時間経過する
+- 移行条件：一定時間経過する
 
 ### 3. LAUNCH
 
@@ -256,7 +254,6 @@ SDカードにconfig.jsonファイルを配置することで、任意の値を�
     "Timeout": 300000
   },
   "Standby": {
-    "Alt": 20.0,
     "Timeout": 600000
   },
   "Launch": {
