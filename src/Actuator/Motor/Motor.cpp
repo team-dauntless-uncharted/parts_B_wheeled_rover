@@ -86,6 +86,13 @@ void Motor::leftStop() {
 
 void Motor::snakeForwardSmooth(int pwm, int duration, int frequency) {
     unsigned long start = millis();
+
+    // 前進方向に設定しておく
+    digitalWrite(_motorR[0], HIGH);
+    digitalWrite(_motorR[1], LOW);
+    digitalWrite(_motorL[0], HIGH);
+    digitalWrite(_motorL[1], LOW);
+
     while (millis() - start < (unsigned long)duration) {
         float t = (millis() - start) / 1000.0; // 秒に変換
         float offset = sin(2 * M_PI * frequency * t); // -1～1
