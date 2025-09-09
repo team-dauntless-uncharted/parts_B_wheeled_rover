@@ -10,5 +10,5 @@ void setup() {
 
 void loop() {
     cansat.update();
-    delay(50);
+    delay(200);
 }

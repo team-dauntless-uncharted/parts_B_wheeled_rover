@@ -23,7 +23,6 @@ CansatController::CansatController()
       _led{Led(LED0), Led(LED1), Led(LED2), Led(LED3)},
       _speaker(9),
       _heater(6),
-      _twelite(11),
       _sdLogger(),
       _camera(),
       _power()
@@ -45,10 +44,6 @@ void CansatController::begin() {
     _writer.begin();
     _writer.log("CansatController: Starting begin()");
 
-    _twelite.begin(Serial2, 115200);
-    _twelite.off();
-    setIsConnectTwelite(false);
-    
     if (!_sdLogger.begin(CSV_HEADER)) {
         for (int i = 0; i < 5; i++) {
             _speaker.playBeep();
@@ -135,9 +130,6 @@ void CansatController::readConfigFile() {
     
     // Standby設定
     if (doc.containsKey("Standby")) {
-        if (doc["Standby"].containsKey("Alt")) {
-            _config.standbyStateAltThreshold = doc["Standby"]["Alt"];
-        }
         if (doc["Standby"].containsKey("Timeout")) {
             _config.standbyStateTimeoutThreshold = doc["Standby"]["Timeout"];
         }
@@ -196,8 +188,8 @@ void CansatController::dumpConfig() {
     writeSystemLog(logBuf);    
 
     // Standby設定
-    snprintf(logBuf, sizeof(logBuf), "[Standby] Alt: %.2f, Timeout: %d", 
-             _config.standbyStateAltThreshold, _config.standbyStateTimeoutThreshold);
+    snprintf(logBuf, sizeof(logBuf), "Timeout: %d", 
+             _config.standbyStateTimeoutThreshold);
     writeSystemLog(logBuf);
     
     // Launch設定
