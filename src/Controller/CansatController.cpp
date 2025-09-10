@@ -87,6 +87,13 @@ void CansatController::begin() {
 }
 
 void CansatController::update() {
+    unsigned long now = millis();
+
+    if (now - _lastHeartBeat >= 10000) {
+        writeSystemLog("%lu: HeartBeat", now);
+        _lastHeartBeat = now;
+    }
+
     _gnss.update();
     _acceleration = _bno055.getAcceleration();
     _gyro = _bno055.getGyroscope();

@@ -237,7 +237,6 @@ state.txtに対応する数値を記述することで、その状態から始�
 SDカードにconfig.jsonファイルを配置することで、任意の値を設定することができる
 
 - Calibration.Timeout: CalibrationStateでのタイムアウト時間
-- Standby.Alt: StandbyStateでのLaunchState移行ための高度の閾値
 - Standby.Timemout: StandbyStateでのタイムアウト時間
 - Launch.CdS: LaucnhStateでのDropState移行ためのCdSの値の閾値
 - Launch.Timeout: LaunchStateでのタイムアウト時間

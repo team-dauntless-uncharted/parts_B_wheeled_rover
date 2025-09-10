@@ -77,6 +77,7 @@ public:
 
 private:
     UserConfig _config;
+    unsigned long _lastHeartBeat = 0;
 
     void dumpConfig();
     void readConfigFile();
