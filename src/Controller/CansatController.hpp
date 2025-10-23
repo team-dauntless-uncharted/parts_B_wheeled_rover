@@ -7,7 +7,6 @@
 #include "Actuator/Motor/Motor.hpp"
 #include "Actuator/Led/Led.hpp"
 #include "Actuator/Speaker/Speaker.hpp"
-#include "Actuator/Heater/Heater.hpp"
 
 #include "Utils/FileIO/SDLogger.hpp"
 #ifdef USE_FLASH
@@ -55,7 +54,6 @@ public:
     // アクチュエータアクセス
     Motor &getMotor() { return _motor; }
     Led &getLed(int idx) { return _led[idx]; }
-    Heater &getHeater() { return _heater; }
     Speaker &getSpeaker() { return _speaker; }
 
     // データのやり取り
@@ -108,7 +106,6 @@ private:
     Motor _motor;
     std::array<Led, 4> _led;
     Speaker _speaker;
-    Heater _heater;
 
     PowerController _power;
 
