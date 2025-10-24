@@ -1,3 +1,7 @@
+/**
+ * @file CalibrationState.hpp
+ */
+
 #pragma once
 #include "Controller/ICansatState.hpp"
 
@@ -6,9 +10,6 @@
 /**
  * @class CalibrationState
  * @brief キャリブレーション状態：センサーの初期化とキャリブレーションを行う
- *
- * CanSatの最初の状態。BNO055（9軸IMU）のキャリブレーションを行い、
- * センサーが安定するまで待機します。現在の実装では即座にStandbyStateへ遷移する
  *
  * @note キャリブレーション処理はコメントアウトされており、実際には実行していない
  */

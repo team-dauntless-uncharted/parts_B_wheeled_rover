@@ -1,3 +1,7 @@
+/**
+ * @file CalibrationState.cpp
+ */
+
 #include "Controller/States/CalibrationState.hpp"
 #include "Controller/States/StandbyState.hpp"
 #include "Controller/CansatController.hpp"
