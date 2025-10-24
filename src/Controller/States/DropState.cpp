@@ -13,6 +13,12 @@ void DropState::onEnter() {
 	_ctx.getSpeaker().playState((int)State::DROP);
   _ctx.setLed((int)State::DROP);
 
+  _ctx.writeSystemLog("%lu: CansatController: Twelite initialization started", millis());
+  if (!_ctx.isConnectTwelite()) {
+    _ctx.getTwelite().on();
+    _ctx.setIsConnectTwelite(true);
+  }
+
   _startTime = millis();  // タイムアウト判定用の開始時刻を記録
 }
 
@@ -26,6 +32,15 @@ void DropState::onUpdate() {
     _ctx.writeSystemLog("%lu: Timeout. Change to EscapeState", millis());
     _ctx.changeState(std::make_unique<EscapeState>(_ctx));
     return;
+  }
+
+  twelite::Packet pkt;
+  if (_ctx.getTwelite().receivePacket(pkt)) {
+    if (twelite::TwelitePacket::match(pkt, twelite::C_PARTS, twelite::BROADCAST, twelite::DeployComplete)) {
+      _ctx.writeSystemLog("%lu: DeployComplete received. Change to EscapeState", millis());
+      _ctx.changeState(std::make_unique<EscapeState>(_ctx));
+      return;
+    }
   }
 }
 

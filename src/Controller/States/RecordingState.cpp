@@ -16,6 +16,11 @@ void RecordingState::onEnter() {
 	// _ctx.getSpeaker().playState((int)State::RECORDING);
 	_ctx.setLed((int)State::RECORDING);
 
+  	if (!_ctx.isConnectTwelite()) {
+    	_ctx.getTwelite().on();
+    	_ctx.setIsConnectTwelite(true);
+  	}
+
 	delay(200);
 
 	// VIDEO_MODE（QVGA 30fps JPEG）でカメラを初期化
@@ -37,6 +42,23 @@ void RecordingState::onUpdate() {
 		_ctx.writeSystemLog("%lu: RecordingState in error state, transitioning to ExploreState", millis());
 		_ctx.changeState(std::make_unique<ExploreState>(_ctx));
 		return;
+	}
+
+	// Twelite通信でReadyForCaptureパケットを送信
+	twelite::Packet pkt = twelite::TwelitePacket::makePacket(
+		twelite::B_PARTS,
+		twelite::A_PARTS,
+		twelite::ReadyForCapture,
+		0,
+		NULL
+	);
+	_ctx.getTwelite().sendPacket(pkt);
+
+	if (_ctx.getTwelite().receivePacket(pkt)) {
+		if (twelite::TwelitePacket::match(pkt, twelite::A_PARTS, twelite::B_PARTS, twelite::ReadyForCaptureAck)) {
+			_ctx.writeSystemLog("%lu: ReadyForCaptureAck received. Recording start", millis());
+			_isRecordingOK = true;
+		}
 	}
 
 	// タイムアウト判定（config.jsonで設定可能）
