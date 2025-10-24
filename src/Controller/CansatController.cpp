@@ -28,7 +28,6 @@ CansatController::CansatController()
       _motor(_motorR_pins, _motorL_pins),
       _led{Led(LED0), Led(LED1), Led(LED2), Led(LED3)},  // Spresense内蔵LED
       _speaker(9),                  // スピーカー: ピン9
-      _heater(6),
       _twelite(11),
       _sdLogger(),
       _camera(),
