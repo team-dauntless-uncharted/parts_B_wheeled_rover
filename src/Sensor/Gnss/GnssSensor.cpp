@@ -1,18 +1,22 @@
+/**
+ * @file GnssSensor.cpp
+ * @brief GNSSセンサー制御クラスの実装
+ */
+
 #include "Sensor/Gnss/GnssSensor.hpp"
 #include <Arduino.h>
 
 // 静的インスタンスポインタの初期化
 GnssSensor* GnssSensor::_instance = nullptr;
 
-GnssSensor::GnssSensor(int timeout_ms) 
+GnssSensor::GnssSensor(int timeout_ms)
     : _gnss(), _latitude(0), _longitude(0), _altitude(0), _currentDate(""), _posFix(false), _timeout_ms(timeout_ms),
       _dataReady(false), _interruptModeEnabled(false), _timerInterruptEnabled(false), _lastUpdateTime(0), _dataReadyCallback(nullptr) {
-    // 静的インスタンスポインタを設定
+    // 静的インスタンスポインタを設定（割り込みハンドラーから参照するため）
     _instance = this;
 }
 
 GnssSensor::~GnssSensor() {
-    // 割り込みモードを無効化
     disableInterruptMode();
     _instance = nullptr;
 }
@@ -20,12 +24,14 @@ GnssSensor::~GnssSensor() {
 bool GnssSensor::begin() {
 	if (_gnss.begin() != 0) {
 		return false;
-	} else {
-		_gnss.select(GPS);
-		_gnss.select(QZ_L1CA);
-		_gnss.select(QZ_L1S);
 	}
 
+	// 使用する衛星システムを選択
+	_gnss.select(GPS);        // GPS衛星（米国）
+	_gnss.select(QZ_L1CA);    // 準天頂衛星 みちびき L1C/A信号
+	_gnss.select(QZ_L1S);     // 準天頂衛星 みちびき L1S信号（サブメータ級測位補強）
+
+	// COLD_STARTで測位開始（最初から衛星を探索）
 	if (_gnss.start(COLD_START) != 0) {
 		return false;
 	}
@@ -35,17 +41,17 @@ bool GnssSensor::begin() {
 
 bool GnssSensor::waitReceive() {
 	unsigned long startTime = millis();
-	// タイムアウトを5分(300秒)に設定
-	const unsigned long timeout = 300000; 
+	const unsigned long timeout = 300000;  // タイムアウト: 5分（300秒）
 
+	// 測位完了まで待機（ブロッキング）
 	while (!isPosFix()) {
-		update(); // 内部でwaitUpdate(-1)が呼ばれ、データ更新までブロックされる
+		update();
 		if (millis() - startTime > timeout) {
-			return false;
+			return false;  // タイムアウト
 		}
 	}
 
-	// 測位が完了したので、最新のデータを取得しておく
+	// 測位完了後、最新データを取得
 	update();
 
 	return true;
@@ -54,29 +60,37 @@ bool GnssSensor::waitReceive() {
 bool GnssSensor::update() {
     static bool posFixFlag = false;
 
-    // 非ブロッキングでデータ更新をチェック（タイムアウト0で即座に戻る）
+    // 非ブロッキングでデータ更新をチェック
+    // タイムアウト0 = 即座に戻る（データがなければfalse）
     if (!_gnss.waitUpdate(0)) {
-        // データが更新されていない場合はfalseを返す（ブロッキングしない）
         return false;
     }
 
+    // 測位データを取得
     SpNavData navData;
     _gnss.getNavData(&navData);
 
+    // 測位完了フラグの更新
+    // posDataExist: 測位データが存在するか
+    // posFixMode != FixInvalid: 有効な測位モードか
     bool ledSat = ((navData.posDataExist) && (navData.posFixMode != FixInvalid));
     if (posFixFlag != ledSat) {
         _posFix = ledSat;
         posFixFlag = ledSat;
     }
 
+    // 測位データが存在する場合、内部変数を更新
     if (navData.posDataExist != 0) {
-        sprintf(_currentDate, "%04d/%02d/%02d %02d:%02d:%02dZ", 
+        // UTC時刻を文字列化
+        sprintf(_currentDate, "%04d/%02d/%02d %02d:%02d:%02dZ",
             navData.time.year, navData.time.month, navData.time.day,
             navData.time.hour, navData.time.minute, navData.time.sec);
+
+        // 位置情報を更新
         _latitude = navData.latitude;
         _longitude = navData.longitude;
         _altitude = navData.altitude;
-        
+
         // 割り込みモードが有効な場合、データ受信通知を送信
         if (_interruptModeEnabled) {
             onGnssDataReceived();
@@ -99,24 +113,24 @@ double GnssSensor::getAltitude() const {
 }
 
 char *GnssSensor::getCurrentDate() const {
-	return _currentDate;
+	return const_cast<char*>(_currentDate);
 }
 
 bool GnssSensor::isPosFix() const {
 	return _posFix;
 }
 
-// 割り込みベースの非同期処理の実装
+// --- 割り込みベースの非同期処理の実装 ---
+
 void GnssSensor::enableInterruptMode() {
     if (!_interruptModeEnabled) {
         _interruptModeEnabled = true;
         _dataReady = false;
-        
-        // GNSSの割り込み通知を有効化
-        // Spresense SDKのioctl(CXD56_GNSS_IOCTL_SIGNAL_SET)に相当
-        // Arduino環境では、タイマー割り込みを使用してGNSSデータを定期的にチェック
-        // 実際のハードウェア割り込みが利用可能な場合は、ここで設定
-        
+
+        // NOTE: Spresense SDKではioctl(CXD56_GNSS_IOCTL_SIGNAL_SET)で
+        // ハードウェア割り込みを設定できるが、Arduino環境では未対応
+        // 現在はタイマーベースでエミュレートしている
+
         Serial.println("GNSS interrupt mode enabled");
     }
 }
@@ -146,31 +160,32 @@ void GnssSensor::clearDataReadyFlag() {
 void GnssSensor::onGnssDataReceived() {
     if (_interruptModeEnabled) {
         _dataReady = true;
-        
-        // コールバック関数が設定されている場合は実行
+
+        // コールバック関数が設定されていれば実行
         if (_dataReadyCallback) {
             _dataReadyCallback();
         }
     }
 }
 
-// 静的割り込みハンドラー
 void GnssSensor::gnssInterruptHandler() {
+    // 静的メソッドなので、インスタンスポインタ経由で呼び出す
     if (_instance) {
         _instance->onGnssDataReceived();
     }
 }
 
-// タイマー割り込みベースの処理
+// --- タイマー割り込みベースの処理 ---
+
 void GnssSensor::enableTimerInterrupt(unsigned long interval_ms) {
     if (!_timerInterruptEnabled) {
         _timerInterruptEnabled = true;
         _lastUpdateTime = millis();
-        
-        // Arduino環境でのタイマー割り込み設定
-        // 注意: 実際の実装では、使用するArduinoボードに応じて適切なタイマーライブラリを使用
-        // 例: TimerOne, TimerThree, ESP32のタイマーなど
-        
+
+        // NOTE: 実際のタイマー割り込み設定は未実装
+        // Spresenseでタイマー割り込みを使用する場合、
+        // ボード固有のタイマーライブラリが必要
+
         Serial.print("GNSS timer interrupt enabled with interval: ");
         Serial.print(interval_ms);
         Serial.println("ms");
@@ -188,7 +203,7 @@ void GnssSensor::handleTimerInterrupt() {
     if (_timerInterruptEnabled) {
         // 定期的にGNSSデータを更新
         if (update()) {
-            // データが更新された場合、割り込み通知を送信
+            // データ更新成功時、割り込み通知を送信
             onGnssDataReceived();
         }
     }
