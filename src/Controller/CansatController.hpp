@@ -19,6 +19,7 @@
 #endif // USE_FLASH
 #include "Utils/PowerController/PowerController.hpp"
 #include "Utils/Serial/SerialWriter.hpp"
+#include <TwelitePacket.h>
 
 #include "Controller/ICansatState.hpp"
 #include <array>
@@ -44,6 +45,7 @@
  */
 struct UserConfig {
     unsigned long calibrationStateTimeoutThreshold = 5 * 60 * 1000;  ///< CALIBRATIONタイムアウト（ミリ秒）
+    double standbyStateAltThreshold = 20;                            ///< STANDBYでの高度閾値
     unsigned long standbyStateTimeoutThreshold = 10 * 60 * 1000;     ///< STANDBYタイムアウト（ミリ秒）
     int launchStateCdsThreshold = 400;                               ///< LAUNCHのCdS閾値
     unsigned long launchStateTimeoutThreshold = 20 * 60 * 1000;      ///< LAUNCHタイムアウト（ミリ秒）
@@ -127,6 +129,7 @@ public:
 
     // --- データ管理アクセス ---
 
+    twelite::TwelitePacket &getTwelite() { return _twelite; }  ///< Twelite無線通信への参照取得
     SDLogger &getSDLogger() { return _sdLogger; }          ///< SD ロガーへの参照取得
 #ifdef USE_FLASH
     FlashIO &getFlashIO() { return _flash; }               ///< Flash I/Oへの参照取得
@@ -134,10 +137,22 @@ public:
     SerialWriter &getSerialWriter() { return _writer; }    ///< シリアルライターへの参照取得
 
     /**
+     * @brief Twelite接続フラグを設定する
+     * @param isConnectTwelite 接続済みかどうか
+     */
+    void setIsConnectTwelite(bool isConnectTwelite) { _isConnectTwelite = isConnectTwelite; }
+
+    /**
      * @brief カメラ初期化フラグを設定する
      * @param initCamera 初期化済みかどうか
      */
     void setInitCamera(bool initCamera) { _initCamera = initCamera; }
+
+    /**
+     * @brief Tweliteが接続済みかを確認する
+     * @return true: 接続済み, false: 未接続
+     */
+    bool isConnectTwelite() { return _isConnectTwelite; }
 
     /**
      * @brief カメラが初期化済みかを確認する
@@ -205,6 +220,7 @@ private:
     // --- 状態管理 ---
     std::unique_ptr<ICansatState> _state;  ///< 現在の状態（State Pattern）
 
+    bool _isConnectTwelite = false;  ///< Twelite接続済みフラグ
     bool _initCamera = false;  ///< カメラ初期化済みフラグ
 
     // --- センサー ---
@@ -227,6 +243,7 @@ private:
     PowerController _power;     ///< 電源管理
 
     // --- データ管理 ---
+    twelite::TwelitePacket _twelite;  ///< Twelite無線通信
     SDLogger _sdLogger;         ///< SDカードロガー
 #ifdef USE_FLASH
     FlashIO _flash;             ///< Flash ストレージI/O

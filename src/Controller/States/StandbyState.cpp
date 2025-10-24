@@ -19,6 +19,13 @@ void StandbyState::onEnter() {
 void StandbyState::onUpdate() {
 	_ctx.getSerialWriter().log("Updating StandbyState");
 
+	// 高度閾値判定（config.jsonで設定可能）
+	if (_ctx.getGnss().getAltitude() > _ctx.getUserConfig().standbyStateAltThreshold) {
+		_ctx.writeSystemLog("%lu: Above an altitude. Change to LaunchState", millis());
+		_ctx.changeState(std::make_unique<LaunchState>(_ctx));
+		return;
+	}
+
 	// タイムアウト判定
     long elapsedTime = millis() - _startTime;
 	_ctx.getSerialWriter().logf("Elapsed time: %lu", elapsedTime);
