@@ -1,7 +1,7 @@
 @echo off
 REM --- 設定 ---
 set BOARD=SPRESENSE:spresense:spresense
-set SKETCH=%~dp0\100kinsat_neo.ino
+set SKETCH=%~dp0\parts_B_wheeled_rover.ino
 set LIBRARIES=%~dp0\libraries
 set EXTRA_FLAGS=-Isrc
 set CPP_FLAGS=-std=gnu++14
