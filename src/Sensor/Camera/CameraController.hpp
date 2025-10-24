@@ -6,49 +6,84 @@
 #pragma once
 #include <Camera.h>
 
+/**
+ * @enum CameraMode
+ * @brief カメラの動作モード
+ *
+ * 用途に応じてカメラの解像度・フォーマット・FPSを切り替える
+ */
 enum CameraMode {
-    DETECTION_MODE = 0,
-    VIDEO_MODE = 1,
-    PHOTO_MODE = 2,
+    DETECTION_MODE = 0,  ///< 物体検知モード: QQVGA (160x120) YUV422形式
+    VIDEO_MODE = 1,      ///< 動画録画モード: QVGA (320x240) 30fps JPEG形式
+    PHOTO_MODE = 2,      ///< 静止画撮影モード: HD (1280x720) JPEG形式
 };
 
 /**
- * @brief カメラの制御を行うクラス
+ * @class CameraController
+ * @brief Spresense内蔵カメラを制御するクラス
+ *
+ * Sony Spresenseの内蔵カメラ（theCamera）をラップし、
+ * モード切替、撮影、各種パラメータ設定を行う
+ * 3つのモード（物体検知、動画録画、静止画撮影）を提供する
  */
 class CameraController {
 public:
+    /**
+     * @brief コンストラクタ
+     */
     CameraController();
+
+    /**
+     * @brief デストラクタ
+     */
     ~CameraController();
 
     /**
      * @brief カメラの初期化
-     * @param mode カメラのモード
+     * @param mode カメラのモード（DETECTION_MODE/VIDEO_MODE/PHOTO_MODE）
      * @return true: 成功, false: 失敗
+     *
+     * モードに応じて以下の設定を行います:
+     * - DETECTION_MODE: QQVGA (160x120) YUV422、オートホワイトバランス有効
+     * - VIDEO_MODE: QVGA (320x240) 30fps JPEG、バッファ数3
+     * - PHOTO_MODE: HD (1280x720) JPEG
      */
     bool begin(CameraMode mode);
 
     /**
      * @brief カメラの終了
+     *
+     * カメラデバイスを解放し、リソースを解放する
      */
     void end();
 
     /**
-     * @brief ストリーミングの開始
+     * @brief ストリーミングの開始・停止
+     * @param enable true: 開始, false: 停止
+     * @param cb コールバック関数（オプション）
      * @return true: 成功, false: 失敗
+     *
+     * 動画録画モード時にストリーミングを制御する
+     * コールバック関数を指定すると、フレーム取得時に呼び出される
      */
     bool startStreaming(bool enable, camera_cb_t cb = NULL);
 
     /**
-     * @brief 写真の撮影
-     * @param imgBuff 写真のバッファ
-     * @param imgSize 写真のサイズ
+     * @brief 写真を撮影する
+     * @param imgBuff 撮影した画像データのバッファポインタを格納する変数へのポインタ
+     * @param imgSize 画像データのサイズを格納する変数へのポインタ
      * @return true: 成功, false: 失敗
+     *
+     * takePicture()を実行し、画像が利用可能であれば
+     * imgBuffとimgSizeに画像データの情報を設定する
      */
     bool takePicture(void** imgBuff, size_t* imgSize);
 
     /**
-     * @brief エラーの出力
-     * @param err エラーの種類
+     * @brief カメラエラーの詳細をシリアル出力する
+     * @param err カメラエラーコード
+     *
+     * エラー種別に応じた人間可読なメッセージをSerial.printで出力する
      */
     void printError(enum CamErr err);
 
@@ -154,14 +189,24 @@ public:
 
     // 解像度・フレームレート設定関数
     /**
-     * @brief 静止画解像度の設定
-     * @param width 幅 (CAM_IMGSIZE_*_H)
-     * @param height 高さ (CAM_IMGSIZE_*_V)
-     * @param format ピクセルフォーマット (CAM_IMAGE_PIX_FMT_*)
+     * @brief 静止画解像度・フォーマットの設定
+     * @param width 幅（CAM_IMGSIZE_*_H定数を使用）
+     * @param height 高さ（CAM_IMGSIZE_*_V定数を使用）
+     * @param format ピクセルフォーマット（CAM_IMAGE_PIX_FMT_JPG/YUV422など）
      * @return true: 成功, false: 失敗
+     *
+     * 静止画撮影時の解像度とピクセルフォーマットを設定する
+     * YUV422は物体検知用、JPEGは保存用として使い分ける
      */
     bool setStillPictureImageFormat(int width, int height, CAM_IMAGE_PIX_FMT format);
 
 private:
+    /**
+     * @brief カメラエラーチェック
+     * @param err カメラエラーコード
+     * @return true: エラーなし, false: エラーあり
+     *
+     * エラーが発生している場合、printError()でエラー内容を出力する
+     */
     bool checkCameraError(CamErr err);
 };

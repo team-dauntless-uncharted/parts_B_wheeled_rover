@@ -1,6 +1,6 @@
 /**
  * @file CameraController.cpp
- * @brief カメラの制御を行うクラスの実装
+ * @brief カメラ制御クラスの実装
  */
 
 #include "Sensor/Camera/CameraController.hpp"
@@ -17,18 +17,15 @@ bool CameraController::checkCameraError(CamErr err) {
     return true;
 }
 
-/**
- * @brief カメラの初期化
- * @param mode カメラのモード
- * @return true: 成功, false: 失敗
- */
 bool CameraController::begin(CameraMode mode) {
     CamErr err;
     switch (mode) {
         case DETECTION_MODE:
+            // 物体検知モード: QQVGA (160x120) YUV422形式
+            // YUV422はEdge Impulseの画像処理に適した形式
             err = theCamera.begin();
             if (!checkCameraError(err)) return false;
-            
+
             err = theCamera.setAutoWhiteBalanceMode(CAM_WHITE_BALANCE_AUTO);
             if (!checkCameraError(err)) return false;
 
@@ -36,12 +33,18 @@ bool CameraController::begin(CameraMode mode) {
             if (!checkCameraError(err)) return false;
 
             break;
+
         case VIDEO_MODE:
+            // 動画録画モード: QVGA (320x240) 30fps JPEG形式
+            // バッファ数2、フレームレート30fps、QVGA解像度、バッファ数3
             err = theCamera.begin(2, CAM_VIDEO_FPS_30, CAM_IMGSIZE_QVGA_H, CAM_IMGSIZE_QVGA_V, CAM_IMAGE_PIX_FMT_JPG, 3);
             if (!checkCameraError(err)) return false;
 
             break;
+
         case PHOTO_MODE:
+            // 静止画撮影モード: HD (1280x720) JPEG形式
+            // 高解像度での画像保存用
             err = theCamera.begin();
             if (!checkCameraError(err)) return false;
 
@@ -49,6 +52,7 @@ bool CameraController::begin(CameraMode mode) {
             if (!checkCameraError(err)) return false;
 
             break;
+
         default:
             break;
     }
@@ -56,29 +60,15 @@ bool CameraController::begin(CameraMode mode) {
     return true;
 }
 
-/**
- * @brief カメラの終了
- */
 void CameraController::end() {
     theCamera.end();
 }
 
-/**
- * @brief ストリーミングの開始
- * @return true: 成功, false: 失敗
- */
 bool CameraController::startStreaming(bool enable, camera_cb_t cb) {
     CamErr err = theCamera.startStreaming(enable, cb);
     return checkCameraError(err);
 }
 
-/**
- * @brief 写真の撮影
- * @param pictureIndex 写真のインデックス
- * @param imgBuff 写真のバッファ
- * @param imgSize 写真のサイズ
- * @return true: 成功, false: 失敗
- */
 bool CameraController::takePicture(void** imgBuff, size_t* imgSize) {
     CamImage img = theCamera.takePicture();
     if (img.isAvailable()) {
@@ -89,11 +79,8 @@ bool CameraController::takePicture(void** imgBuff, size_t* imgSize) {
     return false;
 }
 
-/**
- * @brief エラーの出力
- * @param err エラーの種類
- */
 void CameraController::printError(enum CamErr err) {
+    // カメラエラーコードに応じた人間可読なメッセージを出力
     Serial.print("Error: ");
     switch (err) {
         case CAM_ERR_NO_DEVICE:
@@ -131,7 +118,8 @@ void CameraController::printError(enum CamErr err) {
     }
 }
 
-// カメラパラメータ設定関数の実装
+/* --- カメラパラメータ設定関数の実装 --- */
+
 bool CameraController::setJPEGQuality(int quality) {
     CamErr err = theCamera.setJPEGQuality(quality);
     return checkCameraError(err);
@@ -201,8 +189,9 @@ bool CameraController::setHDR(CAM_HDR_MODE mode) {
 
 CAM_HDR_MODE CameraController::getHDR() {
     CAM_HDR_MODE mode = theCamera.getHDR();
+    // NOTE: カメラが初期化されていない場合でもCAM_HDR_MODE_OFFを返す
+    // getFd() < 0はカメラ未初期化を示す
     if (mode == CAM_HDR_MODE_OFF && theCamera.getFd() < 0) {
-        // カメラが初期化されていない場合のエラーハンドリング
         return CAM_HDR_MODE_OFF;
     }
     return mode;
