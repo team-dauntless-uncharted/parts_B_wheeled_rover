@@ -1,7 +1,12 @@
+/**
+ * @file RecordingState.cpp
+ */
+
 #include "Controller/States/RecordingState.hpp"
 #include "Controller/States/ExploreState.hpp"
 #include "Controller/CansatController.hpp"
 
+// 静的コールバック用のインスタンスポインタ
 RecordingState* RecordingState::_instance = nullptr;
 
 void RecordingState::onEnter() {
@@ -13,6 +18,7 @@ void RecordingState::onEnter() {
 
 	delay(200);
 
+	// VIDEO_MODE（QVGA 30fps JPEG）でカメラを初期化
 	if (!setRecordingMode()) {
 		_ctx.writeSystemLog("%lu: Failed to set recording mode", millis());
 		_recordingError = true;
@@ -20,7 +26,7 @@ void RecordingState::onEnter() {
 		_ctx.writeSystemLog("%lu: Recording mode set", millis());
 	}
 
-	_startTime = millis();
+	_startTime = millis();  // タイムアウト判定用の開始時刻を記録
 }
 
 void RecordingState::onUpdate() {
@@ -33,6 +39,7 @@ void RecordingState::onUpdate() {
 		return;
 	}
 
+	// タイムアウト判定（config.jsonで設定可能）
 	unsigned long elapsedTime = millis() - _startTime;
 	_ctx.getSerialWriter().logf("Elapsed time: %lu", elapsedTime);
 	if (elapsedTime > _ctx.getUserConfig().recordingTimeoutThreshold) {
@@ -40,6 +47,7 @@ void RecordingState::onUpdate() {
 		_isRecordingOK = true;
 	}
 
+	// 録画開始フラグが立ったら録画を実行
 	if (_isRecordingOK) {
 		if (record(_ctx.getUserConfig().recordingTime)) {
 			_ctx.writeSystemLog("%lu: Finished recording successfully. Changing to ExploreState", millis());
@@ -53,23 +61,26 @@ void RecordingState::onUpdate() {
 
 void RecordingState::onExit() {
 	_ctx.writeSystemLog("%lu: Exiting RecordingState", millis());
-	
+
 	// 録画エラーの緊急停止処理
 	if (_aviRecordingActive) {
 		_ctx.writeSystemLog("%lu: Emergency AVI stop during state exit", millis());
 		_ctx.getSDLogger().aviEmergencyStop();
 		_aviRecordingActive = false;
 	}
-	
+
+	// カメラの終了
 	if (_isInitCamera) {
 		endRecordingMode();
 	}
 
+	// 次の状態（EXPLORE）をSDカードに保存
 	if (!_ctx.getSDLogger().writeState((int)State::EXPLORE)) {
 		_ctx.getSerialWriter().log("Failed to write state in SD");
 	}
 
 #ifdef USE_FLASH
+	// USE_FLAGが定義されている場合はFlashにも保存
 	if (!_ctx.getFlashIO().writeState((int)State::EXPLORE)) {
 		_ctx.getSerialWriter().log("Failed to write state in Flash");
 	}
@@ -82,6 +93,7 @@ State RecordingState::getState() const {
 	return State::RECORDING;
 }
 
+// VIDEO_MODE（QVGA 30fps JPEG）でカメラを初期化し、コールバックを設定
 bool RecordingState::setRecordingMode() {
 	if (!_ctx.getCamera().begin(VIDEO_MODE)) {
 		_ctx.writeSystemLog("%lu: Camera begin failed", millis());
@@ -97,23 +109,24 @@ bool RecordingState::setRecordingMode() {
 	return true;
 }
 
+// AVI録画を実行（指定時間録画してSDカードに保存）
 bool RecordingState::record(int time_ms) {
 	_ctx.writeSystemLog("%lu: Recording started", millis());
-	
-	// AVI初期化
+
+	// AVI初期化（QVGA解像度）
 	if (!_ctx.getSDLogger().aviInit(CAM_IMGSIZE_QVGA_H, CAM_IMGSIZE_QVGA_V)) {
-		_ctx.writeSystemLog("%lu: AVI initialization failed: %s", millis(), 
+		_ctx.writeSystemLog("%lu: AVI initialization failed: %s", millis(),
 			_ctx.getSDLogger().aviGetErrorMessage());
 		return false;
 	}
-	
+
 	// AVI録画開始
 	if (!_ctx.getSDLogger().aviStart()) {
 		_ctx.writeSystemLog("%lu: AVI recording start failed: %s", millis(),
 			_ctx.getSDLogger().aviGetErrorMessage());
 		return false;
 	}
-	
+
 	_aviRecordingActive = true;
 	_frameCount = 0;
 	_recordingError = false;
@@ -121,7 +134,7 @@ bool RecordingState::record(int time_ms) {
 	uint32_t start_time = millis();
 	uint32_t last_status_time = start_time;
 
-	// 録画ループ
+	// 録画ループ（指定時間またはエラー発生まで）
 	while ((millis() - start_time) < time_ms) {
 		// エラーチェック
 		if (_ctx.getSDLogger().aviHasFailed()) {
@@ -129,7 +142,7 @@ bool RecordingState::record(int time_ms) {
 				_ctx.getSDLogger().aviGetErrorMessage());
 			break;  // エラー発生時はループを抜ける
 		}
-		
+
 		delay(10);
 	}
 
@@ -140,45 +153,48 @@ bool RecordingState::record(int time_ms) {
 			_ctx.getSDLogger().aviGetErrorMessage());
 		success = false;
 	}
-	
+
 	_aviRecordingActive = false;
-	
+
 	// カメラストリーミング停止
 	if (!_ctx.getCamera().startStreaming(false)) {
 		_ctx.writeSystemLog("%lu: Camera streaming stop failed", millis());
 		success = false;
 	}
-	
+
 	// 録画結果の報告
 	uint32_t actual_duration = millis() - start_time;
 	if (success) {
-		_ctx.writeSystemLog("%lu: Recording finished successfully. Duration: %u ms, Frames: %u", 
+		_ctx.writeSystemLog("%lu: Recording finished successfully. Duration: %u ms, Frames: %u",
 			millis(), actual_duration, _frameCount);
 	} else {
-		_ctx.writeSystemLog("%lu: Recording finished with errors. Duration: %u ms, Frames: %u", 
+		_ctx.writeSystemLog("%lu: Recording finished with errors. Duration: %u ms, Frames: %u",
 			millis(), actual_duration, _frameCount);
 	}
-	
+
 	return success;
 }
 
+// カメラの終了
 void RecordingState::endRecordingMode() {
 	_ctx.getCamera().end();
 	_isInitCamera = false;
 }
 
+// 静的コールバック関数：カメラからフレームが到着したときに呼ばれる
 void RecordingState::CamCB(CamImage img) {
 	if (_instance) {
 		_instance->handleCameraImage(img);
 	}
 }
 
+// カメラ画像を処理してAVIファイルに追加
 void RecordingState::handleCameraImage(CamImage img) {
 	if (!img.isAvailable()) {
 		_ctx.writeSystemLog("%lu: Invalid camera image received", millis());
 		return;
 	}
-	
+
 	// 録画がアクティブでない場合は処理しない
 	if (!_aviRecordingActive || _recordingError) {
 		return;
@@ -187,13 +203,13 @@ void RecordingState::handleCameraImage(CamImage img) {
 	void* imgBuff = img.getImgBuff();
 	size_t imgSize = img.getImgSize();
 
-	// フレーム追加
+	// フレームをAVIファイルに追加
 	if (!_ctx.getSDLogger().aviRecord(imgBuff, imgSize)) {
 		_ctx.writeSystemLog("%lu: Frame recording failed: %s", millis(),
 			_ctx.getSDLogger().aviGetErrorMessage());
 		_recordingError = true;
 		return;
 	}
-	
+
 	_frameCount++;
 }
