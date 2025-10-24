@@ -1,6 +1,6 @@
 BOARD := SPRESENSE:spresense:spresense:Core=Main,Memory=1536
 PORT ?= $(shell arduino-cli board list | grep SPRESENSE | awk '{print $$1}')
-SKETCH := 100kinsat_neo.ino
+SKETCH := parts_B_wheeled_rover.ino
 
 # FEATURE_FLAG="-D USE_FLASH"
 FEATURE_FLAG ?=

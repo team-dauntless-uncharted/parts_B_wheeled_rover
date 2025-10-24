@@ -1,4 +1,4 @@
-# 100kinsat neo
+# parts_B_wheeled_rover
 
 ARLISS 2025 TDU Team-Dauntless-Uncharted Bパーツ開発リポジトリ
 
@@ -7,8 +7,8 @@ ARLISS 2025 TDU Team-Dauntless-Uncharted Bパーツ開発リポジトリ
 ## ディレクトリ構造
 
 ```
-100kinsat_neo
-├── 100kinsat_neo.ino                 # メインのArduinoスケッチ
+parts_B_wheeled_rover
+├── parts_B_wheeled_rover.ino         # メインのArduinoスケッチ
 ├── libraries                         # 外部ライブラリ(git submodule)
 │   ├── ArduinoJson
 │   ├── BNO055Library                 # BNO055のセンサライブラリ
@@ -116,13 +116,13 @@ $ arduino-cli core install SPRESENSE:spresense
 
 このリポジトリをクローンする
 ```bash
-$ git clone https://github.com/team-dauntless-uncharted/100kinsat_neo.git
-$ git clone git@github.com:team-dauntless-uncharted/100kinsat_neo.git
+$ git clone https://github.com/team-dauntless-uncharted/parts_B_wheeled_rover.git
+$ git clone git@github.com:team-dauntless-uncharted/parts_B_wheeled_rover.git
 ```
 
-100kinsat_neo直下に移動
+parts_B_wheeled_rover直下に移動
 ```bash
-$ cd 100kinsat_neo
+$ cd parts_B_wheeled_rover
 ```
 
 submoduleを取得
@@ -134,7 +134,7 @@ $ git submodule update --init --recursive
 
 **macOS・Linuxの場合**
 
-100kinsat_neoディレクトリ直下でmakeコマンドを使用する
+parts_B_wheeled_roverディレクトリ直下でmakeコマンドを使用する
 
 ```bash
 $ make compile
@@ -142,7 +142,7 @@ $ make compile
 
 **Windowsの場合**
 
-100kinsat_neoディレクトリ直下でbuild.batを実行する
+parts_B_wheeled_roverディレクトリ直下でbuild.batを実行する
 ```
 $ ./build.bat compile
 ```
@@ -170,9 +170,9 @@ $ ./build.bat upload
 
 ```bash
 # ビルド
-$ arduino-cli compile --fqbn SPRESENSE:spresense:spresense:Core=Main,Memory=1536 --libraries libraries --build-property build.extra_flags="-Isrc" --build-property compiler.cpp.extra_flags="-std=gnu++14" 100kinsat_neo.ino
+$ arduino-cli compile --fqbn SPRESENSE:spresense:spresense:Core=Main,Memory=1536 --libraries libraries --build-property build.extra_flags="-Isrc" --build-property compiler.cpp.extra_flags="-std=gnu++14" parts_B_wheeled_rover.ino
 # 書き込み
-$ arduino-cli upload --fqbn SPRESENSE:spresense:spresense:Core=Main,Memory=1536 -p [Spresenseを認識しているポート] 100kinsat_neo.ino
+$ arduino-cli upload --fqbn SPRESENSE:spresense:spresense:Core=Main,Memory=1536 -p [Spresenseを認識しているポート] parts_B_wheeled_rover.ino
 # シリアルモニタ
 $ arduino-cli monitor -p [Spresenseを認識しているポート] -c baudrate=115200
 ```
