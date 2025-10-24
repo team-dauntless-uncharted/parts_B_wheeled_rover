@@ -1,3 +1,8 @@
+/**
+ * @file Motor.cpp
+ * @brief モータ制御クラスの実装
+ */
+
 #include <Arduino.h>
 #include <math.h>
 #include "Actuator/Motor/Motor.hpp"
@@ -95,10 +100,13 @@ void Motor::snakeForwardSmooth(int pwm, int duration, int frequency) {
 
     while (millis() - start < (unsigned long)duration) {
         float t = (millis() - start) / 1000.0; // 秒に変換
-        float offset = sin(2 * M_PI * frequency * t); // -1～1
+        float offset = sin(2 * M_PI * frequency * t); // -1～1の正弦波
 
-        int pwmR = pwm * (1.0 - 0.3 * offset); // 右モータ
-        int pwmL = pwm * (1.0 + 0.3 * offset); // 左モータ
+        // 左右のPWM値を±30%の範囲で変動させる
+        // offsetが+1のとき: 右が70%、左が130% → 左に曲がる
+        // offsetが-1のとき: 右が130%、左が70% → 右に曲がる
+        int pwmR = pwm * (1.0 - 0.3 * offset);
+        int pwmL = pwm * (1.0 + 0.3 * offset);
 
         analogWrite(_motorR[2], constrain(pwmR, 0, 255));
         analogWrite(_motorL[2], constrain(pwmL, 0, 255));
