@@ -19,7 +19,7 @@ enum State {
     STANDBY,          ///< スタンバイ状態：発射前待機
     LAUNCH,           ///< 発射検知状態：CdSセンサーで放出検知
     DROP,             ///< 降下状態：Twelite起動、降下監視
-	ESCAPE,           ///< 脱出状態：コンテナからの脱出
+	ESCAPE,           ///< 脱出状態：ケースからの脱出
 	DETECTION,        ///< 検知状態：A-parts（目標）の物体検知
 	RECORDING,        ///< 録画状態：A-parts発射動画の撮影
 	EXPLORE,          ///< 探索状態：自律移動と周辺撮影
