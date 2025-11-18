@@ -53,7 +53,8 @@ void CansatController::begin() {
     _writer.begin();
     _writer.log("CansatController: Starting begin()");
 
-    _twelite.begin(Serial2, 115200);
+    Serial2.begin(115200);
+    _twelite.begin(Serial2);
     _twelite.off();
     setIsConnectTwelite(false);
     
